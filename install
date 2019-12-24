@@ -1,0 +1,87 @@
+#!/bin/bash
+set -e
+set -o pipefail
+
+SCRATCH_PATH=$(mktemp -d -t tmp.XXXXXXXXXX)
+function finish {
+	echo Temporary files removed.
+	rm -rf "$SCRATCH_PATH"
+}
+
+trap finish EXIT
+
+RESOURCES_PATH=resources
+SCRIPTS_PATH=scripts
+SLOVNIK_PATH=$SCRATCH_PATH/slovnik
+
+echo Building db setup code...
+make
+
+echo Decrypting and unpacking Slovnik...
+openssl enc -aes-256-cbc -d -in $RESOURCES_PATH/slovnik.tar.gz.enc -pbkdf2 | tar -xz -C $SCRATCH_PATH
+
+rm -f $SLOVNIK_PATH/all.txt;
+for f in $SLOVNIK_PATH/*.txt; do
+	(cat "${f}"; printf "\n") >> $SCRATCH_PATH/slovnik.txt
+	rm -f $f
+done
+
+rm -rf $SLOVNIK_PATH
+
+echo Unpacking RBE...
+zcat $RESOURCES_PATH/db-rbe.sql.gz > $SCRATCH_PATH/db-rbe.sql
+
+echo Cleaning RBE...
+parallel -a $SCRATCH_PATH/db-rbe.sql -k --block 30M --pipe-part \
+	"sed -n -E -f $SCRIPTS_PATH/20_*.sed |\
+		sed -E -f $SCRIPTS_PATH/21_*.sed |\
+		sed -E -f $SCRIPTS_PATH/22_*.sed \
+			>$SCRATCH_PATH/db-rbe.csv"
+
+echo Unpacking Rechko...
+zcat $RESOURCES_PATH/db-rechko.sql.gz > $SCRATCH_PATH/db-rechko.sql
+
+echo Creating database...
+./builddb $SCRATCH_PATH
+
+echo Build finished. Success.
+exit 1;
+
+echo Importing RBE...
+batch "$SCRATCH_PATH/db-rbe.sql"
+inline "SELECT COUNT(*) as cnt FROM word;"
+
+echo Renaming word to lemma...
+inline "RENAME TABLE word TO lemma;"
+
+echo Cleaning...
+inline "DROP TABLE stat_value;"
+
+echo Creating wordform table...
+batch "$SCRIPTS_PATH/wordform.sql"
+inline "SELECT COUNT(*) as cnt FROM wordform;"
+
+echo Cleaning...
+inline "DROP TABLE slovnik_wordform;"
+
+echo Dropping redundancies from lemma...
+inline "ALTER TABLE lemma DROP COLUMN name_with_stress, DROP COLUMN first_letter, DROP COLUMN source_definition, DROP COLUMN workroom_page;"
+
+echo Counting syllables in wordform table...
+python "scripts/wordform_syllable_counter.py"
+
+echo Creating stress table...
+batch "$SCRIPTS_PATH/stress.sql"
+
+echo Importing wordform stresses in stress table...
+python "scripts/wordform_stress_importer.py"
+
+
+echo Importing Rechko...
+batch "$SCRATCH_PATH/db-rechko.sql"
+
+echo Cleaning...
+inline "SET FOREIGN_KEY_CHECKS=0; DROP TABLE IF EXISTS abstract_word, incorrect_form, incorrect_form_revision, revision, sf_guard_group, sf_guard_group_permission, sf_guard_permission, sf_guard_remember_key, sf_guard_user, sf_guard_user_group, sf_guard_user_permission, sf_guard_user_profile, word_revision, word_translation;"
+
+# usefule tables from Rechko: derivative_form, word, word_type
+
