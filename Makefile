@@ -6,11 +6,11 @@ all: $(LINK_TARGET)
 	@echo All done
 
 $(LINK_TARGET): $(OBJS)
-	gcc -o $@ $^ -lsqlite3
+	gcc -o $@ $^ -lsqlite3 -g
 
 %.o: %.c
 	@echo Building $@...
-	gcc -o $@ -c $< -lsqlite3
+	gcc -o $@ -c $< -lsqlite3 -g
 
 clean:
 	rm -f $(REBUILDABLES)

@@ -7,44 +7,48 @@
 
 void initialize_memory_db(sqlite3 **db);
 int persist_db(sqlite3 *pInMemory, const char *zFilename);
+int run_sql_file(char *path);
 void import_slovnik_wordforms(char* path);
 int count_syllables(char *str);
-char * read_file_into_string(char * filename);
+char *read_file_into_string(char * filename);
 
 sqlite3 *db = NULL;
+char *scratch_path = NULL;
+char db_path[200];
 
 int main(int argc, char **argv) {
+	db_path[0] = '\0';
 	setlocale(LC_ALL, "");
 
 	if (argc != 2) {
-		fprintf(stderr, "You must pass the path to \
-the scratchpad as an argument.\n");
+		fprintf(stderr, "You must pass the scratch path \
+ as an argument.\n");
 		exit(1);
 	}
 
-	char *err_msg = 0;
+	scratch_path = argv[1];
+	strcat(db_path, scratch_path);
+	strcat(db_path, "/temp.db");
+
 	initialize_memory_db(&db);
 
-	char *sql = read_file_into_string("scripts/10_create_slovnik_wordform.sql");
-	int rc = sqlite3_exec(db, sql, 0, 0, &err_msg);
-	free(sql);
+	run_sql_file("scripts/10_create_slovnik_wordform.sql");
+	run_sql_file("scripts/30_create_rbe_lemma.sql");
+	run_sql_file("scripts/40_create_stress.sql");
 
-	if (rc != SQLITE_OK ) {
-		fprintf(stderr, "SQL error: %s\n", err_msg);
-		sqlite3_free(err_msg);
-		sqlite3_close(db);
-		return 1;
-	}
+	char slovnik_path[200];
+	slovnik_path[0] = '\0';
+	strcat(slovnik_path, scratch_path);
+	strcat(slovnik_path, "/slovnik.txt");
 
-	import_slovnik_wordforms(strcat(argv[1], "/slovnik.txt"));
+	import_slovnik_wordforms(slovnik_path);
 
-	persist_db(db, "dictionary.db");
 	sqlite3_close(db);
 	return 0;
 }
 
 void initialize_memory_db(sqlite3 **db) {
-	int rc = sqlite3_open(":memory:", db);
+	int rc = sqlite3_open(db_path, db);
 
 	if (rc != SQLITE_OK) {
 		fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(*db));
@@ -74,6 +78,7 @@ int persist_db(sqlite3 *pInMemory, const char *zFilename) {
 }
 
 void import_slovnik_wordforms(char* path) {
+	printf("Importing table from %s...\n", path);
 	FILE *fp = fopen(path, "r");
 	if (fp == NULL) {
 		fprintf(stderr, "Slovnik wordforms file does not exist \
@@ -127,6 +132,23 @@ in %s.", path);
 	free(line);
 }
 
+int run_sql_file(char *path) {
+	printf("Running %s...\n", path);
+	char *err_msg = 0;
+	char *sql = read_file_into_string(path);
+	int rc = sqlite3_exec(db, sql, 0, 0, &err_msg);
+	free(sql);
+
+	if (rc != SQLITE_OK) {
+		fprintf(stderr, "SQL error: %s\n", err_msg);
+		sqlite3_free(err_msg);
+		sqlite3_close(db);
+	}
+
+	free(err_msg);
+	return rc;
+}
+
 int count_syllables(char *str) {
 	int cnt = 0;
 	int strl = strlen(str);
@@ -156,13 +178,18 @@ char *read_file_into_string(char * filename) {
 		fseek (f, 0, SEEK_END);
 		length = ftell (f);
 		fseek (f, 0, SEEK_SET);
-		buffer = malloc (length);
+		buffer = malloc (length + 1);
+		buffer[length] = '\0';
 
 		if (buffer) {
 			fread (buffer, 1, length, f);
 		}
 
-		fclose (f);
+		fclose(f);
+	}
+	else {
+		fprintf(stderr, "File not found: %s\n", filename);
+		exit(1);
 	}
 
 	return buffer;

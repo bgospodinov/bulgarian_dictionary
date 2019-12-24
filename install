@@ -44,6 +44,8 @@ zcat $RESOURCES_PATH/db-rechko.sql.gz > $SCRATCH_PATH/db-rechko.sql
 echo Creating database...
 ./builddb $SCRATCH_PATH
 
+cp $SCRATCH_PATH/temp.db dictionary.db
+
 echo Build finished. Success.
 exit 1;
 
