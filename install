@@ -2,7 +2,7 @@
 set -e
 set -o pipefail
 
-SCRATCH_PATH=$(mktemp -d -t tmp.XXXXXXXXXX)
+SCRATCH_PATH=$(mktemp -d -t bdict.XXXXXXXXXX)
 function finish {
 	echo Temporary files removed.
 	rm -rf "$SCRATCH_PATH"
@@ -34,9 +34,8 @@ zcat $RESOURCES_PATH/db-rbe.sql.gz > $SCRATCH_PATH/db-rbe.sql
 echo Cleaning RBE...
 parallel -a $SCRATCH_PATH/db-rbe.sql -k --block 30M --pipe-part \
 	"sed -n -E -f $SCRIPTS_PATH/20_*.sed |\
-		sed -E -f $SCRIPTS_PATH/21_*.sed |\
-		sed -E -f $SCRIPTS_PATH/22_*.sed \
-			>$SCRATCH_PATH/db-rbe.csv"
+		sed -E -f $SCRIPTS_PATH/21_*.sed" \
+			>$SCRATCH_PATH/db-rbe.csv
 
 echo Unpacking Rechko...
 zcat $RESOURCES_PATH/db-rechko.sql.gz > $SCRATCH_PATH/db-rechko.sql
@@ -44,6 +43,10 @@ zcat $RESOURCES_PATH/db-rechko.sql.gz > $SCRATCH_PATH/db-rechko.sql
 echo Creating database...
 ./builddb $SCRATCH_PATH
 
+echo Importing lemmata into database...
+sqlite3 $SCRATCH_PATH/temp.db ".mode csv" ".separator ^" ".import $SCRATCH_PATH/db-rbe.csv lemma"
+
+echo Persisting temp database...
 cp $SCRATCH_PATH/temp.db dictionary.db
 
 echo Build finished. Success.
@@ -52,12 +55,6 @@ exit 1;
 echo Importing RBE...
 batch "$SCRATCH_PATH/db-rbe.sql"
 inline "SELECT COUNT(*) as cnt FROM word;"
-
-echo Renaming word to lemma...
-inline "RENAME TABLE word TO lemma;"
-
-echo Cleaning...
-inline "DROP TABLE stat_value;"
 
 echo Creating wordform table...
 batch "$SCRIPTS_PATH/wordform.sql"
@@ -69,15 +66,11 @@ inline "DROP TABLE slovnik_wordform;"
 echo Dropping redundancies from lemma...
 inline "ALTER TABLE lemma DROP COLUMN name_with_stress, DROP COLUMN first_letter, DROP COLUMN source_definition, DROP COLUMN workroom_page;"
 
-echo Counting syllables in wordform table...
-python "scripts/wordform_syllable_counter.py"
-
 echo Creating stress table...
 batch "$SCRIPTS_PATH/stress.sql"
 
 echo Importing wordform stresses in stress table...
 python "scripts/wordform_stress_importer.py"
-
 
 echo Importing Rechko...
 batch "$SCRATCH_PATH/db-rechko.sql"
