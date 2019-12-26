@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
 	char slovnik_path[200];
 	slovnik_path[0] = '\0';
 	strcat(slovnik_path, scratch_path);
-	strcat(slovnik_path, "/slovnik.txt");
+	strcat(slovnik_path, "/slovnik.csv");
 
 	import_slovnik_wordforms(slovnik_path);
 

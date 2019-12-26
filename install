@@ -22,7 +22,7 @@ openssl enc -aes-256-cbc -d -in $RESOURCES_PATH/slovnik.tar.gz.enc -pbkdf2 | tar
 
 rm -f $SLOVNIK_PATH/all.txt;
 for f in $SLOVNIK_PATH/*.txt; do
-	(cat "${f}"; printf "\n") >> $SCRATCH_PATH/slovnik.txt
+	(cat "${f}"; printf "\n") >> $SCRATCH_PATH/slovnik.csv
 	rm -f $f
 done
 
