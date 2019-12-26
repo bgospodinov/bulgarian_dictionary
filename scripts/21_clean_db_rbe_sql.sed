@@ -1,3 +1,4 @@
+# replace parentheses from beginning and end
 s/^\(//1g
 s/,NULL\)//1g
 # remove last column from sql inserts
@@ -9,3 +10,7 @@ s/^([0-9]+),'/\1^/
 s/','/^/g
 s/'$//g
 s/^'/^/g
+# convert to lowercase letters
+s/\^(([[:upper:]`]+)\^){2}/\L&/g
+# fixing errors in rbe
+1,3s/а`\^а/а^а`/g

@@ -1,2 +1,3 @@
 parallel
 sqlite3
+git-lfs
