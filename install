@@ -17,9 +17,24 @@ SLOVNIK_PATH=$SCRATCH_PATH/slovnik
 echo Building db setup code...
 make
 
+echo Unpacking Rechko...
+(zcat $RESOURCES_PATH/db-rechko.sql.gz > $SCRATCH_PATH/db-rechko.sql) &
+
+echo Unpacking RBE...
+(zcat $RESOURCES_PATH/db-rbe.sql.gz > $SCRATCH_PATH/db-rbe.sql) &
+
+wait
+
 echo Decrypting and unpacking Slovnik...
 openssl enc -aes-256-cbc -d -in $RESOURCES_PATH/slovnik.tar.gz.enc -pbkdf2 | tar -xz -C $SCRATCH_PATH
 
+echo Cleaning RBE...
+time parallel --bar -a $SCRATCH_PATH/db-rbe.sql --block 30M --pipe-part \
+	"sed -n -E -f $SCRIPTS_PATH/20_*.sed |\
+		sed -E -f $SCRIPTS_PATH/21_*.sed" \
+			>$SCRATCH_PATH/db-rbe.csv
+
+# assembling slovnik.csv
 rm -f $SLOVNIK_PATH/all.txt;
 for f in $SLOVNIK_PATH/*.txt; do
 	(cat "${f}"; printf "\n") >> $SCRATCH_PATH/slovnik.csv
@@ -27,18 +42,6 @@ for f in $SLOVNIK_PATH/*.txt; do
 done
 
 rm -rf $SLOVNIK_PATH
-
-echo Unpacking RBE...
-zcat $RESOURCES_PATH/db-rbe.sql.gz > $SCRATCH_PATH/db-rbe.sql
-
-echo Cleaning RBE...
-parallel -a $SCRATCH_PATH/db-rbe.sql -k --block 10M --pipe-part \
-	"sed -n -E -f $SCRIPTS_PATH/20_*.sed |\
-		sed -E -f $SCRIPTS_PATH/21_*.sed" \
-			>$SCRATCH_PATH/db-rbe.csv
-
-echo Unpacking Rechko...
-zcat $RESOURCES_PATH/db-rechko.sql.gz > $SCRATCH_PATH/db-rechko.sql
 
 echo Creating database...
 ./builddb $SCRATCH_PATH

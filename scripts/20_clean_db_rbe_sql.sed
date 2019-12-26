@@ -1,10 +1,11 @@
 /^INSERT INTO `word`/ {
 	s/^.*VALUES //
 	s/;$//
-	# split inserts into newlines
-	s/([0-9]+(,'.*'){5})\),\(/\1\n/g
+	/^$/ d
 	# split inserts into newlines
 	s/,NULL\),\(/\n/g
-	/^$/ d
+	# split inserts into newlines
+	# split rows with non-null 6th column
+	s/\),\(/\n/g
 	p
 }
