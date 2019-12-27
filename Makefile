@@ -1,5 +1,5 @@
-LINK_TARGET = builddb
-OBJS = src/builddb.o
+LINK_TARGET = import_slovnik
+OBJS = src/import_slovnik.o src/sqlite3_aux.o
 REBUILDABLES = $(OBJS) $(LINK_TARGET) dictionary.db
 
 all: $(LINK_TARGET)

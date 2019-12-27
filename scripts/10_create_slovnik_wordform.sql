@@ -8,3 +8,5 @@ CREATE TABLE slovnik_wordform (
 	is_lemma BOOLEAN DEFAULT 0,
 	num_syllables INT(2)
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_lemma_tag ON slovnik_wordform(lemma, tag);

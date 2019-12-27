@@ -30,4 +30,5 @@ FROM
 	) q;
 COMMIT;
 
+CREATE INDEX IF NOT EXISTS idx_wordform_tag ON wordform(wordform, tag);
 DROP TABLE IF EXISTS slovnik_wordform;

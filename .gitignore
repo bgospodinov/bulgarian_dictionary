@@ -1,4 +1,4 @@
-builddb
+import_slovnik
 *.csv
 *.db
 *.o

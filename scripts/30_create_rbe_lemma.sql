@@ -6,3 +6,5 @@ CREATE TABLE lemma (
   name_with_stress VARCHAR(100),
   source_definition TEXT
 );
+
+CREATE INDEX IF NOT EXISTS idx_name ON lemma(name);
