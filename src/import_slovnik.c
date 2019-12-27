@@ -6,7 +6,7 @@
 #include <wchar.h>
 #include <locale.h>
 
-void import_slovnik_wordforms(char* path);
+void import_slovnik_wordforms(char *path);
 int count_syllables(char *str);
 
 sqlite3 *db = NULL;
@@ -74,7 +74,7 @@ in %s.", path);
 			tok = strtok(NULL, delim);
 		}
 
-		char *nwp;
+		char *nwp = NULL;
 		if((nwp = strchr(toks[2], '\n')) != NULL)
 			*nwp = '\0';
 
@@ -108,6 +108,7 @@ int count_syllables(char *str) {
 
 	for (size_t i = 0; wstr[i]; ++i) {
 		wchar_t wc = wstr[i];
+		// count vowels as a proxy
     	if (wc == u'\u0430' || wc == u'\u0435' || wc == u'\u0438' \
 || wc == u'\u043E' || wc == u'\u0443' || wc == u'\u044A' || wc == u'\u044E' \
 || wc == u'\u044F') {

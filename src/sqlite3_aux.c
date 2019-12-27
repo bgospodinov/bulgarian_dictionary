@@ -13,7 +13,7 @@ void initialize_db(sqlite3 **db, char *db_path) {
 	}	
 }
 
-char *read_file_into_string(char * filename) {
+char *read_file_into_string(char *filename) {
 	char *buffer = 0;
 	long length;
 	FILE *f = fopen (filename, "rb");

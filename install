@@ -33,6 +33,7 @@ time parallel --bar -a $SCRATCH_PATH/db-rbe.sql --block 30M --pipe-part \
 	"sed -n -E -f $SCRIPTS_PATH/20_*.sed |\
 		sed -E -f $SCRIPTS_PATH/21_*.sed" \
 			>$SCRATCH_PATH/db-rbe.csv
+echo ""
 
 # assembling slovnik.csv
 rm -f $SLOVNIK_PATH/all.txt;
@@ -44,13 +45,16 @@ done
 rm -rf $SLOVNIK_PATH
 
 echo Importing slovnik wordforms...
-./import_slovnik $SCRATCH_PATH
+time ./import_slovnik $SCRATCH_PATH
+echo ""
 
 echo Importing RBE lemmata into database...
-sqlite3 $SCRATCH_PATH/temp.db ".mode csv" ".separator ^" ".import $SCRATCH_PATH/db-rbe.csv lemma"
+time sqlite3 $SCRATCH_PATH/temp.db ".mode csv" ".separator ^" ".import $SCRATCH_PATH/db-rbe.csv lemma"
+echo ""
 
 echo Creating wordform table...
-sqlite3 $SCRATCH_PATH/temp.db ".read scripts/50_create_wordform.sql"
+time sqlite3 $SCRATCH_PATH/temp.db ".read scripts/50_create_wordform.sql"
+echo ""
 
 #echo Importing Rechko...
 #sqlite3 $SCRATCH_PATH/temp.db ".read $SCRATCH_PATH/db-rechko.sql"
@@ -59,12 +63,12 @@ sqlite3 $SCRATCH_PATH/temp.db ".read scripts/50_create_wordform.sql"
 #sqlite3 $SCRATCH_PATH/temp.db "DROP TABLE IF EXISTS abstract_word, incorrect_form, incorrect_form_revision, revision, sf_guard_group, sf_guard_group_permission, sf_guard_permission, sf_guard_remember_key, sf_guard_user, sf_guard_user_group, sf_guard_user_permission, sf_guard_user_profile, word_revision, word_translation;"
 
 echo Persisting temp database...
-cp $SCRATCH_PATH/temp.db dictionary.db
+time cp $SCRATCH_PATH/temp.db dictionary.db
+echo ""
 
 echo Build finished. Success.
-exit 1;
 
-echo Importing wordform stresses in stress table...
-python "scripts/wordform_stress_importer.py"
+#echo Importing wordform stresses in stress table...
+#python "scripts/wordform_stress_importer.py"
 
 # usefule tables from Rechko: derivative_form, word, word_type
