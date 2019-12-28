@@ -15,6 +15,11 @@ echo "$CONFIG";
 eval "$CONFIG"
 
 SCRATCH_PATH=$(mktemp -d -t bdict.XXXXXXXXXX)
+RESOURCES_PATH=resources
+SCRIPTS_PATH=scripts
+SLOVNIK_PATH=$SCRATCH_PATH/slovnik
+DB_PATH=$SCRATCH_PATH/$DB_FILE_NAME
+
 function finish {
 	echo Temporary files removed.
 	rm -rf "$SCRATCH_PATH"
@@ -22,12 +27,8 @@ function finish {
 
 trap finish EXIT
 
-RESOURCES_PATH=resources
-SCRIPTS_PATH=scripts
-SLOVNIK_PATH=$SCRATCH_PATH/slovnik
-
 echo Building db setup code...
-make
+make &
 
 echo Unpacking Rechko...
 (zcat $RESOURCES_PATH/db-rechko.sql.gz > $SCRATCH_PATH/db-rechko.sql) &
@@ -61,15 +62,19 @@ time ./import_slovnik $SCRATCH_PATH
 echo ""
 
 echo Importing RBE lemmata into database...
-time sqlite3 $SCRATCH_PATH/$DB_FILE_NAME ".mode csv" ".separator ^" ".import $SCRATCH_PATH/db-rbe.csv lemma"
+time sqlite3 $DB_PATH ".mode csv" ".separator ^" ".import $SCRATCH_PATH/db-rbe.csv lemma"
 echo ""
 
 echo Creating lemma fulltext index
-time sqlite3 $SCRATCH_PATH/$DB_FILE_NAME "CREATE VIRTUAL TABLE idx_ft_lemma USING fts5(source_definition, content=lemma);" "INSERT INTO idx_ft_lemma SELECT source_definition FROM lemma;"
+time sqlite3 $DB_PATH "CREATE VIRTUAL TABLE lemma_ft USING fts5(source_definition, content=lemma);" "INSERT INTO lemma_ft SELECT source_definition FROM lemma;"
 echo ""
 
 echo Creating wordform table...
-time sqlite3 $SCRATCH_PATH/$DB_FILE_NAME ".read scripts/50_create_wordform.sql"
+time sqlite3 $DB_PATH ".read scripts/50_create_wordform.sql"
+echo ""
+
+echo Vacuum...
+time sqlite3 $DB_PATH "VACUUM"
 echo ""
 
 #echo Importing Rechko...
@@ -79,7 +84,7 @@ echo ""
 #sqlite3 $SCRATCH_PATH/temp.db "DROP TABLE IF EXISTS abstract_word, incorrect_form, incorrect_form_revision, revision, sf_guard_group, sf_guard_group_permission, sf_guard_permission, sf_guard_remember_key, sf_guard_user, sf_guard_user_group, sf_guard_user_permission, sf_guard_user_profile, word_revision, word_translation;"
 
 echo Persisting temp database...
-time cp $SCRATCH_PATH/$DB_FILE_NAME dictionary.db
+time cp $DB_PATH dictionary.db
 echo ""
 
 echo Build finished. Success.
