@@ -61,6 +61,8 @@ in %s.", path);
 	sqlite3_stmt* stmt = 0;
 	int rc = sqlite3_prepare_v2(db, "INSERT INTO slovnik_wordform (wordform, lemma, tag, is_lemma, num_syllables) VALUES (?, ?, ?, ?, ?);", -1, &stmt, 0);
 	rc = sqlite3_exec(db, "BEGIN TRANSACTION", 0, 0, 0);
+	rc = sqlite3_exec(db, "PRAGMA synchronous = OFF", 0, 0, 0);
+	rc = sqlite3_exec(db, "PRAGMA journal_mode = OFF", 0, 0, 0);
 
 	while ((read = getline(&line, &len, fp)) != -1) {
 		int ncols = 0;
@@ -77,11 +79,11 @@ in %s.", path);
 			*nwp = '\0';
 
 		if (ncols == maxcols) {
+			rc = sqlite3_bind_text(stmt, 1, toks[0], -1, SQLITE_STATIC);
+			rc = sqlite3_bind_text(stmt, 2, toks[2], -1, SQLITE_STATIC);
+			rc = sqlite3_bind_text(stmt, 3, toks[1], -1, SQLITE_STATIC);
 			rc = sqlite3_bind_int(stmt, 4, strcmp(toks[0], toks[2]) == 0);
 			rc = sqlite3_bind_int(stmt, 5, count_syllables(toks[0]));
-			rc = sqlite3_bind_text(stmt, 1, toks[0], -1, SQLITE_TRANSIENT);
-			rc = sqlite3_bind_text(stmt, 2, toks[2], -1, SQLITE_TRANSIENT);
-			rc = sqlite3_bind_text(stmt, 3, toks[1], -1, SQLITE_TRANSIENT);
 			rc = sqlite3_step(stmt);
 		}
 

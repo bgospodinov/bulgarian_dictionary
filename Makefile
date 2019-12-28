@@ -1,6 +1,7 @@
 LINK_TARGET = import_slovnik
 OBJS = src/import_slovnik.o src/sqlite3_aux.o
 REBUILDABLES = $(OBJS) $(LINK_TARGET) dictionary.db
+CLEANABLES = dictionary.db-journal
 
 all: $(LINK_TARGET)
 	@echo All done
@@ -13,5 +14,5 @@ $(LINK_TARGET): $(OBJS)
 	gcc -o $@ -c $< -lsqlite3 -g
 
 clean:
-	rm -f $(REBUILDABLES)
+	rm -f $(REBUILDABLES) $(CLEANABLES)
 	@echo Cleaning done

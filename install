@@ -2,6 +2,18 @@
 set -e
 set -o pipefail
 
+echo Sourcing configuration from header files...
+CONFIG=$(sed -r '{
+        /^#define/!d
+        /#define[ \t]*[^ \t]*$/d
+        s/[^ \t]*[ \t]*([^ \t]*)[ \t]*(.*)/\1="\2"/
+		s/""/"/g
+        /(""|\([^\)]*\))/d
+    }' <(cat include/*.h))
+
+echo "$CONFIG";
+eval "$CONFIG"
+
 SCRATCH_PATH=$(mktemp -d -t bdict.XXXXXXXXXX)
 function finish {
 	echo Temporary files removed.
@@ -35,10 +47,10 @@ time parallel --bar -a $SCRATCH_PATH/db-rbe.sql --block 30M --pipe-part \
 			>$SCRATCH_PATH/db-rbe.csv
 echo ""
 
-# assembling slovnik.csv
+# assembling slovnik into one csv file
 rm -f $SLOVNIK_PATH/all.txt;
 for f in $SLOVNIK_PATH/*.txt; do
-	(cat "${f}"; printf "\n") >> $SCRATCH_PATH/slovnik.csv
+	(cat "${f}"; printf "\n") >> $SCRATCH_PATH/$SLOVNIK_FILE_NAME
 	rm -f $f
 done
 
@@ -49,11 +61,15 @@ time ./import_slovnik $SCRATCH_PATH
 echo ""
 
 echo Importing RBE lemmata into database...
-time sqlite3 $SCRATCH_PATH/temp.db ".mode csv" ".separator ^" ".import $SCRATCH_PATH/db-rbe.csv lemma"
+time sqlite3 $SCRATCH_PATH/$DB_FILE_NAME ".mode csv" ".separator ^" ".import $SCRATCH_PATH/db-rbe.csv lemma"
+echo ""
+
+echo Creating lemma fulltext index
+time sqlite3 $SCRATCH_PATH/$DB_FILE_NAME "CREATE VIRTUAL TABLE idx_ft_lemma USING fts5(source_definition, content=lemma);" "INSERT INTO idx_ft_lemma SELECT source_definition FROM lemma;"
 echo ""
 
 echo Creating wordform table...
-time sqlite3 $SCRATCH_PATH/temp.db ".read scripts/50_create_wordform.sql"
+time sqlite3 $SCRATCH_PATH/$DB_FILE_NAME ".read scripts/50_create_wordform.sql"
 echo ""
 
 #echo Importing Rechko...
@@ -63,7 +79,7 @@ echo ""
 #sqlite3 $SCRATCH_PATH/temp.db "DROP TABLE IF EXISTS abstract_word, incorrect_form, incorrect_form_revision, revision, sf_guard_group, sf_guard_group_permission, sf_guard_permission, sf_guard_remember_key, sf_guard_user, sf_guard_user_group, sf_guard_user_permission, sf_guard_user_profile, word_revision, word_translation;"
 
 echo Persisting temp database...
-time cp $SCRATCH_PATH/temp.db dictionary.db
+time cp $SCRATCH_PATH/$DB_FILE_NAME dictionary.db
 echo ""
 
 echo Build finished. Success.
