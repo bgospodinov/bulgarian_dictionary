@@ -28,8 +28,6 @@ int main(int argc, char **argv) {
 	initialize_db(&db, db_path);
 
 	run_sql_file(db, "scripts/10_create_slovnik_wordform.sql");
-	run_sql_file(db, "scripts/30_create_rbe_lemma.sql");
-	run_sql_file(db, "scripts/40_create_stress.sql");
 
 	slovnik_path = malloc(strlen(scratch_path) + strlen(SLOVNIK_FILE_NAME) + 2);
 	sprintf(slovnik_path, "%s/%s", scratch_path, SLOVNIK_FILE_NAME);

@@ -62,6 +62,7 @@ time ./import_slovnik $SCRATCH_PATH
 echo ""
 
 echo Importing RBE lemmata into database...
+sqlite3 $DB_PATH ".read scripts/30_create_rbe_lemma.sql"
 time sqlite3 $DB_PATH ".mode csv" ".separator ^" ".import $SCRATCH_PATH/db-rbe.csv lemma"
 echo ""
 
@@ -76,6 +77,9 @@ echo ""
 echo Vacuum...
 time sqlite3 $DB_PATH "VACUUM"
 echo ""
+
+echo Create stress table...
+sqlite3 $DB_PATH ".read scripts/40_create_stress.sql"
 
 #echo Importing Rechko...
 #sqlite3 $SCRATCH_PATH/temp.db ".read $SCRATCH_PATH/db-rechko.sql"
