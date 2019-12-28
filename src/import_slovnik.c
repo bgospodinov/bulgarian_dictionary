@@ -1,20 +1,18 @@
 #include <sqlite3.h>
 #include "../include/sqlite3_aux.h"
+#include "../include/import_slovnik.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
 #include <locale.h>
 
-void import_slovnik_wordforms(char *path);
-int count_syllables(char *str);
-
 sqlite3 *db = NULL;
 char *scratch_path = NULL;
-char db_path[200];
+char *db_path = NULL;
+char *slovnik_path = NULL;
 
 int main(int argc, char **argv) {
-	db_path[0] = '\0';
 	setlocale(LC_ALL, "");
 
 	if (argc != 2) {
@@ -24,8 +22,8 @@ int main(int argc, char **argv) {
 	}
 
 	scratch_path = argv[1];
-	strcat(db_path, scratch_path);
-	strcat(db_path, "/temp.db");
+	db_path = malloc(strlen(scratch_path) + strlen(DB_FILE_NAME) + 2);
+	sprintf(db_path, "%s/%s", scratch_path, DB_FILE_NAME);
 
 	initialize_db(&db, db_path);
 
@@ -33,13 +31,13 @@ int main(int argc, char **argv) {
 	run_sql_file(db, "scripts/30_create_rbe_lemma.sql");
 	run_sql_file(db, "scripts/40_create_stress.sql");
 
-	char slovnik_path[200];
-	slovnik_path[0] = '\0';
-	strcat(slovnik_path, scratch_path);
-	strcat(slovnik_path, "/slovnik.csv");
+	slovnik_path = malloc(strlen(scratch_path) + strlen(SLOVNIK_FILE_NAME) + 2);
+	sprintf(slovnik_path, "%s/%s", scratch_path, SLOVNIK_FILE_NAME);
 
 	import_slovnik_wordforms(slovnik_path);
 
+	free(db_path);
+	free(slovnik_path);
 	sqlite3_close(db);
 	return 0;
 }
