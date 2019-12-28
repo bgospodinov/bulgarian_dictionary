@@ -10,7 +10,9 @@ s/^([0-9]+),'/\1^/
 s/','/^/g
 s/'$//g
 s/^'/^/g
+# remove row id
+s/^[0-9]+\^//1g
 # convert to lowercase letters
-s/\^(([[:upper:]`]+)\^){2}/\L&/g
+s/(([[:upper:]`]+)\^){2}/\L&/g
 # fixing errors in rbe
 1,3s/а`\^а/а^а`/g

@@ -1,4 +1,4 @@
 import_slovnik
 *.csv
-*.db
+*.db*
 *.o
