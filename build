@@ -71,7 +71,7 @@ time sqlite3 $DB_PATH "CREATE VIRTUAL TABLE lemma_ft USING fts5(source_definitio
 echo ""
 
 echo Creating wordform table...
-time sqlite3 $DB_PATH ".read scripts/50_create_wordform.sql"
+time sqlite3 $DB_PATH ".read scripts/40_create_wordform.sql"
 echo ""
 
 echo Vacuum...
@@ -79,7 +79,7 @@ time sqlite3 $DB_PATH "VACUUM"
 echo ""
 
 echo Create stress table...
-sqlite3 $DB_PATH ".read scripts/40_create_stress.sql"
+sqlite3 $DB_PATH ".read scripts/50_create_stress.sql"
 
 #echo Importing Rechko...
 #sqlite3 $SCRATCH_PATH/temp.db ".read $SCRATCH_PATH/db-rechko.sql"
