@@ -80,20 +80,30 @@ echo ""
 
 echo Create stress table...
 sqlite3 $DB_PATH ".read scripts/50_create_stress.sql"
+echo ""
 
-#echo Importing Rechko...
-#sqlite3 $SCRATCH_PATH/temp.db ".read $SCRATCH_PATH/db-rechko.sql"
-#
-#echo Cleaning Rechko...
-#sqlite3 $SCRATCH_PATH/temp.db "DROP TABLE IF EXISTS abstract_word, incorrect_form, incorrect_form_revision, revision, sf_guard_group, sf_guard_group_permission, sf_guard_permission, sf_guard_remember_key, sf_guard_user, sf_guard_user_group, sf_guard_user_permission, sf_guard_user_profile, word_revision, word_translation;"
+echo Converting Rechko MySQL dump to SQLite
+time ./scripts/mysql2sqlite.awk $SCRATCH_PATH/db-rechko.sql > $SCRATCH_PATH/db-rechko.sqlite
+echo ""
+
+echo Importing Rechko...
+time sqlite3 $DB_PATH ".read $SCRATCH_PATH/db-rechko.sqlite"
+echo ""
+
+echo Cleaning Rechko...
+# useful tables from Rechko: derivative_form, word, word_type
+time sqlite3 $DB_PATH "DROP TABLE abstract_word; DROP TABLE incorrect_form; DROP TABLE incorrect_form_revision; DROP TABLE revision; DROP TABLE sf_guard_group; DROP TABLE sf_guard_group_permission; DROP TABLE sf_guard_permission; DROP TABLE sf_guard_remember_key; DROP TABLE sf_guard_user; DROP TABLE sf_guard_user_group; DROP TABLE sf_guard_user_permission; DROP TABLE sf_guard_user_profile; DROP TABLE word_revision; DROP TABLE word_translation;"
+echo ""
 
 echo Persisting temp database...
 time cp $DB_PATH dictionary.db
+echo ""
+
+echo Vacuum...
+time sqlite3 $DB_PATH "VACUUM"
 echo ""
 
 echo Build finished. Success.
 
 #echo Importing wordform stresses in stress table...
 #python "scripts/wordform_stress_importer.py"
-
-# usefule tables from Rechko: derivative_form, word, word_type
