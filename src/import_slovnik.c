@@ -77,9 +77,9 @@ in %s.", path);
 			*nwp = '\0';
 
 		if (ncols == maxcols) {
-			rc = sqlite3_bind_text(stmt, 1, toks[0], -1, SQLITE_STATIC);
-			rc = sqlite3_bind_text(stmt, 2, toks[2], -1, SQLITE_STATIC);
-			rc = sqlite3_bind_text(stmt, 3, toks[1], -1, SQLITE_STATIC);
+			rc = sqlite3_bind_text(stmt, 1, toks[0], -1, SQLITE_TRANSIENT);
+			rc = sqlite3_bind_text(stmt, 2, toks[2], -1, SQLITE_TRANSIENT);
+			rc = sqlite3_bind_text(stmt, 3, toks[1], -1, SQLITE_TRANSIENT);
 			rc = sqlite3_bind_int(stmt, 4, strcmp(toks[0], toks[2]) == 0);
 			rc = sqlite3_bind_int(stmt, 5, count_syllables(toks[0]));
 			rc = sqlite3_step(stmt);
