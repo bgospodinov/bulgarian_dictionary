@@ -46,6 +46,7 @@ time parallel --bar -a $SCRATCH_PATH/db-rbe.sql --block 30M --pipe-part \
 	"sed -n -E -f $SCRIPTS_PATH/20_*.sed |\
 		sed -E -f $SCRIPTS_PATH/21_*.sed" \
 			>$SCRATCH_PATH/db-rbe.csv
+rm -f $SCRATCH_PATH/db-rbe.sql
 echo ""
 
 # assembling slovnik into one csv file
@@ -59,11 +60,13 @@ rm -rf $SLOVNIK_PATH
 
 echo Importing slovnik wordforms...
 time ./import_slovnik $SCRATCH_PATH
+rm -f $SCRATCH_PATH/slovnik.csv
 echo ""
 
 echo Importing RBE lemmata into database...
 sqlite3 $DB_PATH ".read scripts/30_create_rbe_lemma.sql"
 time sqlite3 $DB_PATH ".mode csv" ".separator ^" ".import $SCRATCH_PATH/db-rbe.csv lemma"
+rm -f $SCRATCH_PATH/db-rbe.csv
 echo ""
 
 echo Creating lemma fulltext index
@@ -84,10 +87,12 @@ echo ""
 
 echo Converting Rechko MySQL dump to SQLite
 time ./scripts/mysql2sqlite.awk $SCRATCH_PATH/db-rechko.sql > $SCRATCH_PATH/db-rechko.sqlite
+rm -f $SCRATCH_PATH/db-rechko.sql
 echo ""
 
 echo Importing Rechko...
 time sqlite3 $DB_PATH ".read $SCRATCH_PATH/db-rechko.sqlite"
+rm -f $SCRATCH_PATH/db-rechko.sqlite
 echo ""
 
 echo Cleaning Rechko...
