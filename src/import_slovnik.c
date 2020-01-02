@@ -10,20 +10,22 @@
 sqlite3 *db = NULL;
 char *scratch_path = NULL;
 char *db_path = NULL;
+char *db_file_name = NULL;
 char *slovnik_path = NULL;
 
 int main(int argc, char **argv) {
 	setlocale(LC_ALL, "");
 
-	if (argc != 2) {
+	if (argc != 3) {
 		fprintf(stderr, "You must pass the scratch path \
- as an argument.\n");
+ and the database name as arguments.\n");
 		exit(1);
 	}
 
 	scratch_path = argv[1];
-	db_path = malloc(strlen(scratch_path) + strlen(DB_FILE_NAME) + 2);
-	sprintf(db_path, "%s/%s", scratch_path, DB_FILE_NAME);
+	db_file_name = argv[2];
+	db_path = malloc(strlen(scratch_path) + strlen(db_file_name) + 2);
+	sprintf(db_path, "%s/%s", scratch_path, db_file_name);
 
 	initialize_db(&db, db_path);
 

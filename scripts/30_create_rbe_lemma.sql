@@ -1,9 +1,7 @@
-DROP TABLE IF EXISTS lemma;
+DROP TABLE IF EXISTS rbe_lemma;
 
-CREATE TABLE lemma (
+CREATE TABLE rbe_lemma (
   lemma VARCHAR(100),
   lemma_with_stress VARCHAR(100),
   source_definition TEXT
 );
-
-CREATE INDEX IF NOT EXISTS idx_lemma ON lemma(lemma);
