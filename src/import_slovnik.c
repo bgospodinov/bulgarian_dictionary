@@ -29,8 +29,6 @@ int main(int argc, char **argv) {
 
 	initialize_db(&db, db_path);
 
-	run_sql_file(db, "scripts/10_create_slovnik_wordform.sql");
-
 	slovnik_path = malloc(strlen(scratch_path) + strlen(SLOVNIK_FILE_NAME) + 2);
 	sprintf(slovnik_path, "%s/%s", scratch_path, SLOVNIK_FILE_NAME);
 
@@ -82,7 +80,7 @@ in %s.", path);
 			rc = sqlite3_bind_text(stmt, 1, toks[0], -1, SQLITE_TRANSIENT);
 			rc = sqlite3_bind_text(stmt, 2, toks[2], -1, SQLITE_TRANSIENT);
 			rc = sqlite3_bind_text(stmt, 3, toks[1], -1, SQLITE_TRANSIENT);
-			rc = sqlite3_bind_int(stmt, 4, strcmp(toks[0], toks[2]) == 0);
+			rc = sqlite3_bind_int(stmt, 4, is_lemma(toks[0], toks[2], toks[1]));
 			rc = sqlite3_bind_int(stmt, 5, count_syllables(toks[0]));
 			rc = sqlite3_step(stmt);
 		}
@@ -97,6 +95,36 @@ in %s.", path);
 
 	fclose(fp);
 	free(line);
+}
+
+int is_lemma(char *wordform, char *lemma, char *tag) {
+	// these are the only possible tags for lemmata
+	static const char * const tags[] = {
+		"Ncmsi", "Ncfsi", "Ncnsi", "Nc-li", "Npmsi", "Npfsi", "Npnsi", "Np-li",
+		"Amsi", "A",
+		"Vpiif-r1s", "Vpitf-r1s", "Vppif-r1s", "Vpptf-r1s", "Vniif-r3s", "Vnitf-r3s", "Vnpif-r3s", "Vnptf-r3s", "Vxitf-r1s", "Vyptf-r1s", "Viitf-r1s",
+		"Dm", "Dt", "Dl", "Dq", "Dd",
+		"Mcmsi", "Momsi", "Mc-pi", "Mo-pi", "Md-pi", "My-pi",
+		"I",
+		"R",
+		"Ta", "Tn", "Ti", "Tx", "Tm", "Tv", "Te", "Tg", "T",
+		"Cc", "Cs", "Cr", "Cp"
+	};
+
+	for (int i = 0; i < sizeof(tags) / sizeof(tags[0]); i++) {
+		if (strcmp(tag, tags[i]) == 0) {
+			return 1;
+		}
+	}
+
+	// deal with pronouns separately
+	if (*tag == 'P') {
+		if (strcmp(wordform, lemma) == 0) {
+			return 1;
+		}
+	}
+
+	return 0;
 }
 
 int count_syllables(char *str) {
