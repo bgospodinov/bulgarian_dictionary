@@ -81,6 +81,8 @@ trap finish EXIT
 	echo Importing RBE lemmata into database...;
 	sqlite3 $DB_MAIN_PATH ".read scripts/30_create_rbe_lemma.sql";
 	sqlite3 $DB_MAIN_PATH ".mode csv" ".separator ^" ".import $SCRATCH_PATH/db-rbe.csv rbe_lemma";
+	sqlite3 $DB_MAIN_PATH "CREATE VIRTUAL TABLE rbe_lemma_ft USING fts5(source_definition, content=rbe_lemma);" "INSERT INTO rbe_lemma_ft SELECT source_definition FROM rbe_lemma;";
+	sqlite3 $DB_MAIN_PATH ".read scripts/31_add_pos_to_rbe_lemma.sql"
 	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_rbe_lemma ON rbe_lemma(lemma);";
 	rm -f $SCRATCH_PATH/db-rbe.csv;
 	##### RBE SECTION END #####
@@ -110,7 +112,7 @@ trap finish EXIT
 wait
 
 echo Joining RBE lemmata with Rechko lemmata
-sqlite3 $DB_MAIN_PATH "ATTACH '$DB_RECHKO_PATH' as rechko;" ".read scripts/31_join_rechko_lemma.sql" "DETACH rechko;"
+sqlite3 $DB_MAIN_PATH "ATTACH '$DB_RECHKO_PATH' as rechko;" ".read scripts/32_join_rechko_lemma.sql" "DETACH rechko;"
 
 echo Creating lemma fulltext and other indices;
 # drop rechko_lemma and rbe_lemma tables
