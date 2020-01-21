@@ -22,7 +22,6 @@ CREATE TABLE main.rechko_word_type AS SELECT * FROM rechko.word_type;
 CREATE TABLE lemma AS SELECT
 	rl.name,
 	rl.name_stressed,
-	--rl.id as rechko_id,
 	rl.source,
 	m.source_definition,
 	rl.pos as pos
@@ -33,7 +32,6 @@ LEFT JOIN rbe_lemma m
 UNION ALL SELECT
 	lemma as name,
 	lemma_with_stress as name_stressed,
-	--0 as rechko_id,
 	'rbe' as source,
 	m.source_definition,
 	m.pos as pos
@@ -42,3 +40,11 @@ LEFT JOIN rechko_lemma l
 	ON m.lemma_with_stress = l.name_stressed
 	AND m.pos = l.pos
 WHERE l.name_stressed IS NULL;
+
+-- deletes duplicate names
+DELETE FROM lemma WHERE ROWID IN (
+	SELECT ROWID FROM (
+		SELECT ROWID, ROW_NUMBER() OVER(PARTITION BY name, pos) AS rownum FROM lemma WHERE pos = 'H'
+	)
+	WHERE rownum > 1
+);
