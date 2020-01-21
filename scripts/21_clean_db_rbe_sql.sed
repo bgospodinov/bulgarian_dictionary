@@ -16,3 +16,5 @@ s/^[0-9]+\^//1g
 s/(([[:upper:]`]+)\^){2}/\L&/g
 # fixing errors in rbe
 1,3s/а`\^а/а^а`/g
+# remove short hyphen character (&shy;), that is used to break words across lines
+s/\xc2\xad//g
