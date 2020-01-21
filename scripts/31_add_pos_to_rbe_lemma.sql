@@ -9,6 +9,15 @@ WHERE pos IS NULL AND ROWID IN (select ROWID from rbe_lemma_ft WHERE rbe_lemma_f
 UPDATE rbe_lemma SET pos = "V"
 WHERE pos IS NULL AND ROWID IN (select ROWID from rbe_lemma_ft WHERE rbe_lemma_ft MATCH '"<i>несв."');
 
+UPDATE rbe_lemma SET pos = "C"
+WHERE pos IS NULL AND ROWID IN (select ROWID from rbe_lemma_ft WHERE rbe_lemma_ft MATCH '"<i>съюз."');
+
+UPDATE rbe_lemma SET pos = "T"
+WHERE pos IS NULL AND ROWID IN (select ROWID from rbe_lemma_ft WHERE rbe_lemma_ft MATCH '"<i>частица"');
+
+UPDATE rbe_lemma SET pos = "I"
+WHERE pos IS NULL AND ROWID IN (select ROWID from rbe_lemma_ft WHERE rbe_lemma_ft MATCH '"<i>междум."');
+
 UPDATE rbe_lemma SET pos = "N"
 WHERE pos IS NULL AND ROWID IN (select ROWID from rbe_lemma_ft WHERE rbe_lemma_ft MATCH '"<i>м." OR "<i>ж." OR "<i>ср."');
 
