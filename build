@@ -85,6 +85,7 @@ trap finish EXIT
 	sqlite3 $DB_MAIN_PATH ".read scripts/31_add_pos_to_rbe_lemma.sql"
 	sqlite3 $DB_MAIN_PATH ".read scripts/32_fix_rbe_lemma_errors.sql"
 	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_rbe_lemma ON rbe_lemma(lemma);";
+	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_rbe_lemma_stress_pos ON rbe_lemma(lemma_with_stress, pos);";
 	rm -f $SCRATCH_PATH/db-rbe.csv;
 	##### RBE SECTION END #####
 ) &
@@ -118,7 +119,12 @@ sqlite3 $DB_MAIN_PATH "ATTACH '$DB_RECHKO_PATH' as rechko;" ".read scripts/33_jo
 echo Creating lemma fulltext and other indices;
 # drop rechko_lemma and rbe_lemma tables
 sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_lemma ON lemma(name);"
+sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_lemma_stress_pos ON lemma(name_stressed, pos);"
 sqlite3 $DB_MAIN_PATH "CREATE VIRTUAL TABLE lemma_ft USING fts5(source_definition, content=lemma);" "INSERT INTO lemma_ft SELECT source_definition FROM lemma;";
+
+echo Run tests on lemmata tables
+sqlite3 -list $DB_MAIN_PATH ".read scripts/34_test_lemma.sql" |
+	diff <(printf "missing_rbe_lemmata|0\n") -
 
 echo Import Rechko wordforms
 sqlite3 $DB_MAIN_PATH "ATTACH '$DB_RECHKO_PATH' as rechko;" ".read scripts/40_import_rechko_wordforms.sql" "DETACH rechko;"
