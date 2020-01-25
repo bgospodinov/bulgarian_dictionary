@@ -1,5 +1,6 @@
 CREATE TABLE main.rechko_lemma AS SELECT
 	*,
+	rwt.speech_part,
 	CASE
 		WHEN rwt.speech_part LIKE "verb%" THEN "V"
 		WHEN rwt.speech_part = "adjective" THEN "A"
@@ -42,11 +43,3 @@ LEFT JOIN rechko_lemma l
 	ON m.lemma_with_stress = l.name_stressed
 	AND m.pos = l.pos
 WHERE l.name_stressed IS NULL;
-
--- deletes duplicate names
-DELETE FROM lemma WHERE ROWID IN (
-	SELECT ROWID FROM (
-		SELECT ROWID, ROW_NUMBER() OVER(PARTITION BY name, pos) AS rownum FROM lemma WHERE pos = 'H'
-	)
-	WHERE rownum > 1
-);

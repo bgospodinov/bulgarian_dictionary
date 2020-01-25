@@ -126,15 +126,20 @@ echo Run tests on lemmata tables
 sqlite3 -list $DB_MAIN_PATH ".read pipeline/34_test_lemma.sql" |
 	diff <(printf "missing_rbe_lemmata|0\n") -
 
-echo Deleting old lemma tables
-sqlite3 $DB_MAIN_PATH "DROP TABLE rbe_lemma;" "DROP TABLE rechko_lemma;" "DROP TABLE rbe_lemma_ft;" "DROP TABLE rechko_word_type;"
-
 echo Import Rechko wordforms
 sqlite3 $DB_MAIN_PATH "ATTACH '$DB_RECHKO_PATH' as rechko;" ".read pipeline/40_import_rechko_wordforms.sql" "DETACH rechko;"
 rm -f $DB_RECHKO_PATH
 
 echo Joining Slovnik wordforms with Rechko wordforms
 #sqlite3 $DB_MAIN_PATH ".read pipeline/41_join_slovnik_wordforms.sql"
+echo ""
+
+echo Cleaning lemma and wordforms table
+sqlite3 $DB_MAIN_PATH ".read pipeline/45_clean_lemma_table.sql"
+echo ""
+
+echo Deleting old lemma tables
+sqlite3 $DB_MAIN_PATH "DROP TABLE rbe_lemma;" "DROP TABLE rechko_lemma;" "DROP TABLE rbe_lemma_ft;" "DROP TABLE rechko_word_type;"
 echo ""
 
 echo Vacuum...
