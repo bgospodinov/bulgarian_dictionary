@@ -12,8 +12,10 @@ s/'$//g
 s/^'/^/g
 # remove row id
 s/^[0-9]+\^//1g
-# convert to lowercase letters
-s/(([[:upper:]`]+)\^){2}/\L&/g
+# convert all uppercase words to lowercase letters
+s/(([[:upper:][:space:]`]+)\^){2}/\L&/g
+# trim trailing whitespace
+s/[[:space:]]?\^[[:space:]]?/^/g
 # fixing errors in rbe
 1,3s/а`\^а/а^а`/g
 # remove short hyphen character (&shy;), that is used to break words across lines

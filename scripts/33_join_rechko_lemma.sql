@@ -20,6 +20,7 @@ LEFT JOIN rechko.word_type rwt
 CREATE TABLE main.rechko_word_type AS SELECT * FROM rechko.word_type;
 
 CREATE TABLE lemma AS SELECT
+	rl.id as lemma_id,
 	rl.name,
 	rl.name_stressed,
 	rl.source,
@@ -30,6 +31,7 @@ LEFT JOIN rbe_lemma m
 	ON m.lemma_with_stress = rl.name_stressed
 	AND rl.pos = m.pos
 UNION ALL SELECT
+	NULL as lemma_id,
 	lemma as name,
 	lemma_with_stress as name_stressed,
 	'rbe' as source,
