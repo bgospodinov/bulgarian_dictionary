@@ -23,7 +23,7 @@ CREATE TABLE main.rechko_word_type AS SELECT * FROM rechko.word_type;
 CREATE TABLE lemma AS SELECT
 	rl.id as lemma_id,
 	rl.name,
-	rl.name_stressed,
+	COALESCE(rl.name_stressed, rl.name) AS name_stressed,
 	rl.source,
 	m.source_definition,
 	rl.pos as pos
@@ -34,7 +34,7 @@ LEFT JOIN rbe_lemma m
 UNION ALL SELECT
 	NULL as lemma_id,
 	lemma as name,
-	lemma_with_stress as name_stressed,
+	COALESCE(lemma_with_stress, lemma) as name_stressed,
 	'rbe' as source,
 	m.source_definition,
 	m.pos as pos
