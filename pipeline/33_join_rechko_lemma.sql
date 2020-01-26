@@ -2,17 +2,17 @@ CREATE TABLE main.rechko_lemma AS SELECT
 	*,
 	rwt.speech_part,
 	CASE
-		WHEN rwt.speech_part LIKE "verb%" THEN "V"
-		WHEN rwt.speech_part = "adjective" THEN "A"
-		WHEN rwt.speech_part = "adverb" THEN "D"
-		WHEN rwt.speech_part LIKE "pronominal%" THEN "P"
-		WHEN rwt.speech_part LIKE "name%" THEN "H"
-		WHEN rwt.speech_part LIKE "numeral%" THEN "M"
-		WHEN rwt.speech_part = "conjunction" THEN "C"
-		WHEN rwt.speech_part = "interjection" THEN "I"
-		WHEN rwt.speech_part = "particle" THEN "T"
-		WHEN rwt.speech_part = "preposition" THEN "R"
-		ELSE "N"
+		WHEN rwt.speech_part LIKE 'verb%' THEN 'V'
+		WHEN rwt.speech_part = 'adjective' THEN 'A'
+		WHEN rwt.speech_part = 'adverb' THEN 'D'
+		WHEN rwt.speech_part LIKE 'pronominal%' THEN 'P'
+		WHEN rwt.speech_part LIKE 'name%' THEN 'N' -- proper nouns
+		WHEN rwt.speech_part LIKE 'numeral%' THEN 'M'
+		WHEN rwt.speech_part = 'conjunction' THEN 'C'
+		WHEN rwt.speech_part = 'interjection' THEN 'I'
+		WHEN rwt.speech_part = 'particle' THEN 'T'
+		WHEN rwt.speech_part = 'preposition' THEN 'R'
+		ELSE 'N'
 	END AS pos
 FROM rechko.rechko_lemma rl
 LEFT JOIN rechko.word_type rwt

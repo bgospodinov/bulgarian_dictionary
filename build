@@ -124,7 +124,7 @@ sqlite3 $DB_MAIN_PATH "CREATE VIRTUAL TABLE lemma_ft USING fts5(source_definitio
 
 echo Run tests on lemmata tables
 sqlite3 -list $DB_MAIN_PATH ".read pipeline/34_test_lemma.sql" |
-	diff <(printf "missing_rbe_lemmata|0\nlemmata_without_stress|0\n") -
+	diff tests/lemma.test -
 
 echo Import Rechko wordforms
 sqlite3 $DB_MAIN_PATH "ATTACH '$DB_RECHKO_PATH' as rechko;" ".read pipeline/40_import_rechko_wordforms.sql" "DETACH rechko;"
@@ -132,27 +132,25 @@ rm -f $DB_RECHKO_PATH
 
 echo Joining Slovnik wordforms with Rechko wordforms
 #sqlite3 $DB_MAIN_PATH ".read pipeline/41_join_slovnik_wordforms.sql"
-echo ""
+
+echo Run tests on wordform table
+sqlite3 -list $DB_MAIN_PATH ".read pipeline/44_test_wordform.sql" |
+	diff tests/wordform.test -
 
 echo Cleaning lemma and wordforms table
 sqlite3 $DB_MAIN_PATH ".read pipeline/45_clean_lemma_table.sql"
-echo ""
 
 echo Deleting old lemma tables
 sqlite3 $DB_MAIN_PATH "DROP TABLE rbe_lemma;" "DROP TABLE rechko_lemma;" "DROP TABLE rbe_lemma_ft;" "DROP TABLE rechko_word_type;"
-echo ""
 
 echo Vacuum...
 sqlite3 $DB_MAIN_PATH "VACUUM"
-echo ""
 
 echo Create stress table...
 sqlite3 $DB_MAIN_PATH ".read pipeline/50_create_stress.sql"
-echo ""
 
 echo Persisting temp database...
 cp $DB_MAIN_PATH $DB_FINAL_PATH
-echo ""
 
 #echo Importing wordform stresses in stress table...
 #python "pipeline/wordform_stress_importer.py"

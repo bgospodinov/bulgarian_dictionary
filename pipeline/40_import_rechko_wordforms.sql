@@ -32,6 +32,5 @@ SELECT
 	is_lemma,
 	tag,
 	'rechko' as source,
-	-- consider cases where the word contains ь or й
-	LENGTH(wordform) - LENGTH(wordform_condensed) as num_syllables
+	LENGTH(REPLACE(REPLACE(wordform, 'й', ''), 'ь', '')) - LENGTH(wordform_condensed) as num_syllables
 FROM main.rechko_wordforms;
