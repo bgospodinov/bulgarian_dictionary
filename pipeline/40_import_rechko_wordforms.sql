@@ -1,13 +1,24 @@
-CREATE TABLE main.rechko_wordforms AS SELECT * FROM rechko.derivative_form;
+CREATE TABLE main.rechko_wordforms AS
+SELECT
+	rd.name as wordform,
+	rd.name as wordform_stressed,
+	rd.name_condensed as wordform_condensed,
+	rd.base_word_id as lemma_id,
+	rd.is_infinitive as is_lemma,
+	NULL as tag,
+	rl.speech_part as speech_part,
+	rd.description as tag_description
+FROM
+	rechko.derivative_form rd
+LEFT JOIN main.rechko_lemma rl ON rd.base_word_id = rl.id;
 
 CREATE TABLE main.wordforms (
 	wordform TEXT,
 	wordform_stressed TEXT,
 	lemma_id INT,
 	is_lemma INT,
-	pos,
 	tag TEXT,
-	source,
+	source TEXT,
 	num_syllables INT,
 	FOREIGN KEY(lemma_id) REFERENCES lemma(lemma_id)
 	ON DELETE CASCADE
@@ -15,14 +26,12 @@ CREATE TABLE main.wordforms (
 
 INSERT INTO main.wordforms
 SELECT
-	rw.name as wordform,
-	rw.name as wordform_stressed,
-	rw.base_word_id as lemma_id,
-	rw.is_infinitive as is_lemma,
-	l.pos as pos,
-	rw.description as tag,
+	wordform,
+	wordform_stressed,
+	lemma_id,
+	is_lemma,
+	tag,
 	'rechko' as source,
-	LENGTH(rw.name) - LENGTH(rw.name_condensed) as num_syllables
-FROM
-	main.rechko_wordforms rw
-LEFT JOIN main.lemma l ON rw.base_word_id = l.lemma_id;
+	-- consider cases where the word contains ь or й
+	LENGTH(wordform) - LENGTH(wordform_condensed) as num_syllables
+FROM main.rechko_wordforms;

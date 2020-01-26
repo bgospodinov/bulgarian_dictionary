@@ -39,7 +39,7 @@ UNION ALL SELECT
 	m.source_definition,
 	m.pos as pos
 FROM rbe_lemma m
-LEFT JOIN rechko_lemma l
-	ON m.lemma_with_stress = l.name_stressed
-	AND m.pos = l.pos
-WHERE l.name_stressed IS NULL;
+LEFT JOIN rechko_lemma rl
+	ON m.lemma_with_stress = rl.name_stressed
+	AND m.pos = rl.pos
+WHERE rl.name_stressed IS NULL;
