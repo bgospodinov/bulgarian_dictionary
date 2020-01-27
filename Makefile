@@ -16,7 +16,7 @@ REBUILDABLES = $(OBJ_DIR) $(EXEC_DIR) $(LIB_DIR)
 CLEANABLES = dictionary.db dictionary.db-journal
 
 vpath %.c src
-vpath %.h include
+vpath %.h inc
 vpath % src
 
 .SUFFIXES:

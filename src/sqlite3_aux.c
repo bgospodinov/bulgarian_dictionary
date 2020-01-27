@@ -1,5 +1,5 @@
 #include <sqlite3.h>
-#include "../include/sqlite3_aux.h"
+#include "../inc/sqlite3_aux.h"
 #include <stdio.h>
 #include <stdlib.h>
 

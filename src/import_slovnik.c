@@ -1,6 +1,6 @@
 #include <sqlite3.h>
-#include "../include/sqlite3_aux.h"
-#include "../include/import_slovnik.h"
+#include "../inc/sqlite3_aux.h"
+#include "../inc/import_slovnik.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

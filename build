@@ -24,7 +24,7 @@ CONFIG=$(sed -r '{
         s/[^ \t]*[ \t]*([^ \t]*)[ \t]*(.*)/\1="\2"/
 		s/""/"/g
         /(""|\([^\)]*\))/d
-    }' <(cat include/*.h))
+    }' <(cat inc/*.h))
 
 echo "$CONFIG";
 eval "$CONFIG"

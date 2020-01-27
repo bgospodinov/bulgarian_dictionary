@@ -2,6 +2,6 @@ This repository contains code that produces a dictionary of millions of Bulgaria
 
 The build script requires a Linux distribution, although the resulting artifact is a platform-independent SQLite file. Recommended RAM > 1GB. The script uses as many cores as possible when parallelization is feasible.
 
-For best results mount /tmp to main memory as tmpfs or ramfs. To configure a module, please refer to the respective header file inside include/.
+For best results mount /tmp to main memory as tmpfs or ramfs. To configure a module, please refer to the respective header file inside inc/.
 
 The Slovnik dictionary is encrypted as it is not intended for public use. This repo is created for my own convenience. If you want to gain access to Slovnik, contact a BTB member at http://bultreebank.org. Afterwards, I will provide you with the password to decrypt Slovnik.
