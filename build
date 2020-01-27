@@ -63,7 +63,7 @@ trap finish EXIT
 
 	echo Importing slovnik wordforms...
 	sqlite3 $DB_MAIN_PATH ".read pipeline/10_create_slovnik_wordform.sql"
-	./import_slovnik $SCRATCH_PATH ${DB_MAIN_PATH##*/}
+	./bin/import_slovnik $SCRATCH_PATH ${DB_MAIN_PATH##*/}
 	rm -f $SCRATCH_PATH/$SLOVNIK_FILE_NAME
 	##### SLOVNIK SECTION END #####
 

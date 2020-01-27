@@ -1,4 +1,7 @@
-import_slovnik
+bin/
+obj/
+lib/
 *.csv
 *.db*
 *.o
+*.so

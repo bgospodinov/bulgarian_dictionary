@@ -1,11 +1,18 @@
+CC := gcc
+CFLAGS := -g
+LIB := -lsqlite3
 SHELL = /bin/bash
 EXEC_DIR := bin
 LIB_DIR := lib
+SRC_DIR := src
+OBJ_DIR := obj
 SLOVNIK_TARGET = $(EXEC_DIR)/import_slovnik
 LIB_TARGET = $(LIB_DIR)/libextfun.so
 TARGETS = $(LIB_TARGET) $(SLOVNIK_TARGET)
-OBJS = import_slovnik.o sqlite3_aux.o
-REBUILDABLES = $(OBJS) $(TARGETS) $(EXEC_DIR) $(LIB_DIR)
+SLOVNIK_OBJS = import_slovnik.o sqlite3_aux.o
+LIB_OBJS = libextfun.o
+OBJS = $(SLOVNIK_OBJS) $(LIB_OBJS)
+REBUILDABLES = $(OBJ_DIR) $(EXEC_DIR) $(LIB_DIR)
 CLEANABLES = dictionary.db dictionary.db-journal
 
 vpath %.c src
@@ -15,26 +22,31 @@ vpath % src
 .SUFFIXES:
 .SUFFIXES: .c .o
 
-all : $(LIB_TARGET) $(SLOVNIK_TARGET) 
+all : $(TARGETS)
 	@echo All done
 
-$(LIB_TARGET) : | $(LIB_DIR) ;
+$(LIB_TARGET) : | $(LIB_DIR)
+	$(CC) $(CFLAGS) -fPIC -shared src/libextfun.c -o $@
 
-$(SLOVNIK_TARGET) : $(OBJS) | $(EXEC_DIR)
-	gcc -o $@ $^ -lsqlite3 -g
+$(SLOVNIK_TARGET) : $(addprefix $(OBJ_DIR)/, $(SLOVNIK_OBJS)) | $(EXEC_DIR)
+	$(CC) $(CFLAGS) -o $@ $^ $(LIB)
 
-%.o : %.c
+$(OBJ_DIR)/%.o : %.c | $(OBJ_DIR)
 	@echo Building $@...
-	gcc -o $@ -c $< -lsqlite3 -g
+	$(CC) $(CFLAGS) -o $@ -c $< $(LIB)
 
+
+$(OBJ_DIR):
+	mkdir $(OBJ_DIR)
 
 $(EXEC_DIR):
-        mkdir $(EXEC_DIR)
+	mkdir $(EXEC_DIR)
 
 $(LIB_DIR):
-        mkdir $(LIB_DIR)
+	mkdir $(LIB_DIR)
 
-.PHONY : clean
 clean :
-	-rm -f $(REBUILDABLES) $(CLEANABLES)
+	-rm -rf $(REBUILDABLES) $(CLEANABLES)
 	@echo Cleaning done
+
+.PHONY : all clean

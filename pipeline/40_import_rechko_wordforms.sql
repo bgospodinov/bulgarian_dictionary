@@ -5,9 +5,12 @@ SELECT
 	rd.name_condensed as wordform_condensed,
 	rd.base_word_id as lemma_id,
 	rd.is_infinitive as is_lemma,
-	NULL as tag,
-	rl.speech_part as speech_part,
-	rd.description as tag_description
+	CASE 
+		WHEN rl.speech_part LIKE 'noun%' THEN 'N'
+		ELSE NULL
+	END	AS tag,
+	rl.speech_part as pos, -- for debugging only
+	rd.description as morphosyntactic_tag -- for debugging only
 FROM
 	rechko.derivative_form rd
 LEFT JOIN main.rechko_lemma rl ON rd.base_word_id = rl.id;
