@@ -127,7 +127,7 @@ sqlite3 -list $DB_MAIN_PATH ".read pipeline/34_test_lemma.sql" |
 	diff tests/lemma.test -
 
 echo Import Rechko wordforms
-sqlite3 $DB_MAIN_PATH "ATTACH '$DB_RECHKO_PATH' as rechko;" ".read pipeline/40_import_rechko_wordforms.sql" "DETACH rechko;"
+sqlite3 $DB_MAIN_PATH "ATTACH '$DB_RECHKO_PATH' as rechko;" ".load lib/libextfun.so" ".read pipeline/40_import_rechko_wordforms.sql" "DETACH rechko;"
 rm -f $DB_RECHKO_PATH
 
 echo Joining Slovnik wordforms with Rechko wordforms

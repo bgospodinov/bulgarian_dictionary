@@ -25,8 +25,8 @@ vpath % src
 all : $(TARGETS)
 	@echo All done
 
-$(LIB_TARGET) : | $(LIB_DIR)
-	$(CC) $(CFLAGS) -fPIC -shared src/libextfun.c -o $@
+$(LIB_TARGET) : src/libextfun.c | $(LIB_DIR)
+	$(CC) $(CFLAGS) -fPIC -shared $^ -o $@
 
 $(SLOVNIK_TARGET) : $(addprefix $(OBJ_DIR)/, $(SLOVNIK_OBJS)) | $(EXEC_DIR)
 	$(CC) $(CFLAGS) -o $@ $^ $(LIB)
