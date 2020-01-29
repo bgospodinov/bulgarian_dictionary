@@ -11,7 +11,7 @@ OBJ_DIR := obj
 SLOVNIK_TARGET = $(EXEC_DIR)/import_slovnik
 LIBEXTFUN_TARGET = $(LIB_DIR)/libextfun.so
 LIBDICT_TARGET = $(LIB_DIR)/libdict.a
-TARGETS = $(LIBEXTFUN_TARGET) $(SLOVNIK_TARGET)
+TARGETS = $(LIBEXTFUN_TARGET) $(LIBDICT_TARGET) $(SLOVNIK_TARGET)
 
 SLOVNIK_OBJS = import_slovnik.o sqlite3_aux.o libdict.o
 LIBEXTFUN_OBJS = libextfun.o
@@ -43,7 +43,6 @@ $(SLOVNIK_TARGET) : $(addprefix $(OBJ_DIR)/, $(SLOVNIK_OBJS)) | $(EXEC_DIR)
 $(OBJ_DIR)/%.o : %.c | $(OBJ_DIR)
 	@echo Building $@...
 	$(CC) $(CFLAGS) -o $@ -c $< $(LIB)
-
 
 $(OBJ_DIR):
 	mkdir $(OBJ_DIR)
