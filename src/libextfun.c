@@ -1,7 +1,8 @@
 #include <sqlite3ext.h>
-#include "../inc/libextfun.h"
 #include <stdio.h>
 SQLITE_EXTENSION_INIT1
+
+static void firstchar(sqlite3_context *context, int argc, sqlite3_value **argv);
 
 int sqlite3_extfun_init(sqlite3 *db, char **pzErrMsg, const sqlite3_api_routines *pApi){
 	int rc = SQLITE_OK;
