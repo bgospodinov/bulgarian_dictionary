@@ -13,9 +13,9 @@ LIBEXTFUN_TARGET = $(LIB_DIR)/libextfun.so
 LIBDICT_TARGET = $(LIB_DIR)/libdict.a
 TARGETS = $(LIBEXTFUN_TARGET) $(LIBDICT_TARGET) $(SLOVNIK_TARGET)
 
-SLOVNIK_OBJS = $(addprefix $(OBJDIR)/,import_slovnik.o sqlite3_aux.o libdict.o)
-LIBEXTFUN_OBJS = $(addprefix $(OBJDIR)/,libextfun.o)
-LIBDICT_OBJS = $(addprefix $(OBJDIR)/,libdict.o)
+SLOVNIK_OBJS = $(addprefix $(OBJ_DIR)/,import_slovnik.o sqlite3_aux.o libdict.o)
+LIBEXTFUN_OBJS = $(addprefix $(OBJ_DIR)/,libdict.o)
+LIBDICT_OBJS = $(addprefix $(OBJ_DIR)/,libdict.o)
 OBJS = $(SLOVNIK_OBJS) $(LIBEXTFUN_OBJS) $(LIBDICT_OBJS)
 
 REBUILDABLES = $(OBJ_DIR) $(EXEC_DIR) $(LIB_DIR)
@@ -31,7 +31,7 @@ vpath % src
 all : $(TARGETS)
 	@echo All done
 
-$(LIBEXTFUN_TARGET) : src/libextfun.c | $(LIB_DIR)
+$(LIBEXTFUN_TARGET) : src/libextfun.c $(LIBEXTFUN_OBJS) | $(LIB_DIR)
 	$(CC) $(CFLAGS) -fPIC -shared $^ -o $@
 
 $(LIBDICT_TARGET) : $(LIBDICT_OBJS) | $(LIB_DIR)

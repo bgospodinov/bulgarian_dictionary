@@ -3,6 +3,7 @@
 #include <string.h>
 #include <wchar.h>
 #include <stdio.h>
+#include <locale.h>
 
 int is_lemma(char *wordform, char *lemma, char *tag) {
 	// these are the only possible tags for lemmata
@@ -34,7 +35,9 @@ int is_lemma(char *wordform, char *lemma, char *tag) {
 	return 0;
 }
 
-int count_syllables(char *str) {
+// TODO: make sure it works with capital letters
+int count_syllables(const char *str) {
+	setlocale(LC_ALL, "");
 	int cnt = 0;
 	int strl = strlen(str);
 	int wstrl = (strl / 2) + 1; // we don't expect more than 2 bytes per character

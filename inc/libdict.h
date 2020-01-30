@@ -2,6 +2,6 @@
 #define LIBDICT_H_
 
 int is_lemma(char *wordform, char *lemma, char *tag);
-int count_syllables(char *str);
+int count_syllables(const char *str);
 
 #endif // LIBDICT_H_
