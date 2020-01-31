@@ -46,13 +46,18 @@ int count_syllables(const char *str) {
 
 	for (size_t i = 0; wstr[i]; ++i) {
 		wchar_t wc = wstr[i];
-		// count vowels as a proxy instead
+
+		// account for capital letters
+		if (wc < u'\u0430') {
+			wc += 32;
+		}
+
+		// count vowels as a proxy
 		for (int j = 0; j < sizeof(lc_vowels) / 2; j++) {
-			// take capital letters into account
-			if (lc_vowels[j] == wc || lc_vowels[j] - 32 == wc) {
-				cnt++;
-				break;
-			}
+			int sign = (lc_vowels[j] > wc) - (lc_vowels[j] < wc);
+			if (sign == -1) continue;
+			else if (sign == 0) cnt++;
+			break;
     	}
 	}
 

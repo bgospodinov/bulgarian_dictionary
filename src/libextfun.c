@@ -11,6 +11,7 @@ int sqlite3_extfun_init(sqlite3 *db, char **pzErrMsg, const sqlite3_api_routines
 	printf("%s\n", "Loading libextfun.so...");
 	// registering all custom sqlite functions
 	sqlite3_create_function(db, "count_syllables", 1, SQLITE_UTF8, NULL, &sqlite_count_syllables, NULL, NULL);
+	sqlite3_create_function(db, "rechko_tag", 2, SQLITE_UTF8, NULL, &sqlite_count_syllables, NULL, NULL);
 	return rc;
 }
 
