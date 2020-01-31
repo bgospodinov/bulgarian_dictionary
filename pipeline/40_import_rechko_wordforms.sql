@@ -2,7 +2,6 @@ CREATE TABLE main.rechko_wordforms AS
 SELECT
 	rd.name as wordform,
 	rd.name as wordform_stressed,
-	rd.name_condensed as wordform_condensed,
 	rd.base_word_id as lemma_id,
 	rd.is_infinitive as is_lemma,
 	CASE 
@@ -35,5 +34,9 @@ SELECT
 	is_lemma,
 	tag,
 	'rechko' as source,
-	LENGTH(REPLACE(REPLACE(wordform, 'й', ''), 'ь', '')) - LENGTH(wordform_condensed) as num_syllables
+	COUNT_SYLLABLES(wordform) as num_syllables
 FROM main.rechko_wordforms;
+
+-- fix bugs in rechko
+-- replace latin letters with cyrillic equivalents
+UPDATE main.wordforms SET wordform = REPLACE(wordform, 'o', 'о'), wordform_stressed = REPLACE(wordform_stressed, 'o', 'о');

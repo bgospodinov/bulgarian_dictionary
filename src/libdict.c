@@ -35,7 +35,6 @@ int is_lemma(char *wordform, char *lemma, char *tag) {
 	return 0;
 }
 
-// TODO: make sure it works with capital letters
 int count_syllables(const char *str) {
 	setlocale(LC_ALL, "");
 	int cnt = 0;
@@ -43,14 +42,17 @@ int count_syllables(const char *str) {
 	int wstrl = (strl / 2) + 1; // we don't expect more than 2 bytes per character
 	wchar_t *wstr = (wchar_t *) malloc(sizeof(wchar_t) * wstrl);
 	int rc = mbstowcs(wstr, str, wstrl);
+	wchar_t lc_vowels[] = { u'\u0430', u'\u0435', u'\u0438', u'\u043E', u'\u0443', u'\u044A', u'\u044E', u'\u044F' };
 
 	for (size_t i = 0; wstr[i]; ++i) {
 		wchar_t wc = wstr[i];
-		// count vowels as a proxy
-    	if (wc == u'\u0430' || wc == u'\u0435' || wc == u'\u0438' \
-|| wc == u'\u043E' || wc == u'\u0443' || wc == u'\u044A' || wc == u'\u044E' \
-|| wc == u'\u044F') {
-			cnt++;
+		// count vowels as a proxy instead
+		for (int j = 0; j < sizeof(lc_vowels) / 2; j++) {
+			// take capital letters into account
+			if (lc_vowels[j] == wc || lc_vowels[j] - 32 == wc) {
+				cnt++;
+				break;
+			}
     	}
 	}
 
