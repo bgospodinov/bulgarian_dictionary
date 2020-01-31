@@ -64,3 +64,19 @@ int count_syllables(const char *str) {
 	free(wstr);
 	return cnt;
 }
+
+const char * rechko_tag(const char *pos, const char *prop) {
+	char *res = (char *) malloc(20 * sizeof(char));
+	*res = '\0';
+
+	if (strncmp(pos, "noun", 4) == 0) {
+		strcpy(res, "N");
+		pos += 5; // include _
+
+		if (strncmp(pos, "male", 4) == 0) {
+			strcat(res, "m");
+		}
+	}
+
+	return res;
+}

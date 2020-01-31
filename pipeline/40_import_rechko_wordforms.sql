@@ -1,15 +1,12 @@
 CREATE TABLE main.rechko_wordforms AS
 SELECT
-	rd.name as wordform,
-	rd.name as wordform_stressed,
-	rd.base_word_id as lemma_id,
-	rd.is_infinitive as is_lemma,
-	CASE 
-		WHEN rl.speech_part LIKE 'noun%' THEN 'N'
-		ELSE NULL
-	END	AS tag,
-	rl.speech_part as pos, -- for debugging only
-	rd.description as morphosyntactic_tag -- for debugging only
+	rd.name AS wordform,
+	rd.name AS wordform_stressed,
+	rd.base_word_id AS lemma_id,
+	rd.is_infinitive AS is_lemma,
+	RECHKO_TAG(rl.speech_part, rd.description) AS tag,
+	rl.speech_part AS pos, -- for debugging only
+	rd.description AS morphosyntactic_tag -- for debugging only
 FROM
 	rechko.derivative_form rd
 LEFT JOIN main.rechko_lemma rl ON rd.base_word_id = rl.id;
