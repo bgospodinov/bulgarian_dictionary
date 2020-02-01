@@ -63,6 +63,9 @@ int count_syllables(const char *str) {
 
 const char * rechko_tag(const char *word, const char *pos, const char *prop) {
 	wchar_t * wword = convert_to_wstring(word);
+	wchar_t * wprop = convert_to_wstring(prop);
+	wchar_t * wword_o = wword;
+	wchar_t * wprop_o = wprop;
 	char *res = (char *) malloc(20 * sizeof(char));
 	*res = '\0';
 
@@ -80,8 +83,33 @@ const char * rechko_tag(const char *word, const char *pos, const char *prop) {
 		if (strncmp(pos, "male", 4) == 0) {
 			strcat(res, "m");
 		}
+		else if (strncmp(pos, "female", 6) == 0) {
+			strcat(res, "f");
+		}
+		else if (strncmp(pos, "neutral", 7) == 0) {
+			strcat(res, "n");
+			goto noun_number;
+		}
+
+noun_case:
+		if (wcsncmp(wprop, L"звателна", 8) == 0) {
+			strcat(res, "s-v");
+			goto end;
+		}
+
+noun_number:
+		if (wcsncmp(wprop, L"ед.ч.", 5) == 0) {
+			wprop += 6; // jump over delimiter as well
+			strcat(res, "s");
+		}
+		else if (wcsncmp(wprop, L"мн.ч.", 5) == 0) {
+			wprop += 6;
+			strcat(res, "p");
+		}
 	}
 
-	free(wword);
+end:
+	free(wword_o);
+	free(wprop_o);
 	return res;
 }
