@@ -1,9 +1,9 @@
-#include "../inc/libdict.h"
 #include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
 #include <stdio.h>
-#include <locale.h>
+#include "../inc/libdict.h"
+#include "../inc/string_aux.h"
 
 int is_lemma(char *wordform, char *lemma, char *tag) {
 	// these are the only possible tags for lemmata
@@ -36,12 +36,8 @@ int is_lemma(char *wordform, char *lemma, char *tag) {
 }
 
 int count_syllables(const char *str) {
-	setlocale(LC_ALL, "");
 	int cnt = 0;
-	int strl = strlen(str);
-	int wstrl = (strl / 2) + 1; // we don't expect more than 2 bytes per character
-	wchar_t *wstr = (wchar_t *) malloc(sizeof(wchar_t) * wstrl);
-	int rc = mbstowcs(wstr, str, wstrl);
+	wchar_t * wstr = convert_to_wstring(str);
 	wchar_t lc_vowels[] = { u'\u0430', u'\u0435', u'\u0438', u'\u043E', u'\u0443', u'\u044A', u'\u044E', u'\u044F' };
 
 	for (size_t i = 0; wstr[i]; ++i) {
@@ -65,12 +61,20 @@ int count_syllables(const char *str) {
 	return cnt;
 }
 
-const char * rechko_tag(const char *pos, const char *prop) {
+const char * rechko_tag(const char *word, const char *pos, const char *prop) {
+	wchar_t * wword = convert_to_wstring(word);
 	char *res = (char *) malloc(20 * sizeof(char));
 	*res = '\0';
 
 	if (strncmp(pos, "noun", 4) == 0) {
 		strcpy(res, "N");
+		if (is_capitalized(wword)) {
+			strcat(res, "p");
+		}
+		else {
+			strcat(res, "c");
+		}
+
 		pos += 5; // include _
 
 		if (strncmp(pos, "male", 4) == 0) {
@@ -78,5 +82,6 @@ const char * rechko_tag(const char *pos, const char *prop) {
 		}
 	}
 
+	free(wword);
 	return res;
 }

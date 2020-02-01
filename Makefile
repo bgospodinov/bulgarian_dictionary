@@ -11,12 +11,11 @@ OBJ_DIR := obj
 SLOVNIK_TARGET = $(EXEC_DIR)/import_slovnik
 LIBEXTFUN_TARGET = $(LIB_DIR)/libextfun.so
 LIBDICT_TARGET = $(LIB_DIR)/libdict.a
-TARGETS = $(LIBEXTFUN_TARGET) $(LIBDICT_TARGET) $(SLOVNIK_TARGET)
+TARGETS = $(LIBDICT_TARGET) $(LIBEXTFUN_TARGET) $(SLOVNIK_TARGET)
 
-SLOVNIK_OBJS = $(addprefix $(OBJ_DIR)/,import_slovnik.o sqlite3_aux.o libdict.o)
-LIBEXTFUN_OBJS = $(addprefix $(OBJ_DIR)/,libdict.o)
-LIBDICT_OBJS = $(addprefix $(OBJ_DIR)/,libdict.o)
-OBJS = $(SLOVNIK_OBJS) $(LIBEXTFUN_OBJS) $(LIBDICT_OBJS)
+SLOVNIK_DEPS = $(addprefix $(OBJ_DIR)/,import_slovnik.o sqlite3_aux.o) lib/libdict.a
+LIBEXTFUN_DEPS = $(addprefix $(SRC_DIR)/,libextfun.c libdict.c string_aux.c)
+LIBDICT_DEPS = $(addprefix $(OBJ_DIR)/,libdict.o string_aux.o)
 
 REBUILDABLES = $(OBJ_DIR) $(EXEC_DIR) $(LIB_DIR)
 CLEANABLES = dictionary.db dictionary.db-journal
@@ -31,13 +30,13 @@ vpath % src
 all : $(TARGETS)
 	@echo All done
 
-$(LIBEXTFUN_TARGET) : src/libextfun.c $(LIBEXTFUN_OBJS) | $(LIB_DIR)
+$(LIBEXTFUN_TARGET) : $(LIBEXTFUN_DEPS) | $(LIB_DIR)
 	$(CC) $(CFLAGS) -fPIC -shared $^ -o $@
 
-$(LIBDICT_TARGET) : $(LIBDICT_OBJS) | $(LIB_DIR)
-	ar rcs $@ $^
+$(LIBDICT_TARGET) : $(LIBDICT_DEPS) | $(LIB_DIR)
+	ar rcsv $@ $^
 
-$(SLOVNIK_TARGET) : $(SLOVNIK_OBJS) | $(EXEC_DIR)
+$(SLOVNIK_TARGET) : $(SLOVNIK_DEPS) | $(EXEC_DIR)
 	$(CC) $(CFLAGS) -o $@ $^ $(LIB)
 
 $(OBJ_DIR)/%.o : %.c | $(OBJ_DIR)

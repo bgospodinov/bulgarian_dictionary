@@ -13,7 +13,7 @@ int sqlite3_extfun_init(sqlite3 *db, char **pzErrMsg, const sqlite3_api_routines
 	printf("%s\n", "Loading libextfun.so...");
 	// registering all custom sqlite functions
 	sqlite3_create_function(db, "count_syllables", 1, SQLITE_UTF8, NULL, &sqlite_count_syllables, NULL, NULL);
-	sqlite3_create_function(db, "rechko_tag", 2, SQLITE_UTF8, NULL, &sqlite_rechko_tag, NULL, NULL);
+	sqlite3_create_function(db, "rechko_tag", 3, SQLITE_UTF8, NULL, &sqlite_rechko_tag, NULL, NULL);
 	return rc;
 }
 
@@ -31,11 +31,12 @@ static void sqlite_count_syllables(sqlite3_context *context, int argc, sqlite3_v
 }
 
 static void sqlite_rechko_tag(sqlite3_context *context, int argc, sqlite3_value **argv) {
-	if (argc == 2) {
-		const char *pos = sqlite3_value_text(argv[0]);
-		const char *prop = sqlite3_value_text(argv[1]);
-		if (pos && prop) {
-			char * result = (char *)rechko_tag(pos, prop);
+	if (argc == 3) {
+		const char *word = sqlite3_value_text(argv[0]);
+		const char *pos = sqlite3_value_text(argv[1]);
+		const char *prop = sqlite3_value_text(argv[2]);
+		if (word && pos && prop) {
+			char * result = (char *)rechko_tag(word, pos, prop);
 			sqlite3_result_text(context, result, -1, SQLITE_TRANSIENT);
 			free(result);
 			return;

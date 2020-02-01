@@ -4,7 +4,7 @@ SELECT
 	rd.name AS wordform_stressed,
 	rd.base_word_id AS lemma_id,
 	rd.is_infinitive AS is_lemma,
-	RECHKO_TAG(rl.speech_part, rd.description) AS tag,
+	RECHKO_TAG(rd.name, rl.speech_part, rd.description) AS tag,
 	rl.speech_part AS pos, -- for debugging only
 	rd.description AS morphosyntactic_tag -- for debugging only
 FROM
