@@ -144,6 +144,89 @@ noun_article:
 	// ADJECTIVES
 	else if (strncmp(pos, "adj", 3) == 0) {
 		strcpy(res, "A");
+
+		if (wcsncmp(wprop, L"ж.р.", 4) == 0) {
+			wprop += 4;
+			strcat(res, "fs");
+		}
+		else if (wcsncmp(wprop, L"м.р.", 4) == 0) {
+			wprop += 4;
+			strcat(res, "ms");
+		}
+		else if (wcsncmp(wprop, L"ср.р.", 5) == 0) {
+			wprop += 5;
+			strcat(res, "ns");
+		}
+		else if (wcsncmp(wprop, L"мн.ч.", 5) == 0) {
+			wprop += 5;
+			strcat(res, "-p");
+		}
+
+		if(!*wprop) {
+			strcat(res, "i");
+			goto end;
+		}
+
+		wprop++;
+
+		if (wcsncmp(wprop, L"член", 4) == 0) {
+			strcat(res, "d");
+		}
+		else if (wcsncmp(wprop, L"непълен", 7) == 0) {
+			strcat(res, "h");
+		}
+		else if (wcsncmp(wprop, L"пълен", 5) == 0) {
+			strcat(res, "f");
+		}
+	}
+	// NAMES
+	else if (strncmp(pos, "name", 4) == 0) {
+		pos += 12;
+
+		if (strncmp(pos, "family", 6) == 0) {
+			strcpy(res, "H");
+		}
+		else if (strncmp(pos, "name", 4) == 0) {
+			strcpy(res, "Np");
+		}
+
+		if (wcsncmp(wprop, L"мъжка", 5) == 0) {
+			strcat(res, "msi");
+		}
+		else if (wcsncmp(wprop, L"женска", 6) == 0) {
+			strcat(res, "fsi");
+		}
+	}
+	// PRONOUNS
+	else if (strncmp(pos, "pron", 4) == 0) {
+		pos += 11;
+		strcpy(res, "P");
+
+		if (strncmp(pos, "personal", 4) == 0) {
+			strcat(res, "pe");
+		}
+		else if (strncmp(pos, "demonstrative", 4) == 0) {
+			strcat(res, "de");
+		}
+		else if (strncmp(pos, "relative", 4) == 0) {
+			strcat(res, "r");
+		}
+		else if (strncmp(pos, "general", 4) == 0) {
+			// pronominal_general in rechko corresponds to collective pronouns
+			strcat(res, "c");
+		}
+		else if (strncmp(pos, "interrogative", 4) == 0) {
+			strcat(res, "i");
+		}
+		else if (strncmp(pos, "indefinite", 4) == 0) {
+			strcat(res, "f");
+		}
+		else if (strncmp(pos, "negative", 4) == 0) {
+			strcat(res, "n");
+		}
+		else if (strncmp(pos, "possessive", 4) == 0) {
+			strcat(res, "s");
+		}
 	}
 
 end:
