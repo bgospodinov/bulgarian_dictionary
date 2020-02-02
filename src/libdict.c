@@ -2,6 +2,7 @@
 #include <string.h>
 #include <wchar.h>
 #include <stdio.h>
+#include <assert.h>
 #include "../inc/libdict.h"
 #include "../inc/string_aux.h"
 
@@ -69,6 +70,7 @@ const char * rechko_tag(const char *word, const char *pos, const char *prop) {
 	char *res = (char *) malloc(20 * sizeof(char));
 	*res = '\0';
 
+	// NOUNS
 	if (strncmp(pos, "noun", 4) == 0) {
 		strcpy(res, "N");
 		if (is_capitalized(wword)) {
@@ -90,22 +92,58 @@ const char * rechko_tag(const char *word, const char *pos, const char *prop) {
 			strcat(res, "n");
 			goto noun_number;
 		}
+		else if (strncmp(pos, "plurale", 7) == 0) {
+			wprop += 5; // jump over count information in rechko
+			strcat(res, "-l");
+			goto noun_article;
+		}
 
 noun_case:
 		if (wcsncmp(wprop, L"звателна", 8) == 0) {
 			strcat(res, "s-v");
 			goto end;
 		}
+		// no archaic accusative or dative in rechko
 
 noun_number:
 		if (wcsncmp(wprop, L"ед.ч.", 5) == 0) {
-			wprop += 6; // jump over delimiter as well
+			wprop += 5; // jump over delimiter as well
 			strcat(res, "s");
 		}
 		else if (wcsncmp(wprop, L"мн.ч.", 5) == 0) {
-			wprop += 6;
+			wprop += 5;
 			strcat(res, "p");
 		}
+		else if (wcsncmp(wprop, L"бройна", 6) == 0) {
+			strcat(res, "t");
+			goto end;
+		}
+
+noun_article:
+		if(!*wprop) {
+			strcat(res, "i");
+			goto end;
+		}
+
+		wprop++;
+
+		if (wcsncmp(wprop, L"член", 4) == 0) {
+			strcat(res, "d");
+		}
+		else if (wcsncmp(wprop, L"непълен", 7) == 0) {
+			strcat(res, "h");
+		}
+		else if (wcsncmp(wprop, L"пълен", 5) == 0) {
+			strcat(res, "f");
+		}
+		else {
+			// shouldn't be possible
+			assert(0);
+		}
+	}
+	// ADJECTIVES
+	else if (strncmp(pos, "adj", 3) == 0) {
+		strcpy(res, "A");
 	}
 
 end:

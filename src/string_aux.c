@@ -12,7 +12,8 @@ wchar_t * convert_to_wstring(const char *str) {
 	setlocale(LC_ALL, "");
 	int strl = strlen(str);
 	int wstrl = (strl / 2) + 1; // we don't expect more than 2 bytes per character
-	wchar_t *wstr = (wchar_t *) malloc(sizeof(wchar_t) * wstrl);
+	wchar_t *wstr = (wchar_t *) calloc(wstrl, sizeof(wchar_t));
+	memset(wstr, '\0', wstrl);
 	int rc = mbstowcs(wstr, str, wstrl);
 
 	if (rc < 0) {
