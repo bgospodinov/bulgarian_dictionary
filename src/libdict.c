@@ -206,26 +206,117 @@ noun_article:
 			strcat(res, "pe");
 		}
 		else if (strncmp(pos, "demonstrative", 4) == 0) {
-			strcat(res, "de");
+			strcat(res, "d");
+			if (wcsncmp(wword, L"инак", 4) == 0) {
+				strcat(res, "a");
+			}
+			else {
+				strcat(res, "e");
+			}
 		}
 		else if (strncmp(pos, "relative", 4) == 0) {
 			strcat(res, "r");
+
+			if (wcsncmp(wword, L"чи", 2) == 0) {
+				strcat(res, "p");
+			}
+			else if (wcsncmp(wword, L"ка", 2) == 0) {
+				strcat(res, "a");
+			}
+			else {
+				strcat(res, "e");
+			}
 		}
 		else if (strncmp(pos, "general", 4) == 0) {
 			// pronominal_general in rechko corresponds to collective pronouns
 			strcat(res, "c");
+			if (wcsncmp(wword, L"всич", 4) == 0) {
+				strcat(res, "q");
+			}
+			else if (wcsncmp(wword, L"всякак", 6) == 0) {
+				strcat(res, "a");
+			}
+			else {
+				strcat(res, "e");
+			}
 		}
 		else if (strncmp(pos, "interrogative", 4) == 0) {
 			strcat(res, "i");
+			if (wcsncmp(wword, L"чи", 2) == 0) {
+				strcat(res, "p");
+			}
+			else if (wcsncmp(wword, L"ка", 2) == 0) {
+				strcat(res, "a");
+			}
+			else {
+				strcat(res, "e");
+			}
 		}
 		else if (strncmp(pos, "indefinite", 4) == 0) {
 			strcat(res, "f");
+			if (wcsncmp(wword, L"неч", 3) == 0) {
+				strcat(res, "p");
+			}
+			else {
+				strcat(res, "e");
+			}
 		}
 		else if (strncmp(pos, "negative", 4) == 0) {
 			strcat(res, "n");
+			if (wcsncmp(wword, L"нич", 3) == 0) {
+				strcat(res, "p");
+			}
+			else if (wcsncmp(wword, L"никак", 5) == 0) {
+				strcat(res, "a");
+			}
+			else {
+				strcat(res, "e");
+			}
 		}
 		else if (strncmp(pos, "possessive", 4) == 0) {
 			strcat(res, "s");
+			if (wcsncmp(wword, L"сво", 3) == 0) {
+				strcat(res, "x");
+			}
+			else if (wcsncmp(wword, L"в", 1) == 0) {
+				strcat(res, "h");
+			}
+			else if (wcsncmp(wword, L"наш", 3) == 0 || wcsncmp(wword, L"т", 1) == 0) {
+				strcat(res, "z");
+			}
+			else {
+				strcat(res, "o");
+			}
+		}
+
+		strcat(res, "l"); // assume long form for now
+
+		if (wcsncmp(wprop, L"имен", 4) == 0) {
+			strcat(res, "o");
+			wprop += 16;
+		}
+		else if (wcsncmp(wprop, L"вин", 3) == 0) {
+			strcat(res, "a");
+			wprop += 15;
+		}
+		else if (wcsncmp(wprop, L"дат", 3) == 0) {
+			strcat(res, "d");
+			wprop += 13;
+		}
+		else {
+			strcat(res, "-");
+		}
+
+		if (*wprop == L',') {
+			wprop += 2;
+		}
+		else {
+			goto end;
+		}
+
+		if (wcsncmp(wprop, L"крат", 4) == 0) {
+			*(res + 3) = 't';
+			goto end;
 		}
 	}
 
