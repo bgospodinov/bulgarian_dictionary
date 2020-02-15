@@ -8,4 +8,4 @@ DELETE FROM lemma WHERE ROWID IN (
 
 
 -- delete all impossible wordforms inherited from rechko
-DELETE FROM wordforms WHERE wordform = "—";
+DELETE FROM wordform WHERE wordform = "—";

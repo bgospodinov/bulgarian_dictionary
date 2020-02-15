@@ -319,6 +319,80 @@ noun_article:
 			goto end;
 		}
 	}
+	// NUMERALS
+	else if (strncmp(pos, "num", 3) == 0) {
+		pos += 8;
+		strcpy(res, "M");
+
+		if (strncmp(pos, "cardinal", 1) == 0) {
+			strcat(res, "c");
+		}
+		else {
+			strcat(res, "o");
+		}
+
+		strcat(res, "-si");
+
+		if (wcsncmp(wprop, L"м.р.", 2) == 0) {
+			wprop += 4;
+			*(res + 2) = 'm';
+		}
+		else if (wcsncmp(wprop, L"ж.р.", 2) == 0) {
+			wprop += 4;
+			*(res + 2) = 'f';
+		}
+		else if (wcsncmp(wprop, L"ср.р.", 3) == 0) {
+			wprop += 5;
+			*(res + 2) = 'n';
+		}
+		else if (wcsncmp(wprop, L"приблизителен брой", 4) == 0) {
+			*(res + 1) = 'y';
+			*(res + 3) = 'p';
+			wprop += 18;
+		}
+		else if (wcsncmp(wprop, L"мъжколична форма", 4) == 0) {
+			wprop += 16;
+		}
+		else if (wcsncmp(wprop, L"бройна форма", 4) == 0) {
+			wprop += 12;
+		}
+
+		if (*wprop == L',') {
+			wprop += 2;
+		}
+		else if(!*wprop) {
+			goto end;
+		}
+
+		if (wcsncmp(wprop, L"ед.ч.", 3) == 0) {
+			wprop += 5;
+		}
+		else if (wcsncmp(wprop, L"мн.ч.", 3) == 0) {
+			wprop += 5;
+			*(res + 3) = 'p';
+		}
+
+		if (*wprop == L',') {
+			wprop += 2;
+		}
+		else if(!*wprop) {
+			goto end;
+		}
+
+		if (wcsncmp(wprop, L"членувано", 2) == 0) {
+			*(res + 4) = 'd';
+		}
+		else if (wcsncmp(wprop, L"пълен", 2) == 0) {
+			*(res + 4) = 'f';
+		}
+		else if (wcsncmp(wprop, L"непълен", 3) == 0) {
+			*(res + 4) = 'h';
+		}
+	}
+	// VERBS
+	else if (strncmp(pos, "verb", 4) == 0) {
+		strcpy(res, "V");
+	}
 
 end:
 	free(wword_o);

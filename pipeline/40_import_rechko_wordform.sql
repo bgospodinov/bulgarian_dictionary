@@ -1,4 +1,4 @@
-CREATE TABLE main.rechko_wordforms AS
+CREATE TABLE main.rechko_wordform AS
 SELECT
 	rd.name AS wordform,
 	rd.name AS wordform_stressed,
@@ -11,7 +11,7 @@ FROM
 	rechko.derivative_form rd
 LEFT JOIN main.rechko_lemma rl ON rd.base_word_id = rl.id;
 
-CREATE TABLE main.wordforms (
+CREATE TABLE main.wordform (
 	wordform TEXT,
 	wordform_stressed TEXT,
 	lemma_id INT,
@@ -19,11 +19,12 @@ CREATE TABLE main.wordforms (
 	tag TEXT,
 	source TEXT,
 	num_syllables INT,
+	morphosyntactic_tag,
 	FOREIGN KEY(lemma_id) REFERENCES lemma(lemma_id)
 	ON DELETE CASCADE
 );
 
-INSERT INTO main.wordforms
+INSERT INTO main.wordform
 SELECT
 	wordform,
 	wordform_stressed,
@@ -32,8 +33,8 @@ SELECT
 	tag,
 	'rechko' as source,
 	COUNT_SYLLABLES(wordform) as num_syllables
-FROM main.rechko_wordforms;
+FROM main.rechko_wordform;
 
 -- fix bugs in rechko
 -- replace latin letters with cyrillic equivalents
-UPDATE main.wordforms SET wordform = REPLACE(wordform, 'o', 'о'), wordform_stressed = REPLACE(wordform_stressed, 'o', 'о');
+UPDATE main.wordform SET wordform = REPLACE(wordform, 'o', 'о'), wordform_stressed = REPLACE(wordform_stressed, 'o', 'о');
