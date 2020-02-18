@@ -11,6 +11,9 @@ FROM
 	rechko.derivative_form rd
 LEFT JOIN main.rechko_lemma rl ON rd.base_word_id = rl.id;
 
+-- delete verb inflections that are not relevant for BTB-style morphosyntactic tagging
+DELETE FROM main.rechko_wordform WHERE morphosyntactic_tag LIKE "бъд.вр.%";
+
 CREATE TABLE main.wordform (
 	wordform TEXT,
 	wordform_stressed TEXT,

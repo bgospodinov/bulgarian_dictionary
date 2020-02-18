@@ -391,7 +391,93 @@ noun_article:
 	}
 	// VERBS
 	else if (strncmp(pos, "verb", 4) == 0) {
-		strcpy(res, "V");
+		pos += 5;
+		// we assume all verbs are personal (which is not true for the dataset)
+		strcpy(res, "Vp--f----");
+
+		if (strncmp(pos, "transitive", 3) == 0) {
+			pos += 11;
+			*(res + 3) = 't';
+		}
+		else if (strncmp(pos, "intransitive", 3) == 0) {
+			pos += 13;
+			*(res + 3) = 'i';
+		}
+
+		if (strncmp(pos, "imperfective", 3) == 0) {
+			*(res + 2) = 'i';
+		}
+		else {
+			// terminative = perfective in this case
+			*(res + 2) = 'p';
+		}
+
+		// mood and participles
+		if (wcsncmp(wprop, L"повелително наклонение", 7) == 0) {
+			wprop += 22;
+			*(res + 4) = 'z';
+		}
+		else if (wcsncmp(wprop, L"пр.накл.", 7) == 0) {
+			wprop += 8;
+			*(res + 4) = 'c';
+			*(res + 5) = 'a';
+		}
+		else if (wcsncmp(wprop, L"условно наклонение", 7) == 0) {
+			wprop += 18;
+			*(res + 4) = 'u';
+		}
+		else if (wcsncmp(wprop, L"мин.деят.несв.прич.", 9) == 0) {
+			*(res + 4) = 'c';
+			*(res + 5) = 'a';
+			*(res + 6) = 'm';
+		}
+		else if (wcsncmp(wprop, L"мин.деят.св.прич.", 9) == 0) {
+			*(res + 4) = 'c';
+			*(res + 5) = 'a';
+			*(res + 6) = 'o';
+		}
+		else if (wcsncmp(wprop, L"мин.страд.прич.", 9) == 0) {
+			*(res + 4) = 'c';
+			*(res + 5) = 'v';
+		}
+		else if (wcsncmp(wprop, L"сег.деят.прич.", 7) == 0) {
+			*(res + 4) = 'c';
+			*(res + 5) = 'a';
+			*(res + 6) = 'r';
+		}
+		else if (wcsncmp(wprop, L"деепричастие", 7) == 0) {
+			*(res + 4) = 'g';
+			*(res + 5) = '\0';
+			goto end;
+		}
+
+		if (*wprop == L',') {
+			wprop += 2;
+		}
+		else if (*wprop == L' ') {
+			wprop += 1;
+		}
+
+		// tense
+		if (wcsncmp(wprop, L"сег.вр.", 6) == 0) {
+			wprop += 7;
+			*(res + 6) = 'r';
+		}
+		else if (wcsncmp(wprop, L"мин.несв.вр.", 6) == 0) {
+			wprop += 12;
+			*(res + 6) = 'm';
+		}
+		else if (wcsncmp(wprop, L"мин.св.вр.", 6) == 0) {
+			wprop += 10;
+			*(res + 6) = 'o';
+		}
+
+		if (*wprop == L',') {
+			wprop += 2;
+		}
+		else if (*wprop == L' ') {
+			wprop += 1;
+		}
 	}
 
 end:

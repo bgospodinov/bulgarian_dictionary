@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -g
+CFLAGS := -g -O3
 LIB := -lsqlite3
 SHELL = /bin/bash
 
