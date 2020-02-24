@@ -67,7 +67,7 @@ const char * rechko_tag(const char *word, const char *pos, const char *prop) {
 	wchar_t * wprop = convert_to_wstring(prop);
 	wchar_t * wword_o = wword;
 	wchar_t * wprop_o = wprop;
-	char *res = (char *) malloc(20 * sizeof(char));
+	char *res = (char *) malloc(15 * sizeof(char));
 	*res = '\0';
 
 	// NOUNS
@@ -393,7 +393,7 @@ noun_article:
 	else if (strncmp(pos, "verb", 4) == 0) {
 		pos += 5;
 		// we assume all verbs are personal (which is not true for the dataset)
-		strcpy(res, "Vp--f----");
+		strcpy(res, "Vp--f---s");
 
 		if (strncmp(pos, "transitive", 3) == 0) {
 			pos += 11;
@@ -416,6 +416,7 @@ noun_article:
 		if (wcsncmp(wprop, L"повелително наклонение", 7) == 0) {
 			wprop += 22;
 			*(res + 4) = 'z';
+			*(res + 7) = '2';
 		}
 		else if (wcsncmp(wprop, L"пр.накл.", 7) == 0) {
 			wprop += 8;
@@ -426,24 +427,32 @@ noun_article:
 			wprop += 18;
 			*(res + 4) = 'u';
 		}
-		else if (wcsncmp(wprop, L"мин.деят.несв.прич.", 9) == 0) {
+		else if (wcsncmp(wprop, L"мин.деят.несв.прич.", 12) == 0) {
+			wprop += 19;
 			*(res + 4) = 'c';
 			*(res + 5) = 'a';
 			*(res + 6) = 'm';
+			strcat(res, "-i");
 		}
-		else if (wcsncmp(wprop, L"мин.деят.св.прич.", 9) == 0) {
+		else if (wcsncmp(wprop, L"мин.деят.св.прич.", 12) == 0) {
+			wprop += 17;
 			*(res + 4) = 'c';
 			*(res + 5) = 'a';
 			*(res + 6) = 'o';
+			strcat(res, "-i");
 		}
 		else if (wcsncmp(wprop, L"мин.страд.прич.", 9) == 0) {
+			wprop += 15;
 			*(res + 4) = 'c';
 			*(res + 5) = 'v';
+			strcat(res, "-i");
 		}
 		else if (wcsncmp(wprop, L"сег.деят.прич.", 7) == 0) {
+			wprop += 14;
 			*(res + 4) = 'c';
 			*(res + 5) = 'a';
 			*(res + 6) = 'r';
+			strcat(res, "-i");
 		}
 		else if (wcsncmp(wprop, L"деепричастие", 7) == 0) {
 			*(res + 4) = 'g';
@@ -477,6 +486,76 @@ noun_article:
 		}
 		else if (*wprop == L' ') {
 			wprop += 1;
+		}
+
+		// person
+		if (wcsncmp(wprop, L"1л.", 3) == 0) {
+			wprop += 3;
+			*(res + 7) = '1';
+		}
+		else if (wcsncmp(wprop, L"2л.", 3) == 0) {
+			wprop += 3;
+			*(res + 7) = '2';
+		}
+		else if (wcsncmp(wprop, L"3л.", 3) == 0) {
+			wprop += 3;
+			*(res + 7) = '3';
+		}
+
+		if (*wprop == L',') {
+			wprop += 2;
+		}
+		else if (*wprop == L' ') {
+			wprop += 1;
+		}
+
+		// number
+		if (wcsncmp(wprop, L"ед.ч.", 4) == 0) {
+			wprop += 5;
+			*(res + 8) = 's';
+		}
+		else if (wcsncmp(wprop, L"мн.ч.", 4) == 0) {
+			wprop += 5;
+			*(res + 8) = 'p';
+		}
+
+		if (*wprop == L',') {
+			wprop += 2;
+		}
+		else if (*wprop == L' ') {
+			wprop += 1;
+		}
+
+		// gender
+		if (wcsncmp(wprop, L"м.р.", 4) == 0) {
+			wprop += 4;
+			*(res + 9) = 'm';
+		}
+		else if (wcsncmp(wprop, L"ж.р.", 4) == 0) {
+			wprop += 4;
+			*(res + 9) = 'f';
+		}
+		else if (wcsncmp(wprop, L"ср.р.", 5) == 0) {
+			wprop += 5;
+			*(res + 9) = 'n';
+		}
+
+		if (*wprop == L',') {
+			wprop += 2;
+		}
+		else if (*wprop == L' ') {
+			wprop += 1;
+		}
+
+		// article
+		if (wcsncmp(wprop, L"членувано", 5) == 0) {
+			*(res + 10) = 'd';
+		}
+		else if (wcsncmp(wprop, L"непълен член", 5) == 0) {
+			*(res + 10) = 'h';
+		}
+		else if (wcsncmp(wprop, L"пълен член", 5) == 0) {
+			*(res + 10) = 'f';
 		}
 	}
 
