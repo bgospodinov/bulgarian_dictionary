@@ -1,3 +1,6 @@
+-- delete verb inflections that are not relevant for BTB-style morphosyntactic tagging
+DELETE FROM rechko.derivative_form WHERE description LIKE "бъд.вр.%" OR description LIKE "мин.неопр.%" OR description LIKE "мин.пред.%" OR description LIKE "бъд.пред.%" OR description LIKE "пр.накл.%" OR description LIKE "условно наклонение%";
+
 CREATE TABLE main.rechko_wordform AS
 SELECT
 	rd.name AS wordform,
@@ -11,9 +14,6 @@ FROM
 	rechko.derivative_form rd
 LEFT JOIN main.rechko_lemma rl ON rd.base_word_id = rl.id;
 
--- delete verb inflections that are not relevant for BTB-style morphosyntactic tagging
-DELETE FROM main.rechko_wordform WHERE morphosyntactic_tag LIKE "бъд.вр.%";
-
 CREATE TABLE main.wordform (
 	wordform TEXT,
 	wordform_stressed TEXT,
@@ -22,6 +22,7 @@ CREATE TABLE main.wordform (
 	tag TEXT,
 	source TEXT,
 	num_syllables INT,
+	--pos,
 	morphosyntactic_tag,
 	FOREIGN KEY(lemma_id) REFERENCES lemma(lemma_id)
 	ON DELETE CASCADE
@@ -35,7 +36,9 @@ SELECT
 	is_lemma,
 	tag,
 	'rechko' as source,
-	COUNT_SYLLABLES(wordform) as num_syllables
+	COUNT_SYLLABLES(wordform) as num_syllables,
+	--pos,
+	morphosyntactic_tag
 FROM main.rechko_wordform;
 
 -- fix bugs in rechko

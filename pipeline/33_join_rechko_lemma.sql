@@ -1,3 +1,8 @@
+CREATE TABLE main.rechko_word_type AS SELECT * FROM rechko.word_type;
+
+-- fix mistakes in rechko_word_type
+UPDATE rechko_word_type SET speech_part = 'noun_male' WHERE id = 3;
+
 CREATE TABLE main.rechko_lemma AS SELECT
 	*,
 	rwt.speech_part,
@@ -15,10 +20,8 @@ CREATE TABLE main.rechko_lemma AS SELECT
 		ELSE 'N'
 	END AS pos
 FROM rechko.rechko_lemma rl
-LEFT JOIN rechko.word_type rwt
+LEFT JOIN rechko_word_type rwt
 	ON rl.type_id = rwt.id;
-
-CREATE TABLE main.rechko_word_type AS SELECT * FROM rechko.word_type;
 
 CREATE TABLE lemma AS SELECT
 	rl.id as lemma_id,

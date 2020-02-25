@@ -117,7 +117,6 @@ echo Joining RBE lemmata with Rechko lemmata
 sqlite3 $DB_MAIN_PATH "ATTACH '$DB_RECHKO_PATH' as rechko;" ".read pipeline/33_join_rechko_lemma.sql" "DETACH rechko;"
 
 echo Creating lemma fulltext and other indices;
-# drop rechko_lemma and rbe_lemma tables
 sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_lemma ON lemma(name);"
 sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_lemma_stress_pos ON lemma(name_stressed, pos);"
 sqlite3 $DB_MAIN_PATH "CREATE VIRTUAL TABLE lemma_ft USING fts5(source_definition, content=lemma);" "INSERT INTO lemma_ft SELECT source_definition FROM lemma;";
@@ -142,6 +141,7 @@ sqlite3 -list $DB_MAIN_PATH ".read pipeline/44_test_wordform.sql" |
 echo Cleaning lemma and wordforms table
 sqlite3 $DB_MAIN_PATH ".read pipeline/45_clean_lemma_table.sql"
 
+# drop rechko_lemma and rbe_lemma tables
 echo Deleting old lemma tables
 sqlite3 $DB_MAIN_PATH "DROP TABLE rbe_lemma;" "DROP TABLE rechko_lemma;" "DROP TABLE rbe_lemma_ft;" "DROP TABLE rechko_word_type;"
 
