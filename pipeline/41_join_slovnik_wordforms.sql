@@ -1,11 +1,16 @@
 BEGIN TRANSACTION;
-DROP TABLE IF EXISTS wordform;
 
 -- join all wordforms from the morphological dictionary (slovnik_wordform table)
 -- with their corresponding lemmata and stresses from the RBE dictionary (lemma table)
 CREATE TABLE IF NOT EXISTS wordform AS
 SELECT
-	wordform, slovnik_lemma, wordform_stress, lemma_id, is_lemma, tag, num_syllables
+	wordform,
+	slovnik_lemma,
+	wordform_stress,
+	lemma_id,
+	is_lemma,
+	tag,
+	num_syllables
 FROM
 	(
 		SELECT 
@@ -26,6 +31,3 @@ FROM
 			s.lemma = r.lemma
 	) q;
 END TRANSACTION;
-
-CREATE INDEX IF NOT EXISTS idx_wordform_tag ON wordform(wordform, tag);
-DROP TABLE IF EXISTS slovnik_wordform;

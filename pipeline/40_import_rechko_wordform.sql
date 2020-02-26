@@ -1,3 +1,4 @@
+BEGIN TRANSACTION;
 -- delete verb inflections that are not relevant for BTB-style morphosyntactic tagging
 DELETE FROM rechko.derivative_form WHERE description LIKE "бъд.вр.%" OR description LIKE "мин.неопр.%" OR description LIKE "мин.пред.%" OR description LIKE "бъд.пред.%" OR description LIKE "пр.накл.%" OR description LIKE "условно наклонение%";
 
@@ -23,7 +24,7 @@ CREATE TABLE main.wordform (
 	source TEXT,
 	num_syllables INT,
 	--pos,
-	morphosyntactic_tag,
+	--morphosyntactic_tag,
 	FOREIGN KEY(lemma_id) REFERENCES lemma(lemma_id)
 	ON DELETE CASCADE
 );
@@ -36,11 +37,12 @@ SELECT
 	is_lemma,
 	tag,
 	'rechko' as source,
-	COUNT_SYLLABLES(wordform) as num_syllables,
+	COUNT_SYLLABLES(wordform) as num_syllables
 	--pos,
-	morphosyntactic_tag
+	--morphosyntactic_tag
 FROM main.rechko_wordform;
 
 -- fix bugs in rechko
 -- replace latin letters with cyrillic equivalents
 UPDATE main.wordform SET wordform = REPLACE(wordform, 'o', 'о'), wordform_stressed = REPLACE(wordform_stressed, 'o', 'о');
+END TRANSACTION;
