@@ -33,8 +33,16 @@ CREATE TABLE lemma AS SELECT
 FROM main.rechko_lemma rl
 LEFT JOIN rbe_lemma m
 	ON m.lemma_with_stress = rl.name_stressed
-	AND rl.pos = m.pos
-UNION ALL SELECT
+	AND rl.pos = m.pos;
+
+CREATE INDEX idx_lemma_id ON lemma(lemma_id);
+CREATE TRIGGER trg_lemma_id AFTER INSERT ON lemma
+BEGIN
+	UPDATE lemma SET lemma_id = (SELECT MAX(lemma_id) + 1 FROM lemma)
+	WHERE ROWID = NEW.ROWID;
+END;
+
+INSERT INTO lemma SELECT
 	NULL as lemma_id,
 	lemma as name,
 	COALESCE(lemma_with_stress, lemma) as name_stressed,
