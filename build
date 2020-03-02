@@ -127,13 +127,13 @@ sqlite3 -list $DB_MAIN_PATH ".read pipeline/34_test_lemma.sql" |
 
 echo Import Rechko wordforms
 sqlite3 $DB_MAIN_PATH "ATTACH '$DB_RECHKO_PATH' as rechko;" ".load lib/libextfun" ".read pipeline/40_import_rechko_wordform.sql" "DETACH rechko;"
-sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform ON wordform(wordform);"
-sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_rechko_wordform ON rechko_wordform(wordform);"
-sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_slovnik_wordform ON slovnik_wordform(wordform);"
+sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_tag ON wordform(wordform, tag);"
+sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_rechko_wordform_tag ON rechko_wordform(wordform, tag);"
+sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_slovnik_wordform_tag ON slovnik_wordform(wordform, tag);"
 rm -f $DB_RECHKO_PATH
 
 echo Joining Slovnik wordforms with Rechko wordforms
-#sqlite3 $DB_MAIN_PATH ".read pipeline/41_join_slovnik_wordforms.sql"
+sqlite3 $DB_MAIN_PATH ".read pipeline/41_join_slovnik_wordforms.sql"
 sqlite3 $DB_MAIN_PATH "DROP TABLE IF EXISTS slovnik_wordform;" "DROP TABLE IF EXISTS rechko_wordform;"
 
 echo Run tests on wordform table

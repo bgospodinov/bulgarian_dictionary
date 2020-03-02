@@ -2,32 +2,21 @@ BEGIN TRANSACTION;
 
 -- join all wordforms from the morphological dictionary (slovnik_wordform table)
 -- with their corresponding lemmata and stresses from the RBE dictionary (lemma table)
-CREATE TABLE IF NOT EXISTS wordform AS
-SELECT
-	wordform,
-	slovnik_lemma,
-	wordform_stress,
-	lemma_id,
-	is_lemma,
-	tag,
-	num_syllables
+INSERT INTO wordform SELECT
+	s.wordform as wordform,
+	CASE WHEN s.is_lemma = 1 THEN COALESCE(l.name_stressed, s.wordform) ELSE s.wordform END AS wordform_stressed,
+	l.lemma_id as lemma_id,
+	s.is_lemma as is_lemma,
+	s.tag as tag,
+	'slovnik' as source,
+	s.num_syllables as num_syllables
 FROM
-	(
-		SELECT 
-			s.wordform as wordform,
-			s.lemma as slovnik_lemma,
-			r.lemma_with_stress as lemma_stress,
-			s.is_lemma as is_lemma,
-			r.rowid as lemma_id,
-			CASE WHEN is_lemma = 1 THEN r.lemma_with_stress ELSE NULL END AS wordform_stress,
-			s.tag as tag,
-			s.num_syllables as num_syllables
-		FROM
-			slovnik_wordform s
-		-- because RBE doesnt have tag information, we have to redundantly join all combinations of wordforms and tags onto the lemma in the RBE dictionary
-		LEFT JOIN
-			lemma r
-		ON
-			s.lemma = r.lemma
-	) q;
+	slovnik_wordform s
+LEFT JOIN
+	lemma l
+ON
+	s.lemma = l.name AND 
+	SUBSTR(s.tag, 1, 1) = l.pos
+WHERE (SELECT COUNT(*) FROM wordform w WHERE w.wordform = s.wordform and w.tag = s.tag) == 0;
+
 END TRANSACTION;

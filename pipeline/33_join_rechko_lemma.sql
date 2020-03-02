@@ -37,6 +37,7 @@ LEFT JOIN rbe_lemma m
 
 CREATE INDEX idx_lemma_id ON lemma(lemma_id);
 CREATE TRIGGER trg_lemma_id AFTER INSERT ON lemma
+WHEN NEW.lemma_id IS NULL
 BEGIN
 	UPDATE lemma SET lemma_id = (SELECT MAX(lemma_id) + 1 FROM lemma)
 	WHERE ROWID = NEW.ROWID;
