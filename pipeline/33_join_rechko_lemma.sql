@@ -23,7 +23,8 @@ FROM rechko.rechko_lemma rl
 LEFT JOIN rechko_word_type rwt
 	ON rl.type_id = rwt.id;
 
-CREATE TABLE lemma AS SELECT
+-- here we join rechko and rbe lemmata, but lemma_id column contains repetitions
+CREATE TEMPORARY TABLE _lemma_ AS SELECT
 	rl.id as lemma_id,
 	rl.name,
 	COALESCE(rl.name_stressed, rl.name) AS name_stressed,
@@ -35,7 +36,34 @@ LEFT JOIN rbe_lemma m
 	ON m.lemma_with_stress = rl.name_stressed
 	AND rl.pos = m.pos;
 
-CREATE INDEX idx_lemma_id ON lemma(lemma_id);
+-- here we autoincrement lemma_id correctly to make it unique
+CREATE TABLE lemma AS SELECT
+	CASE WHEN repetition > 0 
+		THEN (SELECT MAX(lemma_id) FROM _lemma_) + offset 
+		ELSE lemma_id 
+	END AS lemma_id,
+	name,
+	name_stressed,
+	source,
+	source_definition,
+	pos
+FROM
+(
+	SELECT
+		SUM(repetition) OVER win2 AS offset,
+		*
+	FROM
+	(
+		SELECT
+			lag(1, 1, 0) OVER win1 AS repetition,
+			*
+		FROM _lemma_
+		WINDOW win1 AS (PARTITION BY lemma_id)
+	)
+	WINDOW win2 AS (ORDER BY lemma_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+);
+
+CREATE UNIQUE INDEX idx_lemma_id ON lemma(lemma_id);
 CREATE TRIGGER trg_lemma_id AFTER INSERT ON lemma
 WHEN NEW.lemma_id IS NULL
 BEGIN
