@@ -2,20 +2,40 @@
 set -e
 set -o pipefail
 
-SALT="%D*HUKFTV:"
-function pass {
-	echo Enter Slovnik password:
-	read -s SLOVNIK_PASS
-	PASS_HASH=$(echo -n ${SLOVNIK_PASS}$SALT | sha512sum | sha512sum | awk '{print $1}')
-}
+PROCESS_SLOVNIK=true
 
-pass
-
-while [[ "$PASS_HASH" != "6d70366494981ca988a60c2e9f72fc157496896a602981c80ba828e1ac5030462fc4704bff5cb475accf8dc0a3efac703922c47c33e3ecf5c1163ad7ae89378f" ]]
+while [[ $# -gt 0 ]]
 do
-	echo -e "Slovnik pass is wrong. Try again."
-	pass
+	key="$1"
+	case $key in
+		--no-slovnik)
+			PROCESS_SLOVNIK=
+			shift;
+		;;
+		*)
+			>&2 echo "Unknown option" $key
+			shift;
+			exit 1;
+		;;
+	esac
 done
+
+if [ $PROCESS_SLOVNIK ] ; then
+	SALT="%D*HUKFTV:"
+	function pass {
+		echo Enter Slovnik password \(or rerun with option --no-slovnik\):
+		read -s SLOVNIK_PASS
+		PASS_HASH=$(echo -n ${SLOVNIK_PASS}$SALT | sha512sum | sha512sum | awk '{print $1}')
+	}
+
+	pass
+
+	while [[ "$PASS_HASH" != "6d70366494981ca988a60c2e9f72fc157496896a602981c80ba828e1ac5030462fc4704bff5cb475accf8dc0a3efac703922c47c33e3ecf5c1163ad7ae89378f" ]]
+	do
+		echo -e "Slovnik pass is wrong. Try again."
+		pass
+	done
+fi
 
 echo Sourcing configuration from header files...
 CONFIG=$(sed -r '{
@@ -45,27 +65,29 @@ function finish {
 trap finish EXIT
 
 (
-	##### SLOVNIK SECTION START #####
-	echo Building db setup code...
-	make
+	if [ $PROCESS_SLOVNIK ] ; then
+		##### SLOVNIK SECTION START #####
+		echo Building db setup code...
+		make
 
-	echo Decrypting and unpacking Slovnik...
-	openssl enc -aes-256-cbc -d -in $RESOURCES_PATH/slovnik.tar.gz.enc -pbkdf2 -pass "pass:$SLOVNIK_PASS" | tar -xz -C $SCRATCH_PATH
+		echo Decrypting and unpacking Slovnik...
+		openssl enc -aes-256-cbc -d -in $RESOURCES_PATH/slovnik.tar.gz.enc -pbkdf2 -pass "pass:$SLOVNIK_PASS" | tar -xz -C $SCRATCH_PATH
 
-	# assembling slovnik into one csv file
-	rm -f $SLOVNIK_PATH/all.txt;
-	for f in $SLOVNIK_PATH/*.txt; do
-		(cat "${f}"; printf "\n") >> $SCRATCH_PATH/$SLOVNIK_FILE_NAME
-		rm -f $f
-	done
+		# assembling slovnik into one csv file
+		rm -f $SLOVNIK_PATH/all.txt;
+		for f in $SLOVNIK_PATH/*.txt; do
+			(cat "${f}"; printf "\n") >> $SCRATCH_PATH/$SLOVNIK_FILE_NAME
+			rm -f $f
+		done
 
-	rm -rf $SLOVNIK_PATH
+		rm -rf $SLOVNIK_PATH
 
-	echo Importing slovnik wordforms...
-	sqlite3 $DB_MAIN_PATH ".read pipeline/10_create_slovnik_wordform.sql"
-	./bin/import_slovnik $SCRATCH_PATH ${DB_MAIN_PATH##*/}
-	rm -f $SCRATCH_PATH/$SLOVNIK_FILE_NAME
-	##### SLOVNIK SECTION END #####
+		echo Importing slovnik wordforms...
+		sqlite3 $DB_MAIN_PATH ".read pipeline/10_create_slovnik_wordform.sql"
+		./bin/import_slovnik $SCRATCH_PATH ${DB_MAIN_PATH##*/}
+		rm -f $SCRATCH_PATH/$SLOVNIK_FILE_NAME
+		##### SLOVNIK SECTION END #####
+	fi
 
 	###### RBE SECTION START #####
 	echo Unpacking RBE...
@@ -129,12 +151,14 @@ echo Import Rechko wordforms
 sqlite3 $DB_MAIN_PATH "ATTACH '$DB_RECHKO_PATH' as rechko;" ".load lib/libextfun" ".read pipeline/40_import_rechko_wordform.sql" "DETACH rechko;"
 sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_tag ON wordform(wordform, tag);"
 sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_rechko_wordform_tag ON rechko_wordform(wordform, tag);"
-sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_slovnik_wordform_tag ON slovnik_wordform(wordform, tag);"
 rm -f $DB_RECHKO_PATH
 
-echo Joining Slovnik wordforms with Rechko wordforms
-sqlite3 $DB_MAIN_PATH ".read pipeline/41_join_slovnik_wordforms.sql"
-sqlite3 $DB_MAIN_PATH "DROP TABLE IF EXISTS slovnik_wordform;" "DROP TABLE IF EXISTS rechko_wordform;"
+if [ $PROCESS_SLOVNIK ] ; then
+	echo Joining Slovnik wordforms with Rechko wordforms
+	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_slovnik_wordform_tag ON slovnik_wordform(wordform, tag);"
+	sqlite3 $DB_MAIN_PATH ".read pipeline/41_join_slovnik_wordforms.sql"
+	sqlite3 $DB_MAIN_PATH "DROP TABLE IF EXISTS slovnik_wordform;" "DROP TABLE IF EXISTS rechko_wordform;"
+fi
 
 echo Run tests on wordform table
 sqlite3 -list $DB_MAIN_PATH ".read pipeline/44_test_wordform.sql" |

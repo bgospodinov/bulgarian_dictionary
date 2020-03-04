@@ -4,4 +4,4 @@ The build script requires a Linux distribution, although the resulting artifact 
 
 For best results mount /tmp to main memory as tmpfs or ramfs. To configure a module, please refer to the respective header file inside inc/.
 
-The Slovnik dictionary is encrypted as it is not intended for public use. This repo is created for my own convenience. If you want to gain access to Slovnik, contact a BTB member at http://bultreebank.org. Afterwards, I will provide you with the password to decrypt Slovnik.
+The Slovnik dictionary is encrypted as it is not intended for public use. Add option --no-slovnik to skip augmenting Slovnik into the final artifact. If you want to gain access to Slovnik, contact a BTB member at http://bultreebank.org. Afterwards, I will provide you with the password to decrypt Slovnik.
