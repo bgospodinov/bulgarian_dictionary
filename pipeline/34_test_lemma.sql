@@ -11,7 +11,7 @@ INSERT INTO _vars VALUES('total_rbe_lemmata_inside_lemma_table',
 			SELECT
 				COUNT(*)
 			FROM lemma l
-			WHERE r.lemma_with_stress = l.name_stressed AND r.pos = l.pos
+			WHERE r.lemma_with_stress = l.lemma_stressed AND r.pos = l.pos
 		) > 0)
 );
 
@@ -26,7 +26,7 @@ INSERT INTO _res VALUES('missing_rbe_lemmata', (SELECT value FROM _vars WHERE ke
 
 -- test whether there are lemmata with NULL stress columns
 -- should be 0
-INSERT INTO _res VALUES('lemmata_without_stress', (SELECT COUNT(*) FROM lemma WHERE name_stressed IS NULL));
+INSERT INTO _res VALUES('lemmata_without_stress', (SELECT COUNT(*) FROM lemma WHERE lemma_stressed IS NULL));
 
 SELECT * FROM _res;
 

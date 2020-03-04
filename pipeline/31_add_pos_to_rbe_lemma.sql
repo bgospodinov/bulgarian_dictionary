@@ -1,3 +1,4 @@
+BEGIN TRANSACTION;
 ALTER TABLE rbe_lemma ADD pos CHAR(1);
 
 UPDATE rbe_lemma SET pos = "D"
@@ -36,3 +37,4 @@ WHERE pos IS NULL AND lemma IN ("поляни", "померанци");
 
 -- all the rest are assumed to be verbs
 UPDATE rbe_lemma SET pos = "V" WHERE pos IS NULL;
+END TRANSACTION;

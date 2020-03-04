@@ -3,8 +3,9 @@ BEGIN TRANSACTION;
 -- join all wordforms from the morphological dictionary (slovnik_wordform table)
 -- with their corresponding lemmata and stresses from the RBE dictionary (lemma table)
 INSERT INTO wordform SELECT
+	NULL as wordform_id,
 	s.wordform as wordform,
-	CASE WHEN s.is_lemma = 1 THEN COALESCE(l.name_stressed, s.wordform) ELSE s.wordform END AS wordform_stressed,
+	CASE WHEN s.is_lemma = 1 THEN COALESCE(l.lemma_stressed, s.wordform) ELSE s.wordform END AS wordform_stressed,
 	l.lemma_id as lemma_id,
 	s.is_lemma as is_lemma,
 	s.tag as tag,
@@ -15,7 +16,7 @@ FROM
 LEFT JOIN
 	lemma l
 ON
-	s.lemma = l.name AND 
+	s.lemma = l.lemma AND
 	SUBSTR(s.tag, 1, 1) = l.pos
 WHERE (SELECT COUNT(*) FROM wordform w WHERE w.wordform = s.wordform and w.tag = s.tag) == 0;
 

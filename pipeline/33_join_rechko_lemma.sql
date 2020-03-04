@@ -1,3 +1,5 @@
+BEGIN TRANSACTION;
+
 CREATE TABLE main.rechko_word_type AS SELECT * FROM rechko.word_type;
 
 -- fix mistakes in rechko_word_type
@@ -26,8 +28,8 @@ LEFT JOIN rechko_word_type rwt
 -- here we join rechko and rbe lemmata, but lemma_id column contains repetitions
 CREATE TEMPORARY TABLE _lemma_ AS SELECT
 	rl.id as lemma_id,
-	rl.name,
-	COALESCE(rl.name_stressed, rl.name) AS name_stressed,
+	rl.name as lemma,
+	COALESCE(rl.name_stressed, rl.name) AS lemma_stressed,
 	rl.source,
 	m.source_definition,
 	rl.pos as pos
@@ -37,13 +39,22 @@ LEFT JOIN rbe_lemma m
 	AND rl.pos = m.pos;
 
 -- here we autoincrement lemma_id correctly to make it unique
-CREATE TABLE lemma AS SELECT
+CREATE TABLE lemma (
+	lemma_id INTEGER PRIMARY KEY,
+	lemma,
+	lemma_stressed,
+	source,
+	source_definition,
+	pos
+);
+
+INSERT INTO lemma SELECT
 	CASE WHEN repetition > 0 
 		THEN (SELECT MAX(lemma_id) FROM _lemma_) + offset 
 		ELSE lemma_id 
 	END AS lemma_id,
-	name,
-	name_stressed,
+	lemma,
+	lemma_stressed,
 	source,
 	source_definition,
 	pos
@@ -73,8 +84,8 @@ END;
 
 INSERT INTO lemma SELECT
 	NULL as lemma_id,
-	lemma as name,
-	COALESCE(lemma_with_stress, lemma) as name_stressed,
+	lemma,
+	COALESCE(lemma_with_stress, lemma) as lemma_stressed,
 	'rbe' as source,
 	m.source_definition,
 	m.pos as pos
@@ -83,3 +94,5 @@ LEFT JOIN rechko_lemma rl
 	ON m.lemma_with_stress = rl.name_stressed
 	AND m.pos = rl.pos
 WHERE rl.name_stressed IS NULL;
+
+END TRANSACTION;
