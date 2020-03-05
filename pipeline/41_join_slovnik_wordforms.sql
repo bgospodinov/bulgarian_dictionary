@@ -4,9 +4,9 @@ BEGIN TRANSACTION;
 -- with their corresponding lemmata and stresses from the RBE dictionary (lemma table)
 INSERT INTO wordform SELECT
 	NULL as wordform_id,
+	l.lemma_id as lemma_id,
 	s.wordform as wordform,
 	CASE WHEN s.is_lemma = 1 THEN COALESCE(l.lemma_stressed, s.wordform) ELSE s.wordform END AS wordform_stressed,
-	l.lemma_id as lemma_id,
 	s.is_lemma as is_lemma,
 	s.tag as tag,
 	'slovnik' as source,

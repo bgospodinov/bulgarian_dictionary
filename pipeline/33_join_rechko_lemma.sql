@@ -43,9 +43,10 @@ CREATE TABLE lemma (
 	lemma_id INTEGER PRIMARY KEY,
 	lemma,
 	lemma_stressed,
+	definition,
+	pos,
 	source,
-	source_definition,
-	pos
+	num_syllables
 );
 
 INSERT INTO lemma SELECT
@@ -55,9 +56,10 @@ INSERT INTO lemma SELECT
 	END AS lemma_id,
 	lemma,
 	lemma_stressed,
+	source_definition as definition,
+	pos,
 	source,
-	source_definition,
-	pos
+	COUNT_SYLLABLES(lemma)
 FROM
 (
 	SELECT
@@ -86,9 +88,10 @@ INSERT INTO lemma SELECT
 	NULL as lemma_id,
 	lemma,
 	COALESCE(lemma_with_stress, lemma) as lemma_stressed,
+	m.source_definition as definition,
+	m.pos as pos,
 	'rbe' as source,
-	m.source_definition,
-	m.pos as pos
+	COUNT_SYLLABLES(lemma)
 FROM rbe_lemma m
 LEFT JOIN rechko_lemma rl
 	ON m.lemma_with_stress = rl.name_stressed

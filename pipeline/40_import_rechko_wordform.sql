@@ -18,9 +18,9 @@ LEFT JOIN main.rechko_lemma rl ON rd.base_word_id = rl.id;
 
 CREATE TABLE main.wordform (
 	wordform_id INTEGER PRIMARY KEY,
+	lemma_id INT,
 	wordform TEXT,
 	wordform_stressed TEXT,
-	lemma_id INT,
 	is_lemma INT,
 	tag TEXT,
 	pos TEXT GENERATED ALWAYS AS (SUBSTR(tag, 1, 1)) STORED, -- only supported in sqlite >= 3.31.0
@@ -33,9 +33,9 @@ CREATE TABLE main.wordform (
 INSERT INTO main.wordform
 SELECT
 	NULL as wordform_id,
+	lemma_id,
 	wordform,
 	wordform_stressed,
-	lemma_id,
 	is_lemma,
 	tag,
 	'rechko' as source,
