@@ -157,8 +157,10 @@ if [ $PROCESS_SLOVNIK ] ; then
 	echo Joining Slovnik wordforms with Rechko wordforms
 	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_slovnik_wordform_tag ON slovnik_wordform(wordform, tag);"
 	sqlite3 $DB_MAIN_PATH ".read pipeline/41_join_slovnik_wordforms.sql"
-	sqlite3 $DB_MAIN_PATH "DROP TABLE IF EXISTS slovnik_wordform;" "DROP TABLE IF EXISTS rechko_wordform;"
+	sqlite3 $DB_MAIN_PATH "DROP TABLE IF EXISTS slovnik_wordform;"
 fi
+
+sqlite3 $DB_MAIN_PATH "DROP TABLE IF EXISTS rechko_wordform;"
 
 echo Run tests on wordform table
 sqlite3 -list $DB_MAIN_PATH ".read pipeline/44_test_wordform.sql" |
