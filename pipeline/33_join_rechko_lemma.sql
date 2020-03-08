@@ -35,7 +35,7 @@ CREATE TEMPORARY TABLE _lemma_ AS SELECT
 	rl.pos as pos
 FROM main.rechko_lemma rl
 LEFT JOIN rbe_lemma m
-	ON m.lemma_with_stress = rl.name_stressed
+	ON m.lemma_with_stress = rl.name_stressed -- monosyllabic words are not marked as stressed in either rbe and rechko
 	AND rl.pos = m.pos;
 
 -- here we autoincrement lemma_id correctly to make it unique

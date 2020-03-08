@@ -159,10 +159,11 @@ rm -f $DB_RECHKO_PATH
 if [ $PROCESS_SLOVNIK ] ; then
 	echo Joining Slovnik wordforms with Rechko wordforms
 	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_slovnik_wordform_tag ON slovnik_wordform(wordform, tag);"
+	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_slovnik_lemma_tag ON slovnik_wordform(lemma, tag);"
 	sqlite3 $DB_MAIN_PATH ".read pipeline/41_join_slovnik_wordforms.sql"
-	sqlite3 $DB_MAIN_PATH "DROP TABLE IF EXISTS slovnik_wordform;"
 fi
 
+echo Deleting rechko wordforms table
 sqlite3 $DB_MAIN_PATH "DROP TABLE IF EXISTS rechko_wordform;"
 
 echo Cleaning lemma and wordforms table
@@ -179,6 +180,11 @@ sqlite3 -list $DB_MAIN_PATH ".read pipeline/51_test_wordform.sql" |
 # drop rechko_lemma and rbe_lemma tables
 echo Deleting old lemma tables
 sqlite3 $DB_MAIN_PATH "DROP TABLE rbe_lemma;" "DROP TABLE rechko_lemma;" "DROP TABLE rbe_lemma_ft;" "DROP TABLE rechko_word_type;"
+
+if [ $PROCESS_SLOVNIK ] ; then
+	echo Deleting slovnik wordforms
+	sqlite3 $DB_MAIN_PATH "DROP TABLE IF EXISTS slovnik_wordform;"
+fi
 
 echo Create stress table...
 sqlite3 $DB_MAIN_PATH ".read pipeline/60_create_stress.sql"

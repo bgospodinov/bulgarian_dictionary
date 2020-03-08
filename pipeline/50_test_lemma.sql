@@ -21,8 +21,31 @@ INSERT INTO _vars VALUES('total_rbe_lemmata',
 	FROM rbe_lemma)
 );
 
+INSERT INTO _vars VALUES('total_slovnik_lemmata_inside_lemma_table', (
+	SELECT
+		COUNT(*)
+	FROM slovnik_wordform s
+	WHERE is_lemma = 1 AND
+	(
+		SELECT
+			COUNT(*)
+		FROM lemma l
+		WHERE s.lemma = l.lemma AND SUBSTR(s.tag, 1, 1) = l.pos
+	) > 0
+));
+
+INSERT INTO _vars VALUES('total_slovnik_lemmata',
+	(SELECT
+		COUNT(*)
+	FROM slovnik_wordform s
+	WHERE is_lemma = 1)
+);
+
 -- should be 0
 INSERT INTO _res VALUES('missing_rbe_lemmata', (SELECT value FROM _vars WHERE key = 'total_rbe_lemmata') - (SELECT value FROM _vars WHERE key = 'total_rbe_lemmata_inside_lemma_table'));
+
+-- should be 0
+INSERT INTO _res VALUES('missing_slovnik_lemmata', (SELECT value FROM _vars WHERE key = 'total_slovnik_lemmata') - (SELECT value FROM _vars WHERE key = 'total_slovnik_lemmata_inside_lemma_table'));
 
 -- test whether there are lemmata with NULL stress columns
 -- should be 0
