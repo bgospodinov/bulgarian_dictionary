@@ -173,16 +173,16 @@ sqlite3 $DB_MAIN_PATH ".read pipeline/45_clean_lemma_table.sql"
 echo Deleting old lemma tables
 sqlite3 $DB_MAIN_PATH "DROP TABLE rbe_lemma;" "DROP TABLE rechko_lemma;" "DROP TABLE rbe_lemma_ft;" "DROP TABLE rechko_word_type;"
 
-echo Vacuum...
-sqlite3 $DB_MAIN_PATH "VACUUM"
+echo Populating lemma table with stresses
+sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/46_add_stress_to_lemma.sql"
 
 echo Create stress table...
 sqlite3 $DB_MAIN_PATH ".read pipeline/50_create_stress.sql"
 
+echo Vacuum...
+sqlite3 $DB_MAIN_PATH "VACUUM"
+
 echo Persisting temp database...
 cp $DB_MAIN_PATH $DB_FINAL_PATH
-
-#echo Importing wordform stresses in stress table...
-#python "pipeline/wordform_stress_importer.py"
 
 echo Build finished. Success.

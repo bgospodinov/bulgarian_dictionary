@@ -3,10 +3,11 @@
 #include <wchar.h>
 #include <stdio.h>
 #include <assert.h>
+#include <locale.h>
 #include "../inc/libdict.h"
 #include "../inc/string_aux.h"
 
-int is_lemma(char *wordform, char *lemma, char *tag) {
+int is_lemma(char * wordform, char * lemma, char * tag) {
 	// these are the only possible tags for lemmata
 	static const char * const tags[] = {
 		"Ncmsi", "Ncfsi", "Ncnsi", "Nc-li", "Npmsi", "Npfsi", "Npnsi", "Np-li",
@@ -36,33 +37,46 @@ int is_lemma(char *wordform, char *lemma, char *tag) {
 	return 0;
 }
 
-int count_syllables(const char *str) {
+int count_syllables(const char * str) {
 	int cnt = 0;
 	wchar_t * wstr = convert_to_wstring(str);
-	wchar_t lc_vowels[] = { u'\u0430', u'\u0435', u'\u0438', u'\u043E', u'\u0443', u'\u044A', u'\u044E', u'\u044F' };
 
 	for (size_t i = 0; wstr[i]; ++i) {
-		wchar_t wc = wstr[i];
-
-		// account for capital letters
-		if (wc < u'\u0430') {
-			wc += 32;
-		}
-
 		// count vowels as a proxy
-		for (int j = 0; j < sizeof(lc_vowels) / 2; j++) {
-			int sign = (lc_vowels[j] > wc) - (lc_vowels[j] < wc);
-			if (sign == -1) continue;
-			else if (sign == 0) cnt++;
-			break;
-    	}
+		if (is_vowel(wstr[i]))
+			cnt++;
 	}
 
 	free(wstr);
 	return cnt;
 }
 
-const char * rechko_tag(const char *word, const char *pos, const char *prop) {
+const char * stress_first_syllable(const char * word) {
+	setlocale(LC_ALL, "");
+	wchar_t * wword = convert_to_wstring(word);
+	wchar_t * wword_o = wword;
+	size_t wword_len = wcslen(wword);
+	size_t wres_len = wword_len + 1;
+	wchar_t * wres = (wchar_t *) calloc(wres_len + 1, sizeof(wchar_t));
+	int k = 0;
+	for (; *wword != '\0' && !is_vowel(*wword); k++, wword++);
+
+	if (!*wword) {
+		wcsncpy(wres, wword_o, wword_len);
+	}
+	else {
+		wcsncpy(wres, wword_o, k + 1);
+		wcscat(wres, L"`");
+		wcsncpy(wres + k + 2, wword + 1, wword_len - k);
+	}
+
+	free(wword_o);
+	char * res = convert_to_mbstring(wres);
+	free(wres);
+	return res;
+}
+
+const char * rechko_tag(const char * word, const char * pos, const char * prop) {
 	wchar_t * wword = convert_to_wstring(word);
 	wchar_t * wprop = convert_to_wstring(prop);
 	wchar_t * wword_o = wword;
