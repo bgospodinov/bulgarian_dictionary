@@ -23,6 +23,9 @@ INSERT INTO _res VALUES('Узунов_number_of_syllables', (SELECT num_syllable
 -- should be 0
 INSERT INTO _res VALUES('number_of_wordforms_containing_latin_o', (SELECT COUNT(*) FROM wordform WHERE wordform LIKE '%o%'));
 
+-- should be 0
+INSERT INTO _res VALUES("number_of_wordforms_without_lemma", (select COUNT(*) from wordform where lemma_id is null));
+
 SELECT * FROM _res;
 
 DROP TABLE _vars;

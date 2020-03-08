@@ -138,14 +138,17 @@ wait
 echo Joining RBE lemmata with Rechko lemmata
 sqlite3 $DB_MAIN_PATH "ATTACH '$DB_RECHKO_PATH' as rechko;" ".load lib/libextfun" ".read pipeline/33_join_rechko_lemma.sql" "DETACH rechko;"
 
-echo Creating lemma fulltext and other indices;
-sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_lemma ON lemma(lemma);"
+echo Creating lemma indices
+sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_lemma_pos ON lemma(lemma, pos);"
 sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_lemma_stressed_pos ON lemma(lemma_stressed, pos);"
-sqlite3 $DB_MAIN_PATH "CREATE VIRTUAL TABLE lemma_ft USING fts5(definition, content=lemma);" "INSERT INTO lemma_ft SELECT definition FROM lemma;";
 
-echo Run tests on lemmata tables
-sqlite3 -list $DB_MAIN_PATH ".read pipeline/34_test_lemma.sql" |
-	diff tests/lemma.test -
+if [ $PROCESS_SLOVNIK ] ; then
+	echo Joining Slovnik lemmata with lemmata
+	sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/34_join_slovnik_lemma.sql"
+fi
+
+echo Creating lemma fulltext index;
+sqlite3 $DB_MAIN_PATH "CREATE VIRTUAL TABLE lemma_ft USING fts5(definition, content=lemma);" "INSERT INTO lemma_ft SELECT definition FROM lemma;";
 
 echo Import Rechko wordforms
 sqlite3 $DB_MAIN_PATH "ATTACH '$DB_RECHKO_PATH' as rechko;" ".load lib/libextfun" ".read pipeline/40_import_rechko_wordform.sql" "DETACH rechko;"
@@ -162,22 +165,30 @@ fi
 
 sqlite3 $DB_MAIN_PATH "DROP TABLE IF EXISTS rechko_wordform;"
 
-echo Run tests on wordform table
-sqlite3 -list $DB_MAIN_PATH ".read pipeline/44_test_wordform.sql" |
-	diff tests/wordform.test -
-
 echo Cleaning lemma and wordforms table
-sqlite3 $DB_MAIN_PATH ".read pipeline/45_clean_lemma_table.sql"
+sqlite3 $DB_MAIN_PATH ".read pipeline/45_clean_lemma_wordform_table.sql"
+
+echo Run tests on lemmata tables
+sqlite3 -list $DB_MAIN_PATH ".read pipeline/50_test_lemma.sql" |
+	diff tests/lemma.test -
+
+echo Run tests on wordform table
+sqlite3 -list $DB_MAIN_PATH ".read pipeline/51_test_wordform.sql" |
+	diff tests/wordform.test -
 
 # drop rechko_lemma and rbe_lemma tables
 echo Deleting old lemma tables
 sqlite3 $DB_MAIN_PATH "DROP TABLE rbe_lemma;" "DROP TABLE rechko_lemma;" "DROP TABLE rbe_lemma_ft;" "DROP TABLE rechko_word_type;"
 
-echo Populating lemma table with stresses
-sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/46_add_stress_to_lemma.sql"
-
 echo Create stress table...
-sqlite3 $DB_MAIN_PATH ".read pipeline/50_create_stress.sql"
+sqlite3 $DB_MAIN_PATH ".read pipeline/60_create_stress.sql"
+
+echo Populating lemma table with stresses
+sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/61_add_stress_to_lemma.sql"
+
+echo Run tests on stresses
+sqlite3 -list $DB_MAIN_PATH ".read pipeline/65_test_stress.sql" |
+	diff tests/stress.test -
 
 echo Vacuum...
 sqlite3 $DB_MAIN_PATH "VACUUM"

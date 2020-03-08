@@ -26,7 +26,7 @@ INSERT INTO _res VALUES('missing_rbe_lemmata', (SELECT value FROM _vars WHERE ke
 
 -- test whether there are lemmata with NULL stress columns
 -- should be 0
-INSERT INTO _res VALUES('lemmata_without_stress', (SELECT COUNT(*) FROM lemma WHERE lemma_stressed IS NULL));
+INSERT INTO _res VALUES('lemmata_with_null_stress_column', (SELECT COUNT(*) FROM lemma WHERE lemma_stressed IS NULL));
 
 SELECT * FROM _res;
 

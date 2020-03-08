@@ -12,9 +12,10 @@ int is_lemma(char * wordform, char * lemma, char * tag) {
 	static const char * const tags[] = {
 		"Ncmsi", "Ncfsi", "Ncnsi", "Nc-li", "Npmsi", "Npfsi", "Npnsi", "Np-li",
 		"Amsi", "A",
-		"Vpiif-r1s", "Vpitf-r1s", "Vppif-r1s", "Vpptf-r1s", "Vniif-r3s", "Vnitf-r3s", "Vnpif-r3s", "Vnptf-r3s", "Vxitf-r1s", "Vyptf-r1s", "Viitf-r1s",
+		"Vpiif-r1s", "Vpitf-r1s", "Vppif-r1s", "Vpptf-r1s", "Vniif-r3s", "Vnitf-r3s", "Vnpif-r3s", "Vnptf-r3s", "Vxitf-r1s", "Vyptf-r1s", "Viitf-r1s", "Vpiiz--2s", "Vpiiz--2p",
 		"Dm", "Dt", "Dl", "Dq", "Dd",
 		"Mcmsi", "Momsi", "Mc-pi", "Mo-pi", "Md-pi", "My-pi",
+		"Ppelas1", "Pcl", "Pil", "Pit", "Piq", "Pnl", "Pfl", "Pdl", "Pdt", "Pdq", "Pfm", "Pfa--s-f", "Pfa--p", "Pdm", "Prl", "Prt", "Prq", "Pft", "Pfa--s-n", "Pfe--s-n",
 		"I",
 		"R",
 		"Ta", "Tn", "Ti", "Tx", "Tm", "Tv", "Te", "Tg", "T",
