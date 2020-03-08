@@ -21,6 +21,25 @@ INSERT INTO _vars VALUES('total_rbe_lemmata',
 	FROM rbe_lemma)
 );
 
+INSERT INTO _vars VALUES('total_rechko_lemmata_inside_lemma_table',
+	(SELECT
+		COUNT(*)
+	FROM rechko_lemma r
+	WHERE
+		(
+			SELECT
+				COUNT(*)
+			FROM lemma l
+			WHERE r.name_stressed = l.lemma_stressed AND r.pos = l.pos
+		) > 0)
+);
+
+INSERT INTO _vars VALUES('total_rechko_lemmata',
+	(SELECT
+		COUNT(*)
+	FROM rechko_lemma)
+);
+
 INSERT INTO _vars VALUES('total_slovnik_lemmata_inside_lemma_table', (
 	SELECT
 		COUNT(*)
@@ -43,6 +62,9 @@ INSERT INTO _vars VALUES('total_slovnik_lemmata',
 
 -- should be 0
 INSERT INTO _res VALUES('missing_rbe_lemmata', (SELECT value FROM _vars WHERE key = 'total_rbe_lemmata') - (SELECT value FROM _vars WHERE key = 'total_rbe_lemmata_inside_lemma_table'));
+
+-- should be 0
+INSERT INTO _res VALUES('missing_rechko_lemmata', (SELECT value FROM _vars WHERE key = 'total_rechko_lemmata') - (SELECT value FROM _vars WHERE key = 'total_rechko_lemmata_inside_lemma_table'));
 
 -- should be 0
 INSERT INTO _res VALUES('missing_slovnik_lemmata', (SELECT value FROM _vars WHERE key = 'total_slovnik_lemmata') - (SELECT value FROM _vars WHERE key = 'total_slovnik_lemmata_inside_lemma_table'));
