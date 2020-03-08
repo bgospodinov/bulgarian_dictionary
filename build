@@ -106,7 +106,7 @@ trap finish EXIT
 	sqlite3 $DB_MAIN_PATH "CREATE VIRTUAL TABLE rbe_lemma_ft USING fts5(source_definition, content=rbe_lemma);" "INSERT INTO rbe_lemma_ft SELECT source_definition FROM rbe_lemma;";
 	sqlite3 $DB_MAIN_PATH ".read pipeline/31_add_pos_to_rbe_lemma.sql"
 	sqlite3 $DB_MAIN_PATH ".read pipeline/32_fix_rbe_lemma_errors.sql"
-	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_rbe_lemma ON rbe_lemma(lemma);";
+	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_rbe_lemma_pos ON rbe_lemma(lemma, pos);";
 	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_rbe_lemma_stress_pos ON rbe_lemma(lemma_with_stress, pos);";
 	rm -f $SCRATCH_PATH/db-rbe.csv;
 	##### RBE SECTION END #####
@@ -190,7 +190,7 @@ echo Create stress table...
 sqlite3 $DB_MAIN_PATH ".read pipeline/60_create_stress.sql"
 
 echo Populating lemma table with stresses
-sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/61_add_stress_to_lemma.sql"
+sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/61_add_stress_to_lemma_wordform.sql"
 
 echo Run tests on stresses
 sqlite3 -list $DB_MAIN_PATH ".read pipeline/65_test_stress.sql" |

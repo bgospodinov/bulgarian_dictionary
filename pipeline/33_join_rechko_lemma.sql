@@ -25,6 +25,10 @@ FROM rechko.rechko_lemma rl
 LEFT JOIN rechko_word_type rwt
 	ON rl.type_id = rwt.id;
 
+
+-- fix some mistakes in rechko
+UPDATE main.rechko_lemma SET pos = 'V' WHERE name = 'недей';
+
 -- here we join rechko and rbe lemmata, but lemma_id column contains repetitions
 CREATE TEMPORARY TABLE _lemma_ AS SELECT
 	rl.id as lemma_id,

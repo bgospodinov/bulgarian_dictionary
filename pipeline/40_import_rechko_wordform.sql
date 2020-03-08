@@ -33,14 +33,15 @@ CREATE TABLE main.wordform (
 INSERT INTO main.wordform
 SELECT
 	NULL as wordform_id,
-	lemma_id,
-	wordform,
-	wordform_stressed,
-	is_lemma,
-	tag,
+	r.lemma_id,
+	r.wordform,
+	CASE WHEN r.is_lemma = 0 THEN r.wordform_stressed ELSE l.lemma_stressed END AS wordform_stressed,
+	r.is_lemma,
+	r.tag,
 	'rechko' as source,
-	COUNT_SYLLABLES(wordform) as num_syllables
-FROM main.rechko_wordform;
+	COUNT_SYLLABLES(r.wordform) as num_syllables
+FROM main.rechko_wordform r
+LEFT JOIN lemma l ON r.lemma_id = l.lemma_id;
 
 -- fix bugs in rechko
 -- replace latin letters with cyrillic equivalents
