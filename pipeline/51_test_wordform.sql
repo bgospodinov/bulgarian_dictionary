@@ -20,9 +20,30 @@ INSERT INTO _vars VALUES('total_rechko_wordforms',
 	FROM rechko_wordform)
 );
 
+INSERT INTO _vars VALUES('total_slovnik_wordforms_inside_wordform_table',
+	(SELECT
+		COUNT(*)
+	FROM slovnik_wordform s
+	WHERE
+		(
+			SELECT
+				COUNT(*)
+			FROM wordform w
+			WHERE s.wordform = w.wordform AND s.tag = w.tag
+		) > 0)
+);
+
+INSERT INTO _vars VALUES('total_slovnik_wordforms',
+	(SELECT
+		COUNT(*)
+	FROM slovnik_wordform)
+);
 
 -- should be 0
 INSERT INTO _res VALUES('missing_rechko_wordforms', (SELECT value FROM _vars WHERE key = 'total_rechko_wordforms') - (SELECT value FROM _vars WHERE key = 'total_rechko_wordforms_inside_wordform_table'));
+
+-- should be 0
+INSERT INTO _res VALUES('missing_slovnik_wordforms', (SELECT value FROM _vars WHERE key = 'total_slovnik_wordforms') - (SELECT value FROM _vars WHERE key = 'total_slovnik_wordforms_inside_wordform_table'));
 
 -- test whether wordforms containing ь or й have their syllables counted correctly
 -- should be 1

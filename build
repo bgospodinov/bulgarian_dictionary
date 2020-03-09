@@ -179,7 +179,7 @@ echo Deleting old lemma tables
 sqlite3 $DB_MAIN_PATH "DROP TABLE rbe_lemma;" "DROP TABLE rechko_lemma;" "DROP TABLE rbe_lemma_ft;" "DROP TABLE rechko_word_type;"
 
 echo Deleting rechko wordforms table
-#sqlite3 $DB_MAIN_PATH "DROP TABLE IF EXISTS rechko_wordform;"
+sqlite3 $DB_MAIN_PATH "DROP TABLE IF EXISTS rechko_wordform;"
 
 if [ $PROCESS_SLOVNIK ] ; then
 	echo Deleting slovnik wordforms
