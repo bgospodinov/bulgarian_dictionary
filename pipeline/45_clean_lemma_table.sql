@@ -8,7 +8,4 @@ DELETE FROM lemma WHERE ROWID IN (
 	WHERE rownum > 1
 );
 
--- delete all impossible wordforms inherited from rechko
-DELETE FROM wordform WHERE wordform = "—";
-
 END TRANSACTION;

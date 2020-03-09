@@ -16,6 +16,13 @@ FROM
 	rechko.derivative_form rd
 LEFT JOIN main.rechko_lemma rl ON rd.base_word_id = rl.id;
 
+-- delete all impossible wordforms inherited from rechko
+DELETE FROM rechko_wordform WHERE wordform = "—";
+
+-- fix bugs in rechko
+-- replace latin letters with cyrillic equivalents
+UPDATE rechko_wordform SET wordform = REPLACE(wordform, 'o', 'о'), wordform_stressed = REPLACE(wordform_stressed, 'o', 'о');
+
 CREATE TABLE main.wordform (
 	wordform_id INTEGER PRIMARY KEY,
 	lemma_id INT,
@@ -42,9 +49,5 @@ SELECT
 	COUNT_SYLLABLES(r.wordform) as num_syllables
 FROM main.rechko_wordform r
 LEFT JOIN lemma l ON r.lemma_id = l.lemma_id;
-
--- fix bugs in rechko
--- replace latin letters with cyrillic equivalents
-UPDATE main.wordform SET wordform = REPLACE(wordform, 'o', 'о'), wordform_stressed = REPLACE(wordform_stressed, 'o', 'о');
 
 END TRANSACTION;

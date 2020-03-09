@@ -1,6 +1,29 @@
 CREATE TEMP TABLE _vars(key TEXT, value INTEGER);
 CREATE TEMP TABLE _res(key TEXT, value INTEGER);
 
+INSERT INTO _vars VALUES('total_rechko_wordforms_inside_wordform_table',
+	(SELECT
+		COUNT(*)
+	FROM rechko_wordform r
+	WHERE
+		(
+			SELECT
+				COUNT(*)
+			FROM wordform w
+			WHERE r.wordform = w.wordform AND r.lemma_id = w.lemma_id
+		) > 0)
+);
+
+INSERT INTO _vars VALUES('total_rechko_wordforms',
+	(SELECT
+		COUNT(*)
+	FROM rechko_wordform)
+);
+
+
+-- should be 0
+INSERT INTO _res VALUES('missing_rechko_wordforms', (SELECT value FROM _vars WHERE key = 'total_rechko_wordforms') - (SELECT value FROM _vars WHERE key = 'total_rechko_wordforms_inside_wordform_table'));
+
 -- test whether wordforms containing ь or й have their syllables counted correctly
 -- should be 1
 INSERT INTO _res VALUES('гьол_number_of_syllables', (SELECT num_syllables FROM wordform WHERE wordform = 'гьол'));
