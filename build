@@ -196,6 +196,9 @@ echo Run tests on stresses
 sqlite3 -list $DB_MAIN_PATH ".read pipeline/65_test_stress.sql" |
 	diff tests/stress.test -
 
+echo Create pronounciation table...
+sqlite3 $DB_MAIN_PATH ".read pipeline/70_create_pronounciation.sql"
+
 echo Vacuum...
 sqlite3 $DB_MAIN_PATH "VACUUM"
 
