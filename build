@@ -147,6 +147,9 @@ if [ $PROCESS_SLOVNIK ] ; then
 	sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/34_join_slovnik_lemma.sql"
 fi
 
+echo Detecting lemmata diminutives
+sqlite3 $DB_MAIN_PATH ".read pipeline/35_select_diminutives.sql"
+
 echo Creating lemma fulltext index;
 sqlite3 $DB_MAIN_PATH "CREATE VIRTUAL TABLE lemma_ft USING fts5(definition, content=lemma);" "INSERT INTO lemma_ft SELECT definition FROM lemma;";
 

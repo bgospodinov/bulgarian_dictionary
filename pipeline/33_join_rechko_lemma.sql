@@ -45,12 +45,16 @@ LEFT JOIN rbe_lemma m
 -- here we autoincrement lemma_id correctly to make it unique
 CREATE TABLE lemma (
 	lemma_id INTEGER PRIMARY KEY,
+	derivative_id INT,
 	lemma,
 	lemma_stressed,
-	definition,
-	pos,
-	source,
-	num_syllables
+	definition TEXT,
+	derivative_type TEXT,
+	pos TEXT,
+	source TEXT,
+	num_syllables INT,
+	stressed INT GENERATED ALWAYS AS (LIKE('%`%', lemma_stressed)) STORED, -- only supported in sqlite >= 3.31.0
+	FOREIGN KEY(derivative_id) REFERENCES lemma(lemma_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 INSERT INTO lemma SELECT
@@ -58,9 +62,11 @@ INSERT INTO lemma SELECT
 		THEN (SELECT MAX(lemma_id) FROM _lemma_) + offset 
 		ELSE lemma_id 
 	END AS lemma_id,
+	NULL as derivative_id,
 	lemma,
 	lemma_stressed,
 	source_definition as definition,
+	NULL as derivative_type,
 	pos,
 	source,
 	COUNT_SYLLABLES(lemma)
@@ -90,9 +96,11 @@ END;
 
 INSERT INTO lemma SELECT
 	NULL as lemma_id,
+	NULL as derivative_id,
 	lemma,
 	COALESCE(lemma_with_stress, lemma) as lemma_stressed,
 	m.source_definition as definition,
+	NULL as derivative_type,
 	m.pos as pos,
 	'rbe' as source,
 	COUNT_SYLLABLES(lemma)
