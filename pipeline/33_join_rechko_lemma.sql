@@ -50,6 +50,7 @@ CREATE TABLE lemma (
 	lemma_stressed,
 	definition TEXT,
 	derivative_type TEXT,
+	ner TEXT,
 	pos TEXT,
 	source TEXT,
 	num_syllables INT,
@@ -57,19 +58,19 @@ CREATE TABLE lemma (
 	FOREIGN KEY(derivative_id) REFERENCES lemma(lemma_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-INSERT INTO lemma SELECT
+INSERT INTO lemma (
+	lemma_id, lemma, lemma_stressed, definition, pos, source, num_syllables
+) SELECT
 	CASE WHEN repetition > 0 
-		THEN (SELECT MAX(lemma_id) FROM _lemma_) + offset 
+		THEN (SELECT MAX(lemma_id) FROM _lemma_) + offset
 		ELSE lemma_id 
 	END AS lemma_id,
-	NULL as derivative_id,
 	lemma,
 	lemma_stressed,
 	source_definition as definition,
-	NULL as derivative_type,
 	pos,
 	source,
-	COUNT_SYLLABLES(lemma)
+	COUNT_SYLLABLES(lemma) as num_syllables
 FROM
 (
 	SELECT
@@ -94,16 +95,15 @@ BEGIN
 	WHERE ROWID = NEW.ROWID;
 END;
 
-INSERT INTO lemma SELECT
-	NULL as lemma_id,
-	NULL as derivative_id,
+INSERT INTO lemma (
+	lemma, lemma_stressed, definition, pos, source, num_syllables
+) SELECT
 	lemma,
 	COALESCE(lemma_with_stress, lemma) as lemma_stressed,
 	m.source_definition as definition,
-	NULL as derivative_type,
 	m.pos as pos,
 	'rbe' as source,
-	COUNT_SYLLABLES(lemma)
+	COUNT_SYLLABLES(lemma) as num_syllables
 FROM rbe_lemma m
 LEFT JOIN rechko_lemma rl
 	ON m.lemma_with_stress = rl.name_stressed

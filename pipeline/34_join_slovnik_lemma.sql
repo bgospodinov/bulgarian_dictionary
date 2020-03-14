@@ -1,12 +1,10 @@
 BEGIN TRANSACTION;
 
-INSERT INTO lemma SELECT
-	NULL as lemma_id,
-    NULL as derivative_id,
+INSERT INTO lemma (
+	lemma, lemma_stressed, pos, source, num_syllables
+) SELECT
     s.lemma as lemma,
     s.lemma as lemma_stressed,
-    NULL as definition,
-    NULL as derivative_type,
     SUBSTR(s.tag, 1, 1) as pos,
     'slovnik' as source,
     COUNT_SYLLABLES(s.wordform) as num_syllables
