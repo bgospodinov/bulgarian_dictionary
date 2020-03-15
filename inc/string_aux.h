@@ -1,11 +1,12 @@
 #ifndef STRING_AUX_H_
 #define STRING_AUX_H_
 
-int is_capitalized(wchar_t * word);
+int is_capitalized(const wchar_t * const word);
+wchar_t * strip_longest_suffix(wchar_t * const wword, const wchar_t * const suff[], size_t suffsz, int * sfxmidx);
 wchar_t * convert_to_wstring(const char * str);
-char * convert_to_mbstring(wchar_t *wstr);
+char * convert_to_mbstring(const wchar_t * wstr);
 int is_vowel(wchar_t wc);
 
-extern wchar_t lc_vowels[8];
+extern const wchar_t lc_vowels[8];
 
 #endif // STRING_AUX_H_

@@ -7,7 +7,7 @@
 #include "../inc/libdict.h"
 #include "../inc/string_aux.h"
 
-int is_lemma(char * wordform, char * lemma, char * tag) {
+int is_lemma(const char * wordform, const char * lemma, const char * tag) {
 	// these are the only possible tags for lemmata
 	static const char * const tags[] = {
 		"Ncmsi", "Ncfsi", "Ncnsi", "Nc-li", "Npmsi", "Npfsi", "Npnsi", "Np-li",
@@ -52,13 +52,38 @@ int count_syllables(const char * str) {
 	return cnt;
 }
 
+const char * diminutive_to_base(const char * word) {
+	setlocale(LC_ALL, "");
+	static const wchar_t * const suff[] = 
+				{ L"че", L"це", L"йка", L"чица", L"джийка" };
+	static const size_t suffsz = sizeof(suff) / sizeof(suff[0]);
+
+	int matchedsfx;
+	wchar_t * wword = 
+		strip_longest_suffix(convert_to_wstring(word), suff, suffsz, &matchedsfx);
+
+	// only concatenate if the appended string is shorter than the removed suffix
+	switch (matchedsfx) {
+		case 2:
+			wcscat(wword, L"я");
+			break;
+		case 3:
+			wcscat(wword, L"ка");
+			break;
+	}
+
+	char * res = convert_to_mbstring(wword);
+	free(wword);
+	return res;
+}
+
 const char * stress_first_syllable(const char * word) {
 	setlocale(LC_ALL, "");
 	wchar_t * wword = convert_to_wstring(word);
-	wchar_t * wword_o = wword;
-	size_t wword_len = wcslen(wword);
-	size_t wres_len = wword_len + 1;
-	wchar_t * wres = (wchar_t *) calloc(wres_len + 1, sizeof(wchar_t));
+	wchar_t * const wword_o = wword;
+	const size_t wword_len = wcslen(wword);
+	const size_t wres_len = wword_len + 1;
+	wchar_t * const wres = (wchar_t *) calloc(wres_len + 1, sizeof(wchar_t));
 	int k = 0;
 	for (; *wword != '\0' && !is_vowel(*wword); k++, wword++);
 
@@ -80,8 +105,8 @@ const char * stress_first_syllable(const char * word) {
 const char * rechko_tag(const char * word, const char * pos, const char * prop) {
 	wchar_t * wword = convert_to_wstring(word);
 	wchar_t * wprop = convert_to_wstring(prop);
-	wchar_t * wword_o = wword;
-	wchar_t * wprop_o = wprop;
+	wchar_t * const wword_o = wword;
+	wchar_t * const wprop_o = wprop;
 	char *res = (char *) malloc(15 * sizeof(char));
 	*res = '\0';
 

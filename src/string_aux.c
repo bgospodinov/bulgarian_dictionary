@@ -1,13 +1,14 @@
 #include <wchar.h>
 #include <locale.h>
 #include <string.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 
-wchar_t lc_vowels[] = { u'\u0430', u'\u0435', u'\u0438', u'\u043E', u'\u0443', u'\u044A', u'\u044E', u'\u044F' };
+const wchar_t lc_vowels[] = { u'\u0430', u'\u0435', u'\u0438', u'\u043E', u'\u0443', u'\u044A', u'\u044E', u'\u044F' };
 
-int is_capitalized(wchar_t * word) {
+int is_capitalized(const wchar_t * const word) {
 	return *word >= u'\u0410' && *word < u'\u0430';
 }
 
@@ -27,6 +28,58 @@ int is_vowel(wchar_t wc) {
 	return 0;
 }
 
+wchar_t * strip_longest_suffix(wchar_t * const wword, 
+										const wchar_t * const suff[],
+										size_t suffsz, int * sfxmidx) {
+	setlocale(LC_ALL, "");
+	const size_t wlen = wcslen(wword);
+	wchar_t * const pewword = wword + wlen - 1;
+	wchar_t * pwword = pewword;
+	const wchar_t * psuff[suffsz];
+	bool suffp[suffsz]; // is corresponding suffix possible
+	short suffl[suffsz]; // suffices length
+	short suffi[suffsz]; // suffices indices
+	memset(suffp, true, sizeof(bool) * suffsz);
+	memset(suffi, 0, sizeof(short) * suffsz);
+
+	// reset pointers at end of all suffices
+	for (int i = 0; i < suffsz; i++) {
+		suffl[i] = wcslen(suff[i]);
+		psuff[i] = suff[i] + suffl[i] - 1;
+	}
+
+	for (int i = wlen - 1; i >= 0; i--, pwword--) {
+		short suffleft = 0; // suffixes left to try
+		for (int j = 0; j < suffsz; j++) {
+			if (suffi[j] < suffl[j] && suffp[j]) {
+				if (*pwword == *psuff[j]) {
+					suffleft++;
+					psuff[j]--;
+					suffi[j]++;
+				}
+				else {
+					suffp[j] = false;
+				}
+			}
+		}
+
+		if (suffleft == 0)
+			break;
+	}
+
+	short mxpsfxsz = 0;
+	*sfxmidx = -1;
+	for (int i = 0; i < suffsz; i++) {
+		if (suffp[i] && suffl[i] > mxpsfxsz) {
+			mxpsfxsz = suffl[i];
+			*sfxmidx = i;
+		}
+	}
+
+	*(pewword - mxpsfxsz + 1) = '\0';
+	return wword;
+}
+
 wchar_t * convert_to_wstring(const char * str) {
 	setlocale(LC_ALL, "");
 	size_t strl = strlen(str);
@@ -41,7 +94,7 @@ wchar_t * convert_to_wstring(const char * str) {
 	return wstr;
 }
 
-char * convert_to_mbstring(wchar_t * wstr) {
+char * convert_to_mbstring(const wchar_t * wstr) {
 	setlocale(LC_ALL, "");
 	size_t wstrl = wcslen(wstr) * 4 + 1;
 	char * str = (char *) calloc(wstrl, sizeof(char));
