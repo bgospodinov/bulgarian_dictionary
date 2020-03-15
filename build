@@ -151,7 +151,7 @@ echo NER processing in existing lemmata
 sqlite3 $DB_MAIN_PATH ".read pipeline/35_ner_processing.sql"
 
 echo Detecting lemmata diminutives
-sqlite3 $DB_MAIN_PATH ".read pipeline/36_select_diminutives.sql"
+sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/36_select_diminutives.sql"
 
 echo Creating lemma fulltext index;
 sqlite3 $DB_MAIN_PATH "CREATE VIRTUAL TABLE lemma_ft USING fts5(definition, content=lemma);" "INSERT INTO lemma_ft SELECT definition FROM lemma;";

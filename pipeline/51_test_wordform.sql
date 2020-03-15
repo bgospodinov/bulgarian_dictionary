@@ -70,6 +70,9 @@ INSERT INTO _res VALUES('number_of_wordforms_containing_latin_o', (SELECT COUNT(
 -- should be 0
 INSERT INTO _res VALUES("number_of_wordforms_without_lemma", (select COUNT(*) from wordform where lemma_id is null));
 
+-- should be 0
+--INSERT INTO _res VALUES("number_of_stress_mismatches", (select COUNT(*) from wordform where wordform != replace(wordform_stressed, '`', '')));
+
 SELECT * FROM _res;
 
 DROP TABLE _vars;
