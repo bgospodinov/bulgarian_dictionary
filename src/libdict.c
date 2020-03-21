@@ -77,7 +77,7 @@ const char * diminutive_to_base(const char * word) {
 	return res;
 }
 
-const char * stress_first_syllable(const char * word) {
+const char * stress_syllable(const char * word, int n) {
 	setlocale(LC_ALL, "");
 	wchar_t * wword = convert_to_wstring(word);
 	wchar_t * const wword_o = wword;
