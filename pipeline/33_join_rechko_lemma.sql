@@ -29,6 +29,10 @@ LEFT JOIN rechko_word_type rwt
 UPDATE main.rechko_lemma SET pos = 'V' WHERE name = 'недей';
 UPDATE main.rechko_lemma SET name_stressed = name WHERE name_stressed IS NULL;
 
+-- this helps evade rechko mismatches for reflexive verbs and adjectives
+UPDATE main.rechko_lemma SET name = REPLACE(name, ' се', ''), name_stressed = REPLACE(name_stressed, ' се', '')
+WHERE classification = 'reflexive' or classification = '+reflexive';
+
 -- here we join rechko and rbe lemmata, but lemma_id column contains repetitions
 CREATE TEMPORARY TABLE _lemma_ AS SELECT
 	rl.id as lemma_id,

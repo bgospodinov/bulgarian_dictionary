@@ -14,7 +14,7 @@ int is_lemma(const char * wordform, const char * lemma, const char * tag) {
 		"Amsi", "A",
 		"Vpiif-r1s", "Vpitf-r1s", "Vppif-r1s", "Vpptf-r1s", "Vniif-r3s", "Vnitf-r3s", "Vnpif-r3s", "Vnptf-r3s", "Vxitf-r1s", "Vyptf-r1s", "Viitf-r1s",
 		"Dm", "Dt", "Dl", "Dq", "Dd",
-		"Mcmsi", "Momsi", "Mc-pi", "Mo-pi", "Md-pi", "My-pi",
+		"Mcmsi", "Momsi", "Md-pi", "My-pi",
 		"Ppelas1", "Pcl", "Pil", "Pit", "Piq", "Pnl", "Pfl", "Pdl", "Pdt", "Pdq", "Pfm", "Pfa--s-f", "Pfa--p", "Pdm", "Prl", "Prt", "Prq", "Pft", "Pfa--s-n", "Pfe--s-n",
 		"I",
 		"R",

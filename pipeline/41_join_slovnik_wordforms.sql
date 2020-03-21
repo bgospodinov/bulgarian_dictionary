@@ -1,5 +1,7 @@
 BEGIN TRANSACTION;
 
+DELETE FROM slovnik_wordform WHERE wordform = 'хилядо' and tag = 'Mc-pi';
+
 -- join all wordforms from the morphological dictionary (slovnik_wordform table)
 -- with their corresponding lemmata and stresses from the RBE dictionary (lemma table)
 INSERT INTO wordform SELECT
@@ -18,6 +20,12 @@ LEFT JOIN
 ON
 	s.lemma = l.lemma AND
 	SUBSTR(s.tag, 1, 1) = l.pos
-WHERE (SELECT COUNT(*) FROM wordform w WHERE w.wordform = s.wordform and w.tag = s.tag) == 0;
+WHERE (SELECT COUNT(*) FROM wordform w WHERE w.wordform = s.wordform AND w.tag = s.tag) == 0;
+
+-- add lemma manually for some slovnik wordforms
+UPDATE wordform
+SET lemma_id = (SELECT lemma_id FROM lemma WHERE lemma = 'повече' AND pos = 'M' AND source = 'slovnik')
+WHERE wordform = 'повечето'
+and lemma_id IS NULL;
 
 END TRANSACTION;
