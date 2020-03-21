@@ -17,6 +17,12 @@ INSERT INTO _res VALUES('number_of_lemma_stress_mismatches', (SELECT COUNT(*) FR
 -- should be 0
 INSERT INTO _res VALUES("number_of_wordform_stress_mismatches", (SELECT COUNT(*) FROM wordform WHERE wordform != REPLACE(wordform_stressed, '`', '')));
 
+-- should be 0
+INSERT INTO _res VALUES("false_positive_stressed_lemma", (SELECT COUNT(*) FROM lemma WHERE stressed = 0 AND lemma_stressed LIKE '%`%'));
+
+-- should be 0
+INSERT INTO _res VALUES("false_positive_stressed_wordform", (SELECT COUNT(*) FROM wordform WHERE stressed = 0 AND wordform_stressed LIKE '%`%'));
+
 SELECT * FROM _res;
 
 DROP TABLE _vars;
