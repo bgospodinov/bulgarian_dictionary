@@ -11,6 +11,12 @@ from lemma l
 left join wordform w ON l.lemma_id = w.lemma_id AND w.is_lemma = 1
 where lemma_stressed like '%`%' and l.lemma_stressed != w.wordform_stressed));
 
+-- should be 0
+INSERT INTO _res VALUES('number_of_lemma_stress_mismatches', (select COUNT(*) from lemma where lemma != replace(lemma_stressed, '`', '')));
+
+-- should be 0
+--INSERT INTO _res VALUES("number_of_wordform_stress_mismatches", (select COUNT(*) from wordform where wordform != replace(wordform_stressed, '`', '')));
+
 SELECT * FROM _res;
 
 DROP TABLE _vars;

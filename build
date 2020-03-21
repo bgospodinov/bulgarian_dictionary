@@ -195,8 +195,11 @@ fi
 echo Create stress table...
 sqlite3 $DB_MAIN_PATH ".read pipeline/60_create_stress.sql"
 
+echo Fixing lemmata table...
+sqlite3 $DB_MAIN_PATH ".read pipeline/61_fix_stress_errors.sql"
+
 echo Populating lemma table with stresses
-sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/61_add_stress_to_lemma_wordform.sql"
+sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/62_add_stress_to_lemma_wordform.sql"
 
 echo Run tests on stresses
 sqlite3 -list $DB_MAIN_PATH ".read pipeline/65_test_stress.sql" |

@@ -1,7 +1,7 @@
 -- set all words starting with capital letter as named entities
 UPDATE lemma
 SET ner = 'other'
-WHERE UNICODE(SUBSTR(lemma, 1, 1)) < UNICODE('а');
+WHERE UNICODE(lemma) < UNICODE('а');
 
 UPDATE lemma
 SET ner = 'place'
