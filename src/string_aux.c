@@ -107,3 +107,35 @@ char * convert_to_mbstring(const wchar_t * wstr) {
 
 	return str;
 }
+
+char * mbcopy(const char * str) {
+	const size_t lenstr = strlen(str) + 1;
+	char * copy = malloc(lenstr * sizeof(char));
+	strcpy(copy, str);
+	return copy;
+}
+
+// https://stackoverflow.com/a/199453
+void utf8rev(char * str) {
+    /* this assumes that str is valid UTF-8 */
+    char *scanl, *scanr, *scanr2, c;
+
+    /* first reverse the string */
+    for (scanl = str, scanr = str + strlen(str); scanl < scanr;)
+        c= *scanl, *scanl++= *--scanr, *scanr= c;
+
+    /* then scan all bytes and reverse each multibyte character */
+    for (scanl = scanr = str; c = *scanr++;) {
+        if ( (c & 0x80) == 0) // ASCII char
+            scanl = scanr;
+        else if ( (c & 0xc0) == 0xc0 ) { // start of multibyte
+            scanr2 = scanr;
+            switch (scanr - scanl) {
+                case 4: c = *scanl, *scanl++= *--scanr, *scanr = c; // fallthrough
+                case 3: // fallthrough
+                case 2: c = *scanl, *scanl++= *--scanr, *scanr = c;
+            }
+            scanr = scanl = scanr2;
+        }
+    }
+}

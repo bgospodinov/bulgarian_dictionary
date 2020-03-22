@@ -107,6 +107,27 @@ const char * stress_syllable(const char * word, int n) {
 	return res;
 }
 
+int find_nth_stressed_syllable(const char * word, int n) {
+	wchar_t * wword = convert_to_wstring(word);
+	wchar_t * const wword_o = wword;
+	const size_t wword_len = wcslen(wword);
+
+	int syllable_count = 0;
+	for (; *wword != '\0' && n > 0; wword++) {
+		if (is_vowel(*wword)) {
+			syllable_count++;
+		}
+		else if (*wword == L'`') {
+			n--;
+		}
+	}
+
+	free(wword_o);
+	if (n == 0)
+		return syllable_count;
+	return 0;
+}
+
 const char * rechko_tag(const char * word, const char * pos, const char * prop) {
 	wchar_t * wword = convert_to_wstring(word);
 	wchar_t * wprop = convert_to_wstring(prop);
