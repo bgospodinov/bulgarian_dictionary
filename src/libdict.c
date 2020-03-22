@@ -85,6 +85,9 @@ const char * stress_syllable(const char * word, int n) {
 	const size_t wres_len = wword_len + 1;
 	wchar_t * const wres = (wchar_t *) calloc(wres_len + 1, sizeof(wchar_t));
 
+	if (n <= 0)
+		goto copy;
+
 	int k = 0;
 	for (; *wword != '\0' && n > 0; k++, wword++) {
 		if (is_vowel(*wword)) {
@@ -93,6 +96,7 @@ const char * stress_syllable(const char * word, int n) {
 	}
 
 	if (!*wword && n > 0) {
+copy:
 		wcsncpy(wres, wword_o, wword_len);
 	}
 	else {

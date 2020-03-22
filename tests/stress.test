@@ -18,3 +18,6 @@ false_positive_stressed_wordform|0
 МВР_stress_first_pos_rev|-1
 М`ВР_stress_first_pos|0
 М`ВР_stress_first_pos_rev|0
+чудесно_stress_second_syllable|чуде`сно
+чудесно_stress_negative_syllable|чудесно
+чудесно_stress_out_of_bound_syllable|чудесно
