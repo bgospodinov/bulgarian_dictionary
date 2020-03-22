@@ -58,7 +58,7 @@ CREATE TABLE lemma (
 	pos TEXT,
 	source TEXT,
 	num_syllables INT,
-	stressed INT GENERATED ALWAYS AS (LIKE('%`%', lemma_stressed)) STORED, -- only supported in sqlite >= 3.31.0
+	num_stresses INT GENERATED ALWAYS AS (LENGTH(lemma_stressed) - LENGTH(REPLACE(lemma_stressed, '`', ''))) STORED, -- only supported in sqlite >= 3.31.0
 	FOREIGN KEY(derivative_id) REFERENCES lemma(lemma_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 

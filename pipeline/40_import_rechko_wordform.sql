@@ -38,7 +38,7 @@ CREATE TABLE main.wordform (
 	pos TEXT GENERATED ALWAYS AS (SUBSTR(tag, 1, 1)) STORED, -- only supported in sqlite >= 3.31.0
 	source TEXT,
 	num_syllables INT,
-	stressed INT GENERATED ALWAYS AS (LIKE('%`%', wordform_stressed)) STORED, -- only supported in sqlite >= 3.31.0
+	num_stresses INT GENERATED ALWAYS AS (LENGTH(wordform_stressed) - LENGTH(REPLACE(wordform_stressed, '`', ''))) STORED, -- only supported in sqlite >= 3.31.0
 	FOREIGN KEY(lemma_id) REFERENCES lemma(lemma_id) ON DELETE CASCADE
 );
 

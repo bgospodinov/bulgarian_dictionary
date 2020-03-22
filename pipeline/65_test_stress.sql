@@ -20,10 +20,10 @@ INSERT INTO _res VALUES('number_of_lemma_stress_mismatches', (SELECT COUNT(*) FR
 INSERT INTO _res VALUES("number_of_wordform_stress_mismatches", (SELECT COUNT(*) FROM wordform WHERE wordform != REPLACE(wordform_stressed, '`', '')));
 
 -- should be 0
-INSERT INTO _res VALUES("false_positive_stressed_lemma", (SELECT COUNT(*) FROM lemma WHERE stressed = 0 AND lemma_stressed LIKE '%`%'));
+INSERT INTO _res VALUES("false_positive_stressed_lemma", (SELECT COUNT(*) FROM lemma WHERE num_stresses = 0 AND lemma_stressed LIKE '%`%'));
 
 -- should be 0
-INSERT INTO _res VALUES("false_positive_stressed_wordform", (SELECT COUNT(*) FROM wordform WHERE stressed = 0 AND wordform_stressed LIKE '%`%'));
+INSERT INTO _res VALUES("false_positive_stressed_wordform", (SELECT COUNT(*) FROM wordform WHERE num_stresses = 0 AND wordform_stressed LIKE '%`%'));
 
 -- should be 4
 INSERT INTO _res VALUES("абориге`н_stress_first_pos", (SELECT find_nth_stressed_syllable('абориге`н', 1)));
