@@ -7,6 +7,12 @@ SET wordform_stressed =
         (SELECT lemma_stressed FROM lemma WHERE lemma_id = wordform.lemma_id AND stressed = 1),
         wordform_stressed
     )
-WHERE stressed = 0 and is_lemma = 1;
+WHERE stressed = 0 AND is_lemma = 1;
+
+-- by default, stress all non-lemma wordforms the same way their lemmata are stressed
+UPDATE wordform
+SET wordform_stressed =
+    stress_syllable(wordform_stressed, find_nth_stressed_syllable_rev((SELECT lemma_stressed FROM lemma WHERE lemma_id = wordform.lemma_id), 1))
+WHERE stressed = 0 AND is_lemma = 0;
 
 END TRANSACTION;

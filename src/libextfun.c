@@ -100,7 +100,7 @@ static void sqlite_find_nth_stressed_syllable(sqlite3_context *context, int argc
 		}
 	}
 
-	sqlite3_result_null(context);
+	sqlite3_result_int(context, -1);
 }
 
 static void sqlite_find_nth_stressed_syllable_rev(sqlite3_context *context, int argc, sqlite3_value **argv) {
@@ -114,7 +114,7 @@ static void sqlite_find_nth_stressed_syllable_rev(sqlite3_context *context, int 
 		}
 	}
 
-	sqlite3_result_null(context);
+	sqlite3_result_int(context, -1);
 }
 
 static void sqlite_diminutive_to_base(sqlite3_context *context, int argc, sqlite3_value **argv) {
