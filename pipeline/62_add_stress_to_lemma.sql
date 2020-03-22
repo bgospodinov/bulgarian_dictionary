@@ -20,13 +20,4 @@ WHERE lemma.derivative_type = 'diminutive' AND
     lemma.stressed = 0 AND
     lemma.derivative_id IS NOT NULL;
 
--- copy stress from stressed lemmata to their corresponding wordform after additional lemmata have been stressed
-UPDATE wordform
-SET wordform_stressed =
-    IFNULL(
-        (SELECT lemma_stressed FROM lemma WHERE lemma_id = wordform.lemma_id AND stressed = 1),
-        wordform_stressed
-    )
-WHERE stressed = 0 and is_lemma = 1;
-
 END TRANSACTION;

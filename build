@@ -200,7 +200,10 @@ echo Fixing lemmata table...
 sqlite3 $DB_MAIN_PATH ".read pipeline/61_fix_stress_errors.sql"
 
 echo Populating lemma table with stresses
-sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/62_add_stress_to_lemma_wordform.sql"
+sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/62_add_stress_to_lemma.sql"
+
+echo Populating wordform table with stresses
+sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/63_add_stress_to_wordform.sql"
 
 echo Run tests on stresses
 sqlite3 -list $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/65_test_stress.sql" 2>/dev/null |
