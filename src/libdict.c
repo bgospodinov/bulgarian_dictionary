@@ -84,16 +84,21 @@ const char * stress_syllable(const char * word, int n) {
 	const size_t wword_len = wcslen(wword);
 	const size_t wres_len = wword_len + 1;
 	wchar_t * const wres = (wchar_t *) calloc(wres_len + 1, sizeof(wchar_t));
-	int k = 0;
-	for (; *wword != '\0' && !is_vowel(*wword); k++, wword++);
 
-	if (!*wword) {
+	int k = 0;
+	for (; *wword != '\0' && n > 0; k++, wword++) {
+		if (is_vowel(*wword)) {
+			n--;
+		}
+	}
+
+	if (!*wword && n > 0) {
 		wcsncpy(wres, wword_o, wword_len);
 	}
 	else {
-		wcsncpy(wres, wword_o, k + 1);
+		wcsncpy(wres, wword_o, k);
 		wcscat(wres, L"`");
-		wcsncpy(wres + k + 2, wword + 1, wword_len - k);
+		wcsncpy(wres + k + 1, wword, wword_len - k);
 	}
 
 	free(wword_o);
