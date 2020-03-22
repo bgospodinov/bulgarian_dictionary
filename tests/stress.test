@@ -4,3 +4,17 @@ number_of_lemma_stress_mismatches|0
 number_of_wordform_stress_mismatches|0
 false_positive_stressed_lemma|0
 false_positive_stressed_wordform|0
+абориге`н_stress_first_pos|4
+абориге`н_stress_first_pos_rev|4
+о`гненочерве`н_stress_first_pos|1
+о`гненочерве`н_stress_second_pos|5
+о`гненочерве`н_stress_first_pos_rev|5
+о`гненочерве`н_stress_second_pos_rev|1
+чук-чук_stress_first_pos|-1
+чук-чук_stress_first_pos_rev|-1
+ч`ук-чук_stress_second_pos|-1
+ч`ук-чук_stress_second_pos_rev|-1
+МВР_stress_first_pos|-1
+МВР_stress_first_pos_rev|-1
+М`ВР_stress_first_pos|0
+М`ВР_stress_first_pos_rev|0

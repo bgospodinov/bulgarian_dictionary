@@ -23,6 +23,48 @@ INSERT INTO _res VALUES("false_positive_stressed_lemma", (SELECT COUNT(*) FROM l
 -- should be 0
 INSERT INTO _res VALUES("false_positive_stressed_wordform", (SELECT COUNT(*) FROM wordform WHERE stressed = 0 AND wordform_stressed LIKE '%`%'));
 
+-- should be 4
+INSERT INTO _res VALUES("абориге`н_stress_first_pos", (SELECT find_nth_stressed_syllable('абориге`н', 1)));
+
+-- should be 4
+INSERT INTO _res VALUES("абориге`н_stress_first_pos_rev", (SELECT find_nth_stressed_syllable_rev('абориге`н', 1)));
+
+-- should be 1
+INSERT INTO _res VALUES("о`гненочерве`н_stress_first_pos", (SELECT find_nth_stressed_syllable('о`гненочерве`н', 1)));
+
+-- should be 5
+INSERT INTO _res VALUES("о`гненочерве`н_stress_second_pos", (SELECT find_nth_stressed_syllable('о`гненочерве`н', 2)));
+
+-- should be 5
+INSERT INTO _res VALUES("о`гненочерве`н_stress_first_pos_rev", (SELECT find_nth_stressed_syllable_rev('о`гненочерве`н', 1)));
+
+-- should be 1
+INSERT INTO _res VALUES("о`гненочерве`н_stress_second_pos_rev", (SELECT find_nth_stressed_syllable_rev('о`гненочерве`н', 2)));
+
+-- should be -1
+INSERT INTO _res VALUES("чук-чук_stress_first_pos", (SELECT find_nth_stressed_syllable('чук-чук', 1)));
+
+-- should be -1
+INSERT INTO _res VALUES("чук-чук_stress_first_pos_rev", (SELECT find_nth_stressed_syllable_rev('чук-чук', 1)));
+
+-- should be -1
+INSERT INTO _res VALUES("ч`ук-чук_stress_second_pos", (SELECT find_nth_stressed_syllable('ч`ук-чук', 2)));
+
+-- should be -1
+INSERT INTO _res VALUES("ч`ук-чук_stress_second_pos_rev", (SELECT find_nth_stressed_syllable_rev('ч`ук-чук', 2)));
+
+-- should be 0
+INSERT INTO _res VALUES("МВР_stress_first_pos", (SELECT find_nth_stressed_syllable('МВР', 1)));
+
+-- should be 0
+INSERT INTO _res VALUES("МВР_stress_first_pos_rev", (SELECT find_nth_stressed_syllable_rev('МВР', 1)));
+
+-- should be 0
+INSERT INTO _res VALUES("М`ВР_stress_first_pos", (SELECT find_nth_stressed_syllable('М`ВР', 1)));
+
+-- should be 0
+INSERT INTO _res VALUES("М`ВР_stress_first_pos_rev", (SELECT find_nth_stressed_syllable_rev('М`ВР', 1)));
+
 SELECT * FROM _res;
 
 DROP TABLE _vars;

@@ -6,6 +6,7 @@ int count_syllables(const char *str);
 const char * stress_syllable(const char * word, int n);
 const char * diminutive_to_base(const char * word);
 int find_nth_stressed_syllable(const char * word, int n);
+int find_nth_stressed_syllable_rev(const char * word, int n);
 const char * rechko_tag(const char * word, const char * pos, const char * prop);
 
 #endif // LIBDICT_H_

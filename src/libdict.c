@@ -125,7 +125,19 @@ int find_nth_stressed_syllable(const char * word, int n) {
 	free(wword_o);
 	if (n == 0)
 		return syllable_count;
-	return 0;
+	return -1;
+}
+
+int find_nth_stressed_syllable_rev(const char * word, int n) {
+	char * copy = mbcopy(word);
+	utf8rev(copy);
+	int num_syllables = count_syllables(word);
+	int result = find_nth_stressed_syllable(copy, n);
+	free(copy);
+
+	if (result > -1)
+		return num_syllables - result;
+	return result;
 }
 
 const char * rechko_tag(const char * word, const char * pos, const char * prop) {

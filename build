@@ -203,7 +203,7 @@ echo Populating lemma table with stresses
 sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/62_add_stress_to_lemma_wordform.sql"
 
 echo Run tests on stresses
-sqlite3 -list $DB_MAIN_PATH ".read pipeline/65_test_stress.sql" |
+sqlite3 -list $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/65_test_stress.sql" 2>/dev/null |
 	diff tests/stress.test -
 
 echo Create pronunciation table...
