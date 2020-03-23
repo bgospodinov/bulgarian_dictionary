@@ -39,7 +39,7 @@ CREATE TEMPORARY TABLE _lemma_ AS SELECT
 	rl.name as lemma,
 	COALESCE(rl.name_stressed, rl.name) AS lemma_stressed,
 	rl.source,
-	m.source_definition,
+	IFNULL(m.source_definition, '') || IFNULL(rl.meaning, '') AS source_definition,
 	rl.pos as pos
 FROM main.rechko_lemma rl
 LEFT JOIN rbe_lemma m
