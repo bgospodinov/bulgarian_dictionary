@@ -29,9 +29,6 @@ WHERE lemma_id IN
     )
     AND (tag LIKE 'N__sh' OR tag LIKE 'N__sf');
 
--- words with both stresses: дар, дроб, грък, влас
--- чинове, дробове
-
 -- and with plural ове`
 UPDATE wordform
 SET wordform_stressed =
@@ -47,9 +44,38 @@ WHERE lemma_id IN
     AND (tag LIKE 'N__pi' OR tag LIKE 'N__pd' OR (tag LIKE 'N__t' AND wordform LIKE '%ове'));
 
 -- and with plural о`ве
+UPDATE wordform
+SET wordform_stressed =
+    stress_syllable(wordform, find_nth_stressed_syllable_rev(wordform_stressed, 1) + 1)
+WHERE lemma_id IN
+    (
+        SELECT lemma_id FROM lemma l
+        WHERE pos = 'N' AND num_syllables = 1 AND 
+        definition LIKE ('%' || replace(replace(l.lemma, 'я', 'е'), 'ръ', 'ър') || 'о`ве%')
+		AND lemma NOT IN ('бой') -- false positives
+    )
+    AND (tag LIKE 'N__pi' OR tag LIKE 'N__pd' OR (tag LIKE 'N__t' AND wordform LIKE '%ове'));
 
+-- and with plural е`
+UPDATE wordform
+SET wordform_stressed =
+    stress_syllable(wordform, find_nth_stressed_syllable_rev(wordform_stressed, 1) + 1)
+WHERE lemma_id IN (
+    SELECT lemma_id FROM lemma l
+    WHERE pos = 'N' AND lemma IN ('мъж', 'княз', 'цар', 'крал', 'кон')
+    )
+AND (tag LIKE 'N__pi' OR tag LIKE 'N__pd');
 
--- мъж - мъже`
--- тръстт`а, плътт`а
+-- deal with feminite nouns that end in a consonant that move their stress when their article is suffixed
+UPDATE wordform
+SET wordform_stressed =
+    stress_syllable(wordform, num_syllables)
+WHERE tag LIKE 'N_fsd' AND (
+    SELECT COUNT(*) FROM wordform w
+    WHERE w.lemma_id = lemma_id and is_lemma = 1 AND NOT is_vowel(SUBSTR(w.wordform, LENGTH(w.wordform)))
+) > 0;
+
+-- words with both stresses: дар, дроб, грък, влас
+-- чинове, дробове, клонове, колове, родове
 
 END TRANSACTION;

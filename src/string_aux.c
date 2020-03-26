@@ -6,28 +6,6 @@
 #include <stdlib.h>
 #include <errno.h>
 
-const wchar_t lc_vowels[] = { u'\u0430', u'\u0435', u'\u0438', u'\u043E', u'\u0443', u'\u044A', u'\u044E', u'\u044F' };
-
-int is_capitalized(const wchar_t * const word) {
-	return *word >= u'\u0410' && *word < u'\u0430';
-}
-
-int is_vowel(wchar_t wc) {
-	// account for capital letters
-	if (wc < u'\u0430') {
-		wc += 32;
-	}
-
-	for (int j = 0; j < sizeof(lc_vowels) / 2; j++) {
-		int sign = (lc_vowels[j] > wc) - (lc_vowels[j] < wc);
-		if (sign == -1) continue;
-		else if (sign == 0) return 1;
-		else break;
-	}
-
-	return 0;
-}
-
 wchar_t * strip_longest_suffix(wchar_t * const wword, 
 										const wchar_t * const suff[],
 										size_t suffsz, int * sfxmidx) {

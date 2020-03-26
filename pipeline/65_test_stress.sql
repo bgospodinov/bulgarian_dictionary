@@ -20,6 +20,12 @@ INSERT INTO _res VALUES('number_of_lemma_stress_mismatches', (SELECT COUNT(*) FR
 INSERT INTO _res VALUES("number_of_wordform_stress_mismatches", (SELECT COUNT(*) FROM wordform WHERE wordform != REPLACE(wordform_stressed, '`', '')));
 
 -- should be 0
+INSERT INTO _res VALUES("number_of_lemma_with_double_stress", (SELECT COUNT(*) FROM lemma WHERE lemma LIKE '%``%' OR lemma_stressed LIKE '%``%'));
+
+-- should be 0
+INSERT INTO _res VALUES("number_of_wordform_with_double_stress", (SELECT COUNT(*) FROM wordform WHERE wordform LIKE '%``%' OR wordform_stressed LIKE '%``%'));
+
+-- should be 0
 INSERT INTO _res VALUES("false_positive_stressed_lemma", (SELECT COUNT(*) FROM lemma WHERE num_stresses = 0 AND lemma_stressed LIKE '%`%'));
 
 -- should be 0

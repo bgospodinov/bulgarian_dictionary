@@ -29,6 +29,9 @@ LEFT JOIN rechko_word_type rwt
 UPDATE main.rechko_lemma SET pos = 'V' WHERE name = 'недей';
 UPDATE main.rechko_lemma SET name_stressed = name WHERE name_stressed IS NULL;
 
+-- fix accidental double stressing
+UPDATE main.rechko_lemma SET name_stressed = 'боя`' WHERE id = 114442;
+
 -- this helps evade rechko mismatches for reflexive verbs and adjectives
 UPDATE main.rechko_lemma SET name = REPLACE(name, ' се', ''), name_stressed = REPLACE(name_stressed, ' се', '')
 WHERE classification = 'reflexive' or classification = '+reflexive';

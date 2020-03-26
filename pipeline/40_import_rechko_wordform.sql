@@ -24,6 +24,19 @@ DELETE FROM rechko_wordform WHERE wordform = "—";
 -- replace latin letters with cyrillic equivalents
 UPDATE rechko_wordform SET wordform = REPLACE(wordform, 'o', 'о'), wordform_stressed = REPLACE(wordform_stressed, 'o', 'о');
 
+-- certain words are not inflected
+UPDATE rechko_wordform SET wordform = 'урната', wordform_stressed = 'урната', is_lemma = 0 WHERE lemma_id = 114436 AND tag = 'Ncfsd';
+UPDATE rechko_wordform SET wordform = 'урни', wordform_stressed = 'урни', is_lemma = 0 WHERE lemma_id = 114436 AND tag = 'Ncfpi';
+UPDATE rechko_wordform SET wordform = 'урните', wordform_stressed = 'урните', is_lemma = 0 WHERE lemma_id = 114436 AND tag = 'Ncfpd';
+
+UPDATE rechko_wordform SET wordform = 'боята', wordform_stressed = 'боята', is_lemma = 0 WHERE lemma_id = 114442 AND tag = 'Ncfsd';
+UPDATE rechko_wordform SET wordform = 'бои', wordform_stressed = 'бои', is_lemma = 0 WHERE lemma_id = 114442 AND tag = 'Ncfpi';
+UPDATE rechko_wordform SET wordform = 'боите', wordform_stressed = 'боите', is_lemma = 0 WHERE lemma_id = 114442 AND tag = 'Ncfpd';
+
+UPDATE rechko_wordform SET wordform = 'грижата', wordform_stressed = 'грижата', is_lemma = 0 WHERE lemma_id = 114443 AND tag = 'Ncfsd';
+UPDATE rechko_wordform SET wordform = 'грижи', wordform_stressed = 'грижи', is_lemma = 0 WHERE lemma_id = 114443 AND tag = 'Ncfpi';
+UPDATE rechko_wordform SET wordform = 'грижите', wordform_stressed = 'грижите', is_lemma = 0 WHERE lemma_id = 114443 AND tag = 'Ncfpd';
+
 -- this helps evade rechko mismatches for reflexive verbs and adjectives
 UPDATE rechko_wordform SET wordform = REPLACE(wordform, ' се', ''), wordform_stressed = REPLACE(wordform_stressed, ' се', '')
 WHERE classification = 'reflexive' or classification = '+reflexive';

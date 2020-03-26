@@ -2,6 +2,8 @@ monosyllabic_lemmata_without_stress|0
 wordforms_that_dont_match_their_lemma_stress|0
 number_of_lemma_stress_mismatches|0
 number_of_wordform_stress_mismatches|0
+number_of_lemma_with_double_stress|0
+number_of_wordform_with_double_stress|0
 false_positive_stressed_lemma|0
 false_positive_stressed_wordform|0
 абориге`н_stress_first_pos|4
