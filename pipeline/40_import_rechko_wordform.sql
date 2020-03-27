@@ -21,6 +21,9 @@ LEFT JOIN main.rechko_lemma rl ON rd.base_word_id = rl.id;
 DELETE FROM rechko_wordform WHERE wordform = "—";
 
 -- fix bugs in rechko
+-- fix wordforms wrongfully marked up as lemmata
+UPDATE rechko_wordform SET is_lemma = 0 WHERE tag = 'Ncms-v' and is_lemma = 1;
+
 -- replace latin letters with cyrillic equivalents
 UPDATE rechko_wordform SET wordform = REPLACE(wordform, 'o', 'о'), wordform_stressed = REPLACE(wordform_stressed, 'o', 'о');
 
