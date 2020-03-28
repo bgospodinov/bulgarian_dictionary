@@ -2,6 +2,7 @@
 PROCESS_SLOVNIK=true
 EXIT_ON_FAILURE=true
 CLEAN_TEMP_TABLES=true
+RUN_TESTS=true
 
 while [[ $# -gt 0 ]]
 do
@@ -9,15 +10,28 @@ do
 	case $key in
 		--no-slovnik)
 			PROCESS_SLOVNIK=
+			RUN_TESTS=
+			shift;
+		;;
+		--no-tests)
+			RUN_TESTS=
 			shift;
 		;;
 		--no-fail)
 			EXIT_ON_FAILURE=
 			shift;
 		;;
-		--no-clean)
+		--clean)
+			make clean
+			shift;
+		;;
+		--debug)
 			CLEAN_TEMP_TABLES=
 			shift;
+		;;
+		--help)
+			echo "./build [--no-slovnik --no-tests --no-fail --clean --debug --help]"
+			exit 0;
 		;;
 		*)
 			>&2 echo "Unknown option" $key
@@ -189,13 +203,15 @@ sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_wordform_stressed
 echo Cleaning lemma and wordforms table
 sqlite3 $DB_MAIN_PATH ".read pipeline/45_clean_lemma_table.sql"
 
-echo Run tests on lemmata tables
-sqlite3 -list $DB_MAIN_PATH ".read pipeline/50_test_lemma.sql" |
-	diff tests/lemma.test -
+if [ $RUN_TESTS ] ; then
+	echo Run tests on lemmata tables
+	sqlite3 -list $DB_MAIN_PATH ".read pipeline/50_test_lemma.sql" |
+		diff tests/lemma.test -
 
-echo Run tests on wordform table
-sqlite3 -list $DB_MAIN_PATH ".read pipeline/51_test_wordform.sql" |
-	diff tests/wordform.test -
+	echo Run tests on wordform table
+	sqlite3 -list $DB_MAIN_PATH ".read pipeline/51_test_wordform.sql" |
+		diff tests/wordform.test -
+fi
 
 if [ $CLEAN_TEMP_TABLES ] ; then
 	# drop rechko_lemma and rbe_lemma tables
@@ -210,6 +226,7 @@ if [ $CLEAN_TEMP_TABLES ] ; then
 		sqlite3 $DB_MAIN_PATH "DROP TABLE IF EXISTS slovnik_wordform;"
 	fi
 fi
+
 echo Create stress table...
 sqlite3 $DB_MAIN_PATH ".read pipeline/60_create_stress.sql"
 
@@ -222,9 +239,11 @@ sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/62_add_stress_to_lem
 echo Populating wordform table with stresses
 sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/63_add_stress_to_wordform.sql"
 
-echo Run tests on stresses
-sqlite3 -list $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/65_test_stress.sql" 2>/dev/null |
-	diff tests/stress.test -
+if [ $RUN_TESTS ] ; then
+	echo Run tests on stresses
+	sqlite3 -list $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/65_test_stress.sql" 2>/dev/null |
+		diff tests/stress.test -
+fi
 
 echo Create pronunciation table...
 sqlite3 $DB_MAIN_PATH ".read pipeline/70_create_pronunciation.sql"
