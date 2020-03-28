@@ -82,6 +82,33 @@ INSERT INTO _res VALUES("чудесно_stress_negative_syllable", (SELECT stres
 -- should be чудесно
 INSERT INTO _res VALUES("чудесно_stress_out_of_bound_syllable", (SELECT stress_syllable('чудесно', 22)));
 
+-- should be 1
+INSERT INTO _res VALUES("ръба`_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'ръба`'));
+
+-- should be 1
+INSERT INTO _res VALUES("ръбъ`т_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'ръбъ`т'));
+
+-- should be 1
+INSERT INTO _res VALUES("скръбта`_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'скръбта`'));
+
+-- should be 1
+INSERT INTO _res VALUES("пе`дята_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'пе`дята'));
+
+-- should be 1
+INSERT INTO _res VALUES("мъже`_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'мъже`'));
+
+-- should be 1
+INSERT INTO _res VALUES("върхове`_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'върхове`'));
+
+-- should be 1
+INSERT INTO _res VALUES("воло`ве_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'воло`ве'));
+
+-- should be 1
+INSERT INTO _res VALUES("се`стро_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'се`стро'));
+
+-- should be 1
+INSERT INTO _res VALUES("пе`дьо_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'пе`дьо'));
+
 SELECT * FROM _res;
 
 DROP TABLE _vars;

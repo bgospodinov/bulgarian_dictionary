@@ -97,7 +97,7 @@ FROM
 	WINDOW win2 AS (ORDER BY lemma_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
 );
 
-CREATE UNIQUE INDEX idx_lemma_id ON lemma(lemma_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_lemma_lemma_id ON lemma(lemma_id);
 CREATE TRIGGER trg_lemma_id AFTER INSERT ON lemma
 WHEN NEW.lemma_id IS NULL
 BEGIN

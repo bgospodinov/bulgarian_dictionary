@@ -1,6 +1,6 @@
 #!/bin/bash
-set -e
-set -o pipefail
+#set -e
+#set -o pipefail
 
 PROCESS_SLOVNIK=true
 
@@ -169,6 +169,8 @@ if [ $PROCESS_SLOVNIK ] ; then
 	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_slovnik_lemma_tag ON slovnik_wordform(lemma, tag);"
 	sqlite3 $DB_MAIN_PATH ".read pipeline/41_join_slovnik_wordforms.sql"
 fi
+
+sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_lemma_id ON wordform(lemma_id);"
 
 echo Cleaning lemma and wordforms table
 sqlite3 $DB_MAIN_PATH ".read pipeline/45_clean_lemma_table.sql"

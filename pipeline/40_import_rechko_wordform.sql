@@ -22,7 +22,12 @@ DELETE FROM rechko_wordform WHERE wordform = "—";
 
 -- fix bugs in rechko
 -- fix wordforms wrongfully marked up as lemmata
-UPDATE rechko_wordform SET is_lemma = 0 WHERE tag = 'Ncms-v' and is_lemma = 1;
+UPDATE rechko_wordform
+SET
+	wordform = SUBSTR(wordform, 1, LENGTH(wordform) - 1) || 'о',
+	wordform_stressed = SUBSTR(wordform_stressed, 1, LENGTH(wordform_stressed) - 1) || 'о'
+WHERE tag = 'Ncms-v' AND is_lemma = 1 AND SUBSTR(wordform, LENGTH(wordform)) = 'а';
+UPDATE rechko_wordform SET is_lemma = 0 WHERE tag = 'Ncms-v' AND is_lemma = 1;
 
 -- replace latin letters with cyrillic equivalents
 UPDATE rechko_wordform SET wordform = REPLACE(wordform, 'o', 'о'), wordform_stressed = REPLACE(wordform_stressed, 'o', 'о');
