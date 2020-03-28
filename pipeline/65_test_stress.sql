@@ -115,6 +115,30 @@ INSERT INTO _res VALUES("пове`льо_stress", (SELECT COUNT(*) FROM wordform
 -- should be 1
 INSERT INTO _res VALUES("па`ртийо_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'па`ртийо'));
 
+-- should be 1
+INSERT INTO _res VALUES("градъ`т_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'градъ`т'));
+
+-- should be 1
+INSERT INTO _res VALUES("градове`_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'градове`'));
+
+-- should be 1
+INSERT INTO _res VALUES("блата`_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'блата`'));
+
+-- should be 1
+INSERT INTO _res VALUES("блата`та_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'блата`та'));
+
+-- should be 1
+INSERT INTO _res VALUES("стада`_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'стада`'));
+
+-- should be 1
+INSERT INTO _res VALUES("стада`та_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'стада`та'));
+
+-- should be 1
+INSERT INTO _res VALUES("семена`_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'семена`'));
+
+-- should be 1
+INSERT INTO _res VALUES("семена`та_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'семена`та'));
+
 SELECT * FROM _res;
 
 DROP TABLE _vars;

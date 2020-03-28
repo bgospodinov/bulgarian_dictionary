@@ -85,6 +85,26 @@ WHERE tag LIKE 'N_f__v' AND (
     (w.wordform_stressed LIKE '%а`' OR w.wordform_stressed LIKE '%я`')
 ) > 0;
 
+-- deal with neuter nouns that end in an unstressed vowel 'o'
+UPDATE wordform
+SET wordform_stressed =
+    stress_syllable(
+        wordform,
+        CASE WHEN tag LIKE 'N_npi'
+        THEN num_syllables
+        ELSE
+            -- always stress the suffix syllable with the article
+            (SELECT w1.num_syllables FROM wordform w1 WHERE w1.lemma_id = wordform.lemma_id and w1.tag LIKE 'N_npi')
+        END
+    )
+WHERE tag LIKE 'N_np_' AND ((
+    SELECT COUNT(*) FROM wordform w
+    WHERE w.lemma_id = wordform.lemma_id AND w.is_lemma = 1 AND w.wordform_stressed LIKE '%о'
+) > 0);
+
+UPDATE wordform SET wordform_stressed = 'семена`' WHERE lemma_id = 84911 AND tag = 'Ncnpi';
+UPDATE wordform SET wordform_stressed = 'семена`та' WHERE lemma_id = 84911 AND tag = 'Ncnpd';
+
 -- words with both stresses: дар, дроб, грък, влас
 -- чинове, дробове, клонове, колове, родове
 
