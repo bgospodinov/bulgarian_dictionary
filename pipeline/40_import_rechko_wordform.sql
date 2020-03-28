@@ -45,6 +45,11 @@ UPDATE rechko_wordform SET wordform = 'грижата', wordform_stressed = 'г�
 UPDATE rechko_wordform SET wordform = 'грижи', wordform_stressed = 'грижи', is_lemma = 0 WHERE lemma_id = 114443 AND tag = 'Ncfpi';
 UPDATE rechko_wordform SET wordform = 'грижите', wordform_stressed = 'грижите', is_lemma = 0 WHERE lemma_id = 114443 AND tag = 'Ncfpd';
 
+UPDATE rechko_wordform
+SET wordform = REPLACE(wordform, 'черири', 'четири'),
+	wordform_stressed = REPLACE(wordform_stressed, 'черири', 'четири')
+WHERE lemma_id = 102923;
+
 -- this helps evade rechko mismatches for reflexive verbs and adjectives
 UPDATE rechko_wordform SET wordform = REPLACE(wordform, ' се', ''), wordform_stressed = REPLACE(wordform_stressed, ' се', '')
 WHERE classification = 'reflexive' or classification = '+reflexive';
