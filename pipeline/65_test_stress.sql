@@ -109,6 +109,12 @@ INSERT INTO _res VALUES("се`стро_stress", (SELECT COUNT(*) FROM wordform W
 -- should be 1
 INSERT INTO _res VALUES("пе`дьо_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'пе`дьо'));
 
+-- should be 1
+INSERT INTO _res VALUES("пове`льо_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'пове`льо'));
+
+-- should be 1
+INSERT INTO _res VALUES("па`ртийо_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'па`ртийо'));
+
 SELECT * FROM _res;
 
 DROP TABLE _vars;

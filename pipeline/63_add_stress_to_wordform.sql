@@ -75,14 +75,14 @@ WHERE tag LIKE 'N_fsd' AND (
     WHERE w.lemma_id = wordform.lemma_id AND w.is_lemma = 1 AND NOT is_vowel(SUBSTR(w.wordform, LENGTH(w.wordform)))
 ) > 0;
 
--- deal with feminite nouns that end in the vowel 'a' that move their stress one syllable backwards in vocative form
+-- deal with feminite nouns that end in a stressed vowel 'a' or 'я' that move their stress one syllable backwards in vocative form
 UPDATE wordform
 SET wordform_stressed =
     stress_syllable(wordform, MAX(1, find_nth_stressed_syllable_rev(wordform_stressed, 1) - 1))
 WHERE tag LIKE 'N_f__v' AND (
     SELECT COUNT(*) FROM wordform w
-    WHERE w.lemma_id = lemma_id and is_lemma = 1 AND
-    (SUBSTR(w.wordform, LENGTH(w.wordform)) = 'а' OR SUBSTR(w.wordform, LENGTH(w.wordform)) = 'я')
+    WHERE w.lemma_id = lemma_id and is_lemma = 1 AND num_stresses > 0 AND
+    (w.wordform_stressed LIKE '%а`' OR w.wordform_stressed LIKE '%я`')
 ) > 0;
 
 -- words with both stresses: дар, дроб, грък, влас
