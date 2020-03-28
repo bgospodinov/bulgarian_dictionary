@@ -77,7 +77,8 @@ int count_syllables(const char * str) {
 const char * diminutive_to_base(const char * word) {
 	setlocale(LC_ALL, "");
 	static const wchar_t * const suff[] = 
-				{ L"че", L"це", L"йка", L"чица", L"джийка" };
+	// only append new elements to the end or check the switch statement below
+				{ L"че", L"це", L"йка", L"чица", L"джийка", L"нце" };
 	static const size_t suffsz = sizeof(suff) / sizeof(suff[0]);
 
 	int matchedsfx;

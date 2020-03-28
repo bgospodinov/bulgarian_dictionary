@@ -1,8 +1,7 @@
 #!/bin/bash
-set -e
-set -o pipefail
-
 PROCESS_SLOVNIK=true
+EXIT_ON_FAILURE=true
+CLEAN_TEMP_TABLES=true
 
 while [[ $# -gt 0 ]]
 do
@@ -10,6 +9,14 @@ do
 	case $key in
 		--no-slovnik)
 			PROCESS_SLOVNIK=
+			shift;
+		;;
+		--no-fail)
+			EXIT_ON_FAILURE=
+			shift;
+		;;
+		--no-clean)
+			CLEAN_TEMP_TABLES=
 			shift;
 		;;
 		*)
@@ -35,6 +42,11 @@ if [ $PROCESS_SLOVNIK ] ; then
 		echo -e "Slovnik pass is wrong. Try again."
 		pass
 	done
+fi
+
+if [ $EXIT_ON_FAILURE ] ; then
+	set -e
+	set -o pipefail
 fi
 
 echo Sourcing configuration from header files...
@@ -107,8 +119,8 @@ trap finish EXIT
 	sqlite3 $DB_MAIN_PATH "CREATE VIRTUAL TABLE rbe_lemma_ft USING fts5(source_definition, content=rbe_lemma);" "INSERT INTO rbe_lemma_ft SELECT source_definition FROM rbe_lemma;";
 	sqlite3 $DB_MAIN_PATH ".read pipeline/31_add_pos_to_rbe_lemma.sql"
 	sqlite3 $DB_MAIN_PATH ".read pipeline/32_fix_rbe_lemma_errors.sql"
-	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_rbe_lemma_pos ON rbe_lemma(lemma, pos);";
-	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_rbe_lemma_stress_pos ON rbe_lemma(lemma_with_stress, pos);";
+	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_rbe_lemma_lemma_pos ON rbe_lemma(lemma, pos);";
+	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_rbe_lemma_lemma_with_stress_pos ON rbe_lemma(lemma_with_stress, pos);";
 	rm -f $SCRATCH_PATH/db-rbe.csv;
 	##### RBE SECTION END #####
 ) &
@@ -140,8 +152,8 @@ echo Joining RBE lemmata with Rechko lemmata
 sqlite3 $DB_MAIN_PATH "ATTACH '$DB_RECHKO_PATH' as rechko;" ".load lib/libextfun" ".read pipeline/33_join_rechko_lemma.sql" "DETACH rechko;"
 
 echo Creating lemma indices
-sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_lemma_pos ON lemma(lemma, pos);"
-sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_lemma_stressed_pos ON lemma(lemma_stressed, pos);"
+sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_lemma_lemma_pos ON lemma(lemma, pos);"
+sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_lemma_lemma_stressed_pos ON lemma(lemma_stressed, pos);"
 
 if [ $PROCESS_SLOVNIK ] ; then
 	echo Joining Slovnik lemmata with lemmata
@@ -159,18 +171,20 @@ sqlite3 $DB_MAIN_PATH "CREATE VIRTUAL TABLE lemma_ft USING fts5(definition, cont
 
 echo Import Rechko wordforms
 sqlite3 $DB_MAIN_PATH "ATTACH '$DB_RECHKO_PATH' as rechko;" ".load lib/libextfun" ".read pipeline/40_import_rechko_wordform.sql" "DETACH rechko;"
-sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_tag ON wordform(wordform, tag);"
-sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_rechko_wordform_tag ON rechko_wordform(wordform, tag);"
+sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_wordform_tag ON wordform(wordform, tag);"
+sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_rechko_wordform_wordform_tag ON rechko_wordform(wordform, tag);"
 rm -f $DB_RECHKO_PATH
 
 if [ $PROCESS_SLOVNIK ] ; then
 	echo Joining Slovnik wordforms with Rechko wordforms
-	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_slovnik_wordform_tag ON slovnik_wordform(wordform, tag);"
-	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_slovnik_lemma_tag ON slovnik_wordform(lemma, tag);"
+	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_slovnik_wordform_wordform_tag ON slovnik_wordform(wordform, tag);"
+	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_slovnik_wordform_lemma_tag ON slovnik_wordform(lemma, tag);"
 	sqlite3 $DB_MAIN_PATH ".read pipeline/41_join_slovnik_wordforms.sql"
 fi
 
 sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_lemma_id ON wordform(lemma_id);"
+sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_tag ON wordform(tag);"
+sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_wordform_stressed ON wordform(wordform_stressed);" # speeds up tests
 
 echo Cleaning lemma and wordforms table
 sqlite3 $DB_MAIN_PATH ".read pipeline/45_clean_lemma_table.sql"
@@ -183,18 +197,19 @@ echo Run tests on wordform table
 sqlite3 -list $DB_MAIN_PATH ".read pipeline/51_test_wordform.sql" |
 	diff tests/wordform.test -
 
-# drop rechko_lemma and rbe_lemma tables
-echo Deleting old lemma tables
-sqlite3 $DB_MAIN_PATH "DROP TABLE rbe_lemma;" "DROP TABLE rechko_lemma;" "DROP TABLE rbe_lemma_ft;" "DROP TABLE rechko_word_type;"
+if [ $CLEAN_TEMP_TABLES ] ; then
+	# drop rechko_lemma and rbe_lemma tables
+	echo Deleting old lemma tables
+	sqlite3 $DB_MAIN_PATH "DROP TABLE rbe_lemma;" "DROP TABLE rechko_lemma;" "DROP TABLE rbe_lemma_ft;" "DROP TABLE rechko_word_type;"
 
-echo Deleting rechko wordforms table
-sqlite3 $DB_MAIN_PATH "DROP TABLE IF EXISTS rechko_wordform;"
+	echo Deleting rechko wordforms table
+	sqlite3 $DB_MAIN_PATH "DROP TABLE IF EXISTS rechko_wordform;"
 
-if [ $PROCESS_SLOVNIK ] ; then
-	echo Deleting slovnik wordforms
-	sqlite3 $DB_MAIN_PATH "DROP TABLE IF EXISTS slovnik_wordform;"
+	if [ $PROCESS_SLOVNIK ] ; then
+		echo Deleting slovnik wordforms
+		sqlite3 $DB_MAIN_PATH "DROP TABLE IF EXISTS slovnik_wordform;"
+	fi
 fi
-
 echo Create stress table...
 sqlite3 $DB_MAIN_PATH ".read pipeline/60_create_stress.sql"
 

@@ -139,6 +139,9 @@ INSERT INTO _res VALUES("семена`_stress", (SELECT COUNT(*) FROM wordform W
 -- should be 1
 INSERT INTO _res VALUES("семена`та_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'семена`та'));
 
+-- should be 0
+INSERT INTO _res VALUES("unstressed_numeral_lemmata", (SELECT COUNT(*) FROM lemma WHERE pos = 'M' and num_stresses = 0));
+
 SELECT * FROM _res;
 
 DROP TABLE _vars;

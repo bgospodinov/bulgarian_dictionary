@@ -8,4 +8,4 @@ CREATE TABLE slovnik_wordform (
 	num_syllables INT(2)
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_lemma_tag ON slovnik_wordform(lemma, tag);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_slovnik_wordform_lemma_tag ON slovnik_wordform(lemma, tag);
