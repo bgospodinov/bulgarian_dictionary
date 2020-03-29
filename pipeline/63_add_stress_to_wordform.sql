@@ -9,6 +9,11 @@ SET wordform_stressed =
     )
 WHERE num_stresses = 0 AND is_lemma = 1;
 
+-- adds trivial stress to monosyllabic wordforms
+UPDATE wordform
+SET wordform_stressed = stress_syllable(wordform_stressed, 1)
+WHERE num_syllables = 1 AND num_stresses = 0;
+
 -- by default, stress all non-lemma wordforms the same way their lemmata are stressed
 UPDATE wordform
 SET wordform_stressed =
@@ -25,7 +30,7 @@ WHERE lemma_id IN
                     (definition LIKE '%ъ`т%' OR definition LIKE '%ъ̀т%' OR definition LIKE '%я`т,%')
                     AND lemma NOT IN ('взрив', 'кът', 'хрът') -- false positives
         UNION SELECT lemma_id FROM lemma WHERE lemma IN ('син', 'рев', 'ред', 'рид', 'род',
-                'ръб', 'ръст', 'слух', 'срам', 'смях', 'сняг') AND pos = 'N' -- false negatives
+                'ръб', 'ръст', 'слух', 'срам', 'смях', 'сняг', 'полусън') AND pos = 'N' -- false negatives
     )
     AND (tag LIKE 'N__sh' OR tag LIKE 'N__sf');
 
@@ -104,6 +109,17 @@ WHERE tag LIKE 'N_np_' AND ((
 
 UPDATE wordform SET wordform_stressed = 'семена`' WHERE lemma_id = 84911 AND tag = 'Ncnpi';
 UPDATE wordform SET wordform_stressed = 'семена`та' WHERE lemma_id = 84911 AND tag = 'Ncnpd';
+
+-- deal with numerals after "three" where the suffixed article receives the stress e.g. chetirite`
+UPDATE wordform
+SET wordform_stressed = stress_syllable(wordform, num_syllables)
+WHERE (tag like 'Mc_pd' or tag like 'Mc_ph' or tag like 'Mc_pf') AND 
+lemma_id NOT IN (102896, 102897, 102898, 102947, 102948, 102949, 102950, 102951) AND
+wordform LIKE '%те' AND wordform NOT IN ('тринките', 'тричките');
+
+UPDATE wordform
+SET wordform_stressed = stress_syllable(wordform, CASE WHEN tag LIKE '%i' THEN num_syllables - 1 ELSE num_syllables - 2 END)
+WHERE (tag like 'Mc-s_' or tag like 'My-p_') and lemma_id not in (102897, 102898, 102947, 102948, 102949, 102950, 102951);
 
 -- words with both stresses: дар, дроб, грък, влас
 -- чинове, дробове, клонове, колове, родове

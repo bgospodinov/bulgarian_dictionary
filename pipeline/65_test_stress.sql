@@ -3,8 +3,11 @@ CREATE TEMP TABLE _res(key TEXT, value INTEGER);
 
 -- should be 0
 INSERT INTO _res VALUES('monosyllabic_lemmata_without_stress', 
-	(SELECT COUNT(*) FROM lemma WHERE num_syllables = 1) - 
-	(SELECT COUNT(*) FROM lemma WHERE num_syllables = 1 AND lemma_stressed LIKE '%`%'));
+	(SELECT COUNT(*) FROM lemma WHERE num_syllables = 1 AND num_stresses = 0));
+
+-- should be 0
+INSERT INTO _res VALUES('monosyllabic_wordforms_without_stress',
+	(SELECT COUNT(*) FROM wordform WHERE num_syllables = 1 AND num_stresses = 0));
 
 -- should be 0
 INSERT INTO _res VALUES('wordforms_that_dont_match_their_lemma_stress', (SELECT
@@ -138,6 +141,12 @@ INSERT INTO _res VALUES("семена`_stress", (SELECT COUNT(*) FROM wordform W
 
 -- should be 1
 INSERT INTO _res VALUES("семена`та_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'семена`та'));
+
+-- should be 1
+INSERT INTO _res VALUES("четирите`_stress", (SELECT COUNT(*) > 0 FROM wordform WHERE wordform_stressed = 'четирите`'));
+
+-- should be 1
+INSERT INTO _res VALUES("четири`ма_stress", (SELECT COUNT(*) > 0 FROM wordform WHERE wordform_stressed = 'четири`ма'));
 
 -- should be 0
 INSERT INTO _res VALUES("unstressed_numeral_lemmata", (SELECT COUNT(*) FROM lemma WHERE pos = 'M' and num_stresses = 0));

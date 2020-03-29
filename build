@@ -254,4 +254,4 @@ sqlite3 $DB_MAIN_PATH "VACUUM"
 echo Persisting temp database...
 cp $DB_MAIN_PATH $DB_FINAL_PATH
 
-echo Build finished. Success.
+echo Build finished. Artifact generated.

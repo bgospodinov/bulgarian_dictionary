@@ -140,4 +140,8 @@ UPDATE lemma SET lemma_stressed = 'шестнадесети`на' WHERE lemma = 
 UPDATE lemma SET lemma_stressed = 'шестнайсети`на' WHERE lemma = 'шестнайсетина' AND num_stresses = 0;
 UPDATE lemma SET lemma_stressed = 'шестсто`тен' WHERE lemma = 'шестстотен' AND num_stresses = 0;
 
+-- stress lemma that are duplicated with the same stress as their siblings
+
+-- stress the roots of disyllabic verbs by removig common prefixes and suffixes
+
 END TRANSACTION;

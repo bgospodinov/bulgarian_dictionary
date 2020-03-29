@@ -1,4 +1,5 @@
 monosyllabic_lemmata_without_stress|0
+monosyllabic_wordforms_without_stress|0
 wordforms_that_dont_match_their_lemma_stress|0
 number_of_lemma_stress_mismatches|0
 number_of_wordform_stress_mismatches|0
@@ -42,4 +43,6 @@ false_positive_stressed_wordform|0
 стада`та_stress|1
 семена`_stress|1
 семена`та_stress|1
+четирите`_stress|1
+четири`ма_stress|1
 unstressed_numeral_lemmata|0

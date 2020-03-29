@@ -20,6 +20,9 @@ LEFT JOIN main.rechko_lemma rl ON rd.base_word_id = rl.id;
 -- delete all impossible wordforms inherited from rechko
 DELETE FROM rechko_wordform WHERE wordform = "—";
 
+-- delete misspelled wordforms
+DELETE FROM rechko_wordform WHERE lemma_id = 782; -- прираст is misspelled as приръст
+
 -- fix bugs in rechko
 -- fix wordforms wrongfully marked up as lemmata
 UPDATE rechko_wordform
