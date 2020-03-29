@@ -200,6 +200,9 @@ sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_lemma_id ON wordf
 sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_tag ON wordform(tag);"
 sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_wordform_stressed ON wordform(wordform_stressed);" # speeds up tests
 
+echo Add wordforms manually...
+sqlite3 $DB_MAIN_PATH ".read pipeline/43_add_wordforms_manually.sql"
+
 echo Cleaning lemma and wordforms table
 sqlite3 $DB_MAIN_PATH ".read pipeline/45_clean_lemma_table.sql"
 

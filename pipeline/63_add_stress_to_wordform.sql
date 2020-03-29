@@ -107,8 +107,14 @@ WHERE tag LIKE 'N_np_' AND ((
     WHERE w.lemma_id = wordform.lemma_id AND w.is_lemma = 1 AND w.wordform_stressed LIKE '%о'
 ) > 0);
 
-UPDATE wordform SET wordform_stressed = 'семена`' WHERE lemma_id = 84911 AND tag = 'Ncnpi';
-UPDATE wordform SET wordform_stressed = 'семена`та' WHERE lemma_id = 84911 AND tag = 'Ncnpd';
+-- deal with nouns whose plural ends in 'ена'
+UPDATE wordform
+SET wordform_stressed = stress_syllable(wordform, num_syllables)
+WHERE lemma_id IN (SELECT lemma_id FROM wordform WHERE (wordform LIKE '%ена' OR wordform LIKE '%еса') AND tag = 'Ncnpi') AND tag = 'Ncnpi';
+
+UPDATE wordform
+SET wordform_stressed = stress_syllable(wordform, num_syllables - 1)
+WHERE lemma_id IN (SELECT lemma_id FROM wordform WHERE (wordform LIKE '%ена' OR wordform LIKE '%еса') AND tag = 'Ncnpi') AND tag = 'Ncnpd';
 
 -- deal with numerals after "three" where the suffixed article receives the stress e.g. chetirite`
 UPDATE wordform
@@ -121,7 +127,12 @@ UPDATE wordform
 SET wordform_stressed = stress_syllable(wordform, CASE WHEN tag LIKE '%i' THEN num_syllables - 1 ELSE num_syllables - 2 END)
 WHERE (tag like 'Mc-s_' or tag like 'My-p_') and lemma_id not in (102897, 102898, 102947, 102948, 102949, 102950, 102951);
 
--- words with both stresses: дар, дроб, грък, влас
--- чинове, дробове, клонове, колове, родове
+-- хи`ляди
+UPDATE wordform
+SET wordform_stressed = stress_syllable(wordform, 1)
+WHERE lemma_id = 102948 AND wordform like 'хиляди%';
+
+-- words with both stresses: дар, дроб, грък, влас, дроб
+-- чинове, дробове, клонове, колове, родове, духове
 
 END TRANSACTION;
