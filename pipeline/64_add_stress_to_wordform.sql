@@ -26,11 +26,11 @@ SET wordform_stressed =
     stress_syllable(wordform, find_nth_stressed_syllable_rev(wordform_stressed, 1) + 1)
 WHERE lemma_id IN
     (
-        SELECT lemma_id FROM lemma WHERE pos = 'N' AND num_syllables = 1 AND 
+        SELECT lemma_id FROM lemma WHERE pos = 'Ncm' AND num_syllables = 1 AND
                     (definition LIKE '%ъ`т%' OR definition LIKE '%ъ̀т%' OR definition LIKE '%я`т,%')
                     AND lemma NOT IN ('взрив', 'кът', 'хрът') -- false positives
         UNION SELECT lemma_id FROM lemma WHERE lemma IN ('син', 'рев', 'ред', 'рид', 'род',
-                'ръб', 'ръст', 'слух', 'срам', 'смях', 'сняг', 'полусън') AND pos = 'N' -- false negatives
+                'ръб', 'ръст', 'слух', 'срам', 'смях', 'сняг', 'полусън') AND pos = 'Ncm' -- false negatives
     )
     AND (tag LIKE 'N__sh' OR tag LIKE 'N__sf');
 
@@ -41,10 +41,10 @@ SET wordform_stressed =
 WHERE lemma_id IN
     (
         SELECT lemma_id FROM lemma l
-        WHERE pos = 'N' AND num_syllables = 1 AND 
-        definition LIKE ('%' || replace(replace(l.lemma, 'я', 'е'), 'ръ', 'ър') || 'ове`%') AND 
+        WHERE pos = 'Ncm' AND num_syllables = 1 AND
+        definition LIKE ('%' || replace(replace(l.lemma, 'я', 'е'), 'ръ', 'ър') || 'ове`%') AND
         definition NOT LIKE ('%' || replace(l.lemma_stressed, 'я', 'е') || 'ове%')
-        UNION SELECT lemma_id FROM lemma WHERE lemma IN ('свят', 'сняг', 'смях', 'бой', 'рой', 'син') AND pos = 'N' -- false negatives
+        UNION SELECT lemma_id FROM lemma WHERE lemma IN ('свят', 'сняг', 'смях', 'бой', 'рой', 'син') AND pos = 'Ncm' -- false negatives
     )
     AND (tag LIKE 'N__pi' OR tag LIKE 'N__pd' OR (tag LIKE 'N__t' AND wordform LIKE '%ове'));
 
@@ -55,7 +55,7 @@ SET wordform_stressed =
 WHERE lemma_id IN
     (
         SELECT lemma_id FROM lemma l
-        WHERE pos = 'N' AND num_syllables = 1 AND 
+        WHERE pos = 'Ncm' AND num_syllables = 1 AND
         definition LIKE ('%' || replace(replace(l.lemma, 'я', 'е'), 'ръ', 'ър') || 'о`ве%')
 		AND lemma NOT IN ('бой') -- false positives
     )
@@ -67,7 +67,7 @@ SET wordform_stressed =
     stress_syllable(wordform, find_nth_stressed_syllable_rev(wordform_stressed, 1) + 1)
 WHERE lemma_id IN (
     SELECT lemma_id FROM lemma l
-    WHERE pos = 'N' AND lemma IN ('мъж', 'княз', 'цар', 'крал', 'кон')
+    WHERE pos = 'Ncm' AND lemma IN ('мъж', 'княз', 'цар', 'крал', 'кон')
     )
 AND (tag LIKE 'N__pi' OR tag LIKE 'N__pd');
 

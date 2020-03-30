@@ -19,13 +19,12 @@ LEFT JOIN
 	lemma l
 ON
 	s.lemma = l.lemma AND
-	SUBSTR(s.tag, 1, 1) = l.pos
+	s.pos = l.pos
 WHERE (SELECT COUNT(*) FROM wordform w WHERE w.wordform = s.wordform AND w.tag = s.tag) == 0;
 
 -- add lemma manually for some slovnik wordforms
 UPDATE wordform
 SET lemma_id = (SELECT lemma_id FROM lemma WHERE lemma = 'повече' AND pos = 'M' AND source = 'slovnik')
-WHERE wordform = 'повечето'
-and lemma_id IS NULL;
+WHERE wordform = 'повечето' AND lemma_id IS NULL;
 
 END TRANSACTION;

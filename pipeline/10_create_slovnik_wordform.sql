@@ -5,6 +5,7 @@ CREATE TABLE slovnik_wordform (
 	lemma VARCHAR(45),
 	tag VARCHAR(25),
 	is_lemma BOOLEAN DEFAULT 0,
+	pos CHAR(4),
 	num_syllables INT(2)
 );
 

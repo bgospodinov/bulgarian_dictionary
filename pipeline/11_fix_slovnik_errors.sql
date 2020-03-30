@@ -10,7 +10,7 @@ SET
     num_syllables = 3
 WHERE lemma = 'всякъде';
 
-INSERT INTO slovnik_wordform
+INSERT INTO slovnik_wordform (wordform, lemma, tag, is_lemma, num_syllables)
 VALUES ('всъде', 'всъде', 'Pcl', 1, 2);
 
 -------------------
@@ -21,7 +21,7 @@ SET
     num_syllables = 2
 WHERE lemma = 'къде';
 
-INSERT INTO slovnik_wordform
+INSERT INTO slovnik_wordform (wordform, lemma, tag, is_lemma, num_syllables)
 VALUES ('где', 'где', 'Pil', 1, 1);
 
 -------------------
@@ -32,7 +32,7 @@ SET
     num_syllables = 3
 WHERE lemma = 'където';
 
-INSERT INTO slovnik_wordform
+INSERT INTO slovnik_wordform (wordform, lemma, tag, is_lemma, num_syllables)
 VALUES ('гдето', 'гдето', 'Prl', 1, 2);
 
 -------------------
@@ -43,7 +43,7 @@ SET
     num_syllables = 2
 WHERE lemma = 'кога';
 
-INSERT INTO slovnik_wordform
+INSERT INTO slovnik_wordform (wordform, lemma, tag, is_lemma, num_syllables)
 VALUES ('докога', 'докога', 'Pit', 1, 3);
 
 -------------------
@@ -54,7 +54,7 @@ SET
     num_syllables = 3
 WHERE lemma = 'когато';
 
-INSERT INTO slovnik_wordform
+INSERT INTO slovnik_wordform (wordform, lemma, tag, is_lemma, num_syllables)
 VALUES ('докогато', 'докогато', 'Prt', 1, 4);
 
 -------------------
@@ -65,7 +65,7 @@ SET
     num_syllables = 2
 WHERE lemma = 'колко';
 
-INSERT INTO slovnik_wordform
+INSERT INTO slovnik_wordform (wordform, lemma, tag, is_lemma, num_syllables)
 VALUES ('доколко', 'доколко', 'Piq', 1, 3);
 
 -------------------
@@ -76,7 +76,7 @@ SET
     num_syllables = 3
 WHERE lemma = 'колкото';
 
-INSERT INTO slovnik_wordform
+INSERT INTO slovnik_wordform (wordform, lemma, tag, is_lemma, num_syllables)
 VALUES ('доколкото', 'доколкото', 'Prq', 1, 4);
 
 -------------------
@@ -87,7 +87,7 @@ SET
     num_syllables = 3
 WHERE lemma = 'никъде';
 
-INSERT INTO slovnik_wordform
+INSERT INTO slovnik_wordform (wordform, lemma, tag, is_lemma, num_syllables)
 VALUES ('доникъде', 'доникъде', 'Pnl', 1, 4);
 
 -------------------
@@ -98,7 +98,7 @@ SET
     num_syllables = 3
 WHERE lemma = 'някъде';
 
-INSERT INTO slovnik_wordform
+INSERT INTO slovnik_wordform (wordform, lemma, tag, is_lemma, num_syllables)
 VALUES ('донякъде', 'донякъде', 'Pfl', 1, 4);
 
 -------------------
@@ -109,7 +109,7 @@ SET
     num_syllables = 1
 WHERE lemma = 'там';
 
-INSERT INTO slovnik_wordform
+INSERT INTO slovnik_wordform (wordform, lemma, tag, is_lemma, num_syllables)
 VALUES ('дотам', 'дотам', 'Pdl', 1, 2);
 
 -------------------
@@ -120,7 +120,7 @@ SET
     num_syllables = 3
 WHERE lemma = 'тогава';
 
-INSERT INTO slovnik_wordform
+INSERT INTO slovnik_wordform (wordform, lemma, tag, is_lemma, num_syllables)
 VALUES ('дотогава', 'дотогава', 'Pdt', 1, 4);
 
 -------------------
@@ -131,7 +131,7 @@ SET
     num_syllables = 3
 WHERE lemma = 'толкова';
 
-INSERT INTO slovnik_wordform
+INSERT INTO slovnik_wordform (wordform, lemma, tag, is_lemma, num_syllables)
 VALUES ('дотолкова', 'дотолкова', 'Pdq', 1, 4);
 
 -------------------
@@ -142,7 +142,7 @@ SET
     num_syllables = 2
 WHERE lemma = 'някак';
 
-INSERT INTO slovnik_wordform
+INSERT INTO slovnik_wordform (wordform, lemma, tag, is_lemma, num_syllables)
 VALUES ('еди-как си', 'еди-как си', 'Pfm', 1, 4);
 
 -------------------
@@ -153,7 +153,7 @@ SET
     num_syllables = 3
 WHERE lemma = 'някаква';
 
-INSERT INTO slovnik_wordform
+INSERT INTO slovnik_wordform (wordform, lemma, tag, is_lemma, num_syllables)
 VALUES ('еди-каква си', 'еди-каква си', 'Pfa--s-f', 1, 5);
 
 -------------------
@@ -164,7 +164,7 @@ SET
     num_syllables = 3
 WHERE lemma = 'някакви';
 
-INSERT INTO slovnik_wordform
+INSERT INTO slovnik_wordform (wordform, lemma, tag, is_lemma, num_syllables)
 VALUES ('еди-какви си', 'еди-какви си', 'Pfa--p', 1, 5);
 
 -------------------
@@ -175,7 +175,7 @@ SET
     num_syllables = 3
 WHERE lemma = 'някакво';
 
-INSERT INTO slovnik_wordform
+INSERT INTO slovnik_wordform (wordform, lemma, tag, is_lemma, num_syllables)
 VALUES ('еди-какво си', 'еди-какво си', 'Pfa--s-n', 1, 5);
 
 -------------------
@@ -186,7 +186,7 @@ SET
     num_syllables = 3
 WHERE lemma = 'някога';
 
-INSERT INTO slovnik_wordform
+INSERT INTO slovnik_wordform (wordform, lemma, tag, is_lemma, num_syllables)
 VALUES ('еди-кога си', 'еди-кога си', 'Pft', 1, 5);
 
 -------------------
@@ -197,7 +197,7 @@ SET
     num_syllables = 5
 WHERE lemma = 'това-онова';
 
-INSERT INTO slovnik_wordform
+INSERT INTO slovnik_wordform (wordform, lemma, tag, is_lemma, num_syllables)
 VALUES ('едно-друго', 'едно-друго', 'Pfe--s-n', 1, 4);
 
 -------------------
@@ -208,7 +208,7 @@ SET
     num_syllables = 2
 WHERE lemma = 'така';
 
-INSERT INTO slovnik_wordform
+INSERT INTO slovnik_wordform (wordform, lemma, tag, is_lemma, num_syllables)
 VALUES ('инак', 'инак', 'Pdm', 1, 2);
 
 -------------------
@@ -219,7 +219,7 @@ SET
     num_syllables = 2
 WHERE lemma = 'мене';
 
-INSERT INTO slovnik_wordform
+INSERT INTO slovnik_wordform (wordform, lemma, tag, is_lemma, num_syllables)
 VALUES ('мен', 'мен', 'Ppelas1', 1, 1);
 
 -------------------

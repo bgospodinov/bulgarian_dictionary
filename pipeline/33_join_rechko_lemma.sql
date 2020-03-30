@@ -13,13 +13,20 @@ CREATE TABLE main.rechko_lemma AS SELECT
 		WHEN rwt.speech_part = 'adjective' THEN 'A'
 		WHEN rwt.speech_part = 'adverb' THEN 'D'
 		WHEN rwt.speech_part LIKE 'pronominal%' THEN 'P'
-		WHEN rwt.speech_part LIKE 'name%' THEN 'N' -- proper nouns
+		WHEN rwt.speech_part LIKE 'name%' THEN 'Np' -- proper nouns
+		WHEN rwt.speech_part LIKE 'noun_plurale-tantum' THEN 'N' -- nouns only plural
 		WHEN rwt.speech_part LIKE 'numeral%' THEN 'M'
 		WHEN rwt.speech_part = 'conjunction' THEN 'C'
 		WHEN rwt.speech_part = 'interjection' THEN 'I'
 		WHEN rwt.speech_part = 'particle' THEN 'T'
 		WHEN rwt.speech_part = 'preposition' THEN 'R'
-		ELSE 'N'
+		ELSE 'N' -- assumed to be common nouns
+			|| CASE rwt.speech_part
+					WHEN 'noun_male' THEN 'cm'
+					WHEN 'noun_female' THEN 'cf'
+					WHEN 'noun_neutral' THEN 'cn'
+					ELSE '' -- abbreviation, other, phrase, prefix, suffix
+				END
 	END AS pos
 FROM rechko.rechko_lemma rl
 LEFT JOIN rechko_word_type rwt

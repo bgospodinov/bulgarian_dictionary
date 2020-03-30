@@ -11,7 +11,7 @@ INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables)
 -- дроб
 
 
---грък, влас
+-- грък, влас
 -- чинове, клонове, колове, родове, духове
 
 END TRANSACTION;

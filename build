@@ -115,6 +115,7 @@ trap finish EXIT
 		./bin/import_slovnik $SCRATCH_PATH ${DB_MAIN_PATH##*/}
 		rm -f $SCRATCH_PATH/$SLOVNIK_FILE_NAME
 		sqlite3 $DB_MAIN_PATH ".read pipeline/11_fix_slovnik_errors.sql"
+		sqlite3 $DB_MAIN_PATH ".read pipeline/12_update_pos_slovnik.sql"
 		##### SLOVNIK SECTION END #####
 	fi
 

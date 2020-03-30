@@ -5,11 +5,11 @@ INSERT INTO lemma (
 ) SELECT
     s.lemma as lemma,
     s.lemma as lemma_stressed,
-    SUBSTR(s.tag, 1, 1) as pos,
+    s.pos as pos,
     'slovnik' as source,
     COUNT_SYLLABLES(s.wordform) as num_syllables
 FROM slovnik_wordform s
 WHERE s.is_lemma = 1 AND
-(SELECT COUNT(*) FROM lemma WHERE lemma = s.wordform and pos = SUBSTR(s.tag, 1, 1)) = 0;
+(SELECT COUNT(*) FROM lemma WHERE lemma = s.wordform and pos = s.pos) = 0;
 
 END TRANSACTION;

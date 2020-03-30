@@ -49,7 +49,7 @@ INSERT INTO _vars VALUES('total_slovnik_lemmata_inside_lemma_table', (
 		SELECT
 			COUNT(*)
 		FROM lemma l
-		WHERE s.lemma = l.lemma AND SUBSTR(s.tag, 1, 1) = l.pos
+		WHERE s.lemma = l.lemma AND s.pos = l.pos
 	) > 0
 ));
 
@@ -73,7 +73,7 @@ INSERT INTO _res VALUES('missing_slovnik_lemmata', (SELECT value FROM _vars WHER
 -- should be 0
 INSERT INTO _res VALUES('lemmata_with_null_stress_column', (SELECT COUNT(*) FROM lemma WHERE lemma_stressed IS NULL));
 
--- should be 182848
+-- should be 184422
 INSERT INTO _res VALUES("number_of_lemmata", (SELECT COUNT(*) FROM lemma));
 
 SELECT * FROM _res;
