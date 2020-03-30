@@ -62,10 +62,10 @@ CREATE TABLE main.wordform (
 	lemma_id INT,
 	wordform TEXT,
 	wordform_stressed TEXT,
-	is_lemma INT,
+	is_lemma INT DEFAULT 0,
 	tag TEXT,
 	pos TEXT GENERATED ALWAYS AS (SUBSTR(tag, 1, 1)) STORED, -- only supported in sqlite >= 3.31.0
-	source TEXT,
+	source TEXT DEFAULT 'manual',
 	num_syllables INT,
 	num_stresses INT GENERATED ALWAYS AS (LENGTH(wordform_stressed) - LENGTH(REPLACE(wordform_stressed, '`', ''))) STORED, -- only supported in sqlite >= 3.31.0
 	FOREIGN KEY(lemma_id) REFERENCES lemma(lemma_id) ON DELETE CASCADE

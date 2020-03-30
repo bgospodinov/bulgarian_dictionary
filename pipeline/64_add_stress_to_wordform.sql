@@ -127,15 +127,12 @@ UPDATE wordform
 SET wordform_stressed = stress_syllable(wordform, CASE WHEN tag LIKE '%i' THEN num_syllables - 1 ELSE num_syllables - 2 END)
 WHERE (tag like 'Mc-s_' or tag like 'My-p_') and lemma_id not in (102897, 102898, 102947, 102948, 102949, 102950, 102951);
 
--- deal with хи`ляди
+-- deal with the numeral хи`ляди
 UPDATE wordform
 SET wordform_stressed = stress_syllable(wordform, 1)
 WHERE lemma_id = 102948 AND wordform like 'хиляди%';
 
 -- deal with prepositions
-UPDATE wordform SET wordform_stressed = 'й`' WHERE wordform = 'й' and num_stresses = 0;
-
--- words with both stresses: дар, дроб, грък, влас, дроб
--- чинове, дробове, клонове, колове, родове, духове
+UPDATE wordform SET wordform = 'ѝ', wordform_stressed = 'ѝ`' WHERE wordform = 'й' and num_stresses = 0;
 
 END TRANSACTION;
