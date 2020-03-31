@@ -133,7 +133,8 @@ trap finish EXIT
 	echo Importing RBE lemmata into database...;
 	sqlite3 $DB_MAIN_PATH ".read pipeline/30_create_rbe_lemma.sql";
 	sqlite3 $DB_MAIN_PATH ".mode csv" ".separator ^" ".import $SCRATCH_PATH/db-rbe.csv rbe_lemma";
-	sqlite3 $DB_MAIN_PATH "CREATE VIRTUAL TABLE rbe_lemma_ft USING fts5(source_definition, content=rbe_lemma);" "INSERT INTO rbe_lemma_ft SELECT source_definition FROM rbe_lemma;";
+	sqlite3 $DB_MAIN_PATH "CREATE VIRTUAL TABLE rbe_lemma_ft USING fts5(source_definition, content=rbe_lemma);" \
+	\	"INSERT INTO rbe_lemma_ft SELECT SUBSTR(source_definition, 1, MAX(INSTR(source_definition, '<b>1.'), 150)) FROM rbe_lemma;";
 	sqlite3 $DB_MAIN_PATH ".read pipeline/31_add_pos_to_rbe_lemma.sql"
 	sqlite3 $DB_MAIN_PATH ".read pipeline/32_fix_rbe_lemma_errors.sql"
 	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_rbe_lemma_lemma_pos ON rbe_lemma(lemma, pos);";

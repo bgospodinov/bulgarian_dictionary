@@ -73,7 +73,6 @@ INSERT INTO _res VALUES('missing_slovnik_lemmata', (SELECT value FROM _vars WHER
 -- should be 0
 INSERT INTO _res VALUES('lemmata_with_null_stress_column', (SELECT COUNT(*) FROM lemma WHERE lemma_stressed IS NULL));
 
--- should be 184422
 INSERT INTO _res VALUES("number_of_lemmata", (SELECT COUNT(*) FROM lemma));
 
 SELECT * FROM _res;

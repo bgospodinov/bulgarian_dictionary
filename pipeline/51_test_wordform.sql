@@ -70,7 +70,6 @@ INSERT INTO _res VALUES('number_of_wordforms_containing_latin_o', (SELECT COUNT(
 -- should be 0
 INSERT INTO _res VALUES("number_of_wordforms_without_lemma", (SELECT COUNT(*) FROM wordform WHERE lemma_id IS NULL));
 
--- should be 1898826
 INSERT INTO _res VALUES("number_of_wordforms", (SELECT COUNT(*) FROM wordform));
 
 SELECT * FROM _res;
