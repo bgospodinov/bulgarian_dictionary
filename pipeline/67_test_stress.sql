@@ -113,10 +113,10 @@ INSERT INTO _res VALUES("се`стро_stress", (SELECT COUNT(*) FROM wordform W
 INSERT INTO _res VALUES("пе`дьо_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'пе`дьо'));
 
 -- should be 1
-INSERT INTO _res VALUES("пове`льо_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'пове`льо'));
+INSERT INTO _res VALUES("пове`льо_stress", (SELECT COUNT(*) > 0 FROM wordform WHERE wordform_stressed = 'пове`льо'));
 
 -- should be 1
-INSERT INTO _res VALUES("па`ртийо_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'па`ртийо'));
+INSERT INTO _res VALUES("па`ртийо_stress", (SELECT COUNT(*) > 0 FROM wordform WHERE wordform_stressed = 'па`ртийо'));
 
 -- should be 1
 INSERT INTO _res VALUES("градъ`т_stress", (SELECT COUNT(*) FROM wordform WHERE wordform_stressed = 'градъ`т'));

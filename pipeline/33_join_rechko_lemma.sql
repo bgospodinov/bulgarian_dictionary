@@ -56,7 +56,7 @@ CREATE TEMPORARY TABLE _lemma_ AS SELECT
 	rl.id as lemma_id,
 	rl.name as lemma,
 	COALESCE(rl.name_stressed, rl.name) AS lemma_stressed,
-	rl.source,
+	CASE WHEN m.lemma IS NULL THEN rl.source ELSE 'rbe, ' || rl.source END AS source,
 	CASE WHEN COALESCE(m.source_definition, rl.meaning) IS NULL
 		THEN NULL
 		ELSE IFNULL(m.source_definition, '') || IFNULL(rl.meaning, '')

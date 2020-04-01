@@ -1,7 +1,13 @@
 BEGIN TRANSACTION;
 
 -- delete verb inflections that are not relevant for BTB-style morphosyntactic tagging
-DELETE FROM rechko.derivative_form WHERE description LIKE "бъд.вр.%" OR description LIKE "мин.неопр.%" OR description LIKE "мин.пред.%" OR description LIKE "бъд.пред.%" OR description LIKE "пр.накл.%" OR description LIKE "условно наклонение%";
+DELETE FROM rechko.derivative_form WHERE
+description LIKE "бъд.вр.%" OR
+description LIKE "мин.неопр.%" OR
+description LIKE "мин.пред.%" OR
+description LIKE "бъд.пред.%" OR
+description LIKE "пр.накл.%" OR
+description LIKE "условно наклонение%";
 
 CREATE TABLE main.rechko_wordform AS
 SELECT
@@ -71,17 +77,33 @@ CREATE TABLE main.wordform (
 	FOREIGN KEY(lemma_id) REFERENCES lemma(lemma_id) ON DELETE CASCADE
 );
 
-INSERT INTO main.wordform
-SELECT
+INSERT INTO main.wordform SELECT
 	NULL as wordform_id,
 	r.lemma_id,
 	r.wordform,
 	CASE WHEN r.is_lemma = 0 THEN r.wordform_stressed ELSE l.lemma_stressed END AS wordform_stressed,
 	r.is_lemma,
 	r.tag,
-	'rechko' as source,
-	COUNT_SYLLABLES(r.wordform) as num_syllables
+	'rechko' AS source,
+	COUNT_SYLLABLES(r.wordform) AS num_syllables
 FROM main.rechko_wordform r
 LEFT JOIN lemma l ON r.lemma_id = l.lemma_id;
+
+-- if a lemma doesn't have any wordforms assigned, then try to find an identical lemma that has wordforms 
+-- and assign those wordforms to it
+INSERT INTO main.wordform SELECT
+	NULL as wordform_id,
+	l1.lemma_id,
+	w2.wordform,
+	w2.wordform_stressed,
+	w2.is_lemma,
+	w2.tag,
+	w2.source,
+	COUNT_SYLLABLES(w2.wordform) AS num_syllables
+FROM lemma l1
+LEFT JOIN wordform w1 ON w1.lemma_id = l1.lemma_id
+INNER JOIN lemma l2 ON l1.lemma_stressed = l2.lemma_stressed AND l1.pos = l2.pos AND l1.lemma_id != l2.lemma_id
+INNER JOIN wordform w2 ON w2.lemma_id = l2.lemma_id
+WHERE w1.wordform_id IS NULL;
 
 END TRANSACTION;
