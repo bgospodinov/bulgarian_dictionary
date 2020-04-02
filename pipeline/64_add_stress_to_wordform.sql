@@ -28,9 +28,9 @@ WHERE lemma_id IN
     (
         SELECT lemma_id FROM lemma WHERE pos = 'Ncm' AND num_syllables = 1 AND
                     (definition LIKE '%ъ`т%' OR definition LIKE '%ъ̀т%' OR definition LIKE '%я`т,%')
-                    AND lemma NOT IN ('взрив', 'кът', 'хрът') -- false positives
-        UNION SELECT lemma_id FROM lemma WHERE lemma IN ('син', 'рев', 'ред', 'рид', 'род',
-                'ръб', 'ръст', 'слух', 'срам', 'смях', 'сняг', 'полусън') AND pos = 'Ncm' -- false negatives
+                    AND lemma NOT IN ('кът', 'хрът') -- false positives
+        UNION SELECT lemma_id FROM lemma WHERE lemma IN ('тел', 'син', 'рев', 'ред', 'рид', 'род',
+                'ръб', 'ръст', 'слух', 'срам', 'смях', 'сняг', 'полусън', 'тим') AND pos = 'Ncm' -- false negatives
     )
     AND (tag LIKE 'N__sh' OR tag LIKE 'N__sf');
 
@@ -57,7 +57,7 @@ WHERE lemma_id IN
         SELECT lemma_id FROM lemma l
         WHERE pos = 'Ncm' AND num_syllables = 1 AND
         definition LIKE ('%' || replace(replace(l.lemma, 'я', 'е'), 'ръ', 'ър') || 'о`ве%')
-		AND lemma NOT IN ('бой') -- false positives
+		AND lemma NOT IN ('бой', 'клон') -- false positives
     )
     AND (tag LIKE 'N__pi' OR tag LIKE 'N__pd' OR (tag LIKE 'N__t' AND wordform LIKE '%ове'));
 
