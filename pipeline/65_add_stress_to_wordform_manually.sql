@@ -92,6 +92,56 @@ WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'чук' ORDER BY lemma_id
     ((SELECT * FROM ctx), 'чука', 'чу`ка', 'Ncmsh', 2),
     ((SELECT * FROM ctx), 'чукът', 'чу`кът', 'Ncmsf', 2);
 
--- дублетни форми: ключ, лък, цвик, бик, бук, грим?, делът
+-- ключ
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'ключ' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'ключа', 'ключа`', 'Ncmsh', 2),
+    ((SELECT * FROM ctx), 'ключът', 'ключъ`т', 'Ncmsf', 2);
+
+-- лък
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'лък' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'лъка', 'лъ`ка', 'Ncmsh', 2),
+    ((SELECT * FROM ctx), 'лъкът', 'лъ`кът', 'Ncmsf', 2),
+    ((SELECT * FROM ctx), 'лъци', 'лъ`ци', 'Ncmpi', 2),
+    ((SELECT * FROM ctx), 'лъците', 'лъ`ците', 'Ncmpd', 3);
+
+-- бик
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'бик' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'бика', 'би`ка', 'Ncmsh', 2),
+    ((SELECT * FROM ctx), 'бикът', 'би`кът', 'Ncmsf', 2);
+
+-- бук
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'бук' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'бука', 'бука`', 'Ncmsh', 2),
+    ((SELECT * FROM ctx), 'букът', 'букъ`т', 'Ncmsf', 2);
+
+-- грим
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'грим' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'грима', 'грима`', 'Ncmsh', 2),
+    ((SELECT * FROM ctx), 'гримът', 'гримъ`т', 'Ncmsf', 2);
+
+-- грип
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'грип' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'грипа', 'грипа`', 'Ncmsh', 2),
+    ((SELECT * FROM ctx), 'грипът', 'грипъ`т', 'Ncmsf', 2);
+
+-- вир
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'вир' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'вира', 'ви`ра', 'Ncmsh', 2),
+    ((SELECT * FROM ctx), 'вирът', 'ви`рът', 'Ncmsf', 2);
+
+-- ръст
+
+-- щит, клип, клуб, джип, дол, зид, куб, кръст, лен, лук, люк, мех, пик, план
+-- ЛИСТ1, лѝстът, лѝста, мн. листа̀, (поет.) лѝсти, (диал.) лѝсте и листя̀, (остар., рядко) лѝстове, след числ. лѝста, м. 
+
+-- check for -ища
+-- <p><b>ПЛЕТ</b>, плетъ`т, плета`, <i>мн.</i> плетове` и плети`ща, след <i>числ.</i> пле`та, <i>м.</i> 
 
 END TRANSACTION;
