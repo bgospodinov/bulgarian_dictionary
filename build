@@ -7,6 +7,8 @@ CLEAN_TEMP_DATA=true
 RUN_TESTS=true
 SET_TRAP=true
 
+set -b
+
 while [[ $# -gt 0 ]]
 do
 	key="$1"
@@ -92,10 +94,10 @@ DB_FINAL_PATH=dictionary.db # where the artifact gets deployed (relative to PWD)
 
 if [ $SET_TRAP ] ; then
 	function finish {
-		echo Killing background jobs
-		jobs -p | xargs kill 2>/dev/null -9
 		echo Temporary files removed.
 		rm -rf "$SCRATCH_PATH"
+		echo Killing background jobs
+		jobs -p | xargs kill 2>/dev/null -9
 	}
 
 	trap finish EXIT;
