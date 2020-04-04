@@ -1,14 +1,5 @@
 BEGIN TRANSACTION;
 
--- delete verb inflections that are not relevant for BTB-style morphosyntactic tagging
-DELETE FROM rechko.derivative_form WHERE
-description LIKE "бъд.вр.%" OR
-description LIKE "мин.неопр.%" OR
-description LIKE "мин.пред.%" OR
-description LIKE "бъд.пред.%" OR
-description LIKE "пр.накл.%" OR
-description LIKE "условно наклонение%";
-
 CREATE TABLE main.rechko_wordform AS
 SELECT
 	rd.name AS wordform,
@@ -20,7 +11,7 @@ SELECT
 	rd.description AS morphosyntactic_tag, -- for debugging only
 	rl.classification as classification
 FROM
-	rechko.derivative_form rd
+	main.derivative_form rd
 LEFT JOIN main.rechko_lemma rl ON rd.base_word_id = rl.id;
 
 -- delete all impossible wordforms inherited from rechko

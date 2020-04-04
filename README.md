@@ -1,6 +1,6 @@
 This repository contains code that produces a dictionary of 200 000 Bulgarian lemmata and 2 million wordforms along with their stress patterns, morphosyntactic properties and pronunciation. It is meant to be used as a dictionary to assist with translating or writing metric and rhymed poetry in Bulgarian. It is based on previous Bulgarian linguistic resources such as Slovnik, RBE and Rechko.
 
-The build script requires a Linux distribution, although the resulting artifact is a platform-independent SQLite file. Recommended RAM > 1GB. The script uses as many cores as possible when parallelization is feasible.
+The build script requires a Linux distribution, although the resulting artifact is a platform-independent SQLite file. Recommended RAM > 2GB. The script uses as many cores as possible when parallelization is feasible.
 
 For best results mount /tmp to main memory as tmpfs or ramfs.
 
