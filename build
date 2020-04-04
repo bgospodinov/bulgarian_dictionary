@@ -3,8 +3,9 @@
 # different modes of running the build
 PROCESS_SLOVNIK=true
 EXIT_ON_FAILURE=true
-CLEAN_TEMP_TABLES=true
+CLEAN_TEMP_DATA=true
 RUN_TESTS=true
+SET_TRAP=true
 
 while [[ $# -gt 0 ]]
 do
@@ -28,11 +29,15 @@ do
 			shift;
 		;;
 		--debug)
-			CLEAN_TEMP_TABLES=
+			CLEAN_TEMP_DATA=
+			shift;
+		;;
+		--no-trap)
+			SET_TRAP=
 			shift;
 		;;
 		--help)
-			echo "./build [--no-slovnik --no-tests --no-fail --clean --debug --help]"
+			echo "./build [--help --no-slovnik --no-tests --no-fail --clean --debug --no-trap]"
 			exit 0;
 		;;
 		*)
@@ -85,12 +90,14 @@ DB_RECHKO_PATH=$SCRATCH_PATH/rechko.db # this allows concurrent insertion
 DB_MAIN_PATH=$SCRATCH_PATH/main.db # in the end, everything is merged here
 DB_FINAL_PATH=dictionary.db # where the artifact gets deployed (relative to PWD)
 
-function finish {
-	echo Temporary files removed.
-	rm -rf "$SCRATCH_PATH"
-}
+if [ $SET_TRAP ] ; then
+	function finish {
+		echo Temporary files removed.
+		rm -rf "$SCRATCH_PATH"
+	}
 
-trap finish EXIT
+	trap finish EXIT;
+fi
 
 (
 	if [ $PROCESS_SLOVNIK ] ; then
@@ -150,11 +157,15 @@ trap finish EXIT
 
 	echo Converting Rechko MySQL dump to SQLite
 	./scripts/mysql2sqlite.awk $SCRATCH_PATH/db-rechko.sql > $SCRATCH_PATH/db-rechko.sqlite
-	rm -f $SCRATCH_PATH/db-rechko.sql
+	if [ $CLEAN_TEMP_DATA ] ; then
+		rm -f $SCRATCH_PATH/db-rechko.sql
+	fi
 
 	echo Importing Rechko...
 	sqlite3 $DB_RECHKO_PATH ".read $SCRATCH_PATH/db-rechko.sqlite"
-	rm -f $SCRATCH_PATH/db-rechko.sqlite
+	if [ $CLEAN_TEMP_DATA ] ; then
+		rm -f $SCRATCH_PATH/db-rechko.sqlite
+	fi
 
 	echo Cleaning Rechko...
 	# useful tables from Rechko: derivative_form, word, word_type
@@ -190,6 +201,9 @@ sqlite3 $DB_MAIN_PATH "CREATE VIRTUAL TABLE lemma_ft USING fts5(definition, cont
 echo Import Rechko wordforms
 sqlite3 $DB_MAIN_PATH "ATTACH '$DB_RECHKO_PATH' as rechko;" ".load lib/libextfun" ".read pipeline/40_import_rechko_wordform.sql" "DETACH rechko;"
 sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_wordform_tag ON wordform(wordform, tag);"
+sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_lemma_id ON wordform(lemma_id);"
+sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_tag ON wordform(tag);"
+sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_wordform_stressed ON wordform(wordform_stressed);" # speeds up tests
 sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_rechko_wordform_wordform_tag ON rechko_wordform(wordform, tag);"
 rm -f $DB_RECHKO_PATH
 
@@ -199,10 +213,6 @@ if [ $PROCESS_SLOVNIK ] ; then
 	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_slovnik_wordform_lemma_tag ON slovnik_wordform(lemma, tag);"
 	sqlite3 $DB_MAIN_PATH ".read pipeline/41_join_slovnik_wordforms.sql"
 fi
-
-sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_lemma_id ON wordform(lemma_id);"
-sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_tag ON wordform(tag);"
-sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_wordform_stressed ON wordform(wordform_stressed);" # speeds up tests
 
 echo Add wordforms manually...
 sqlite3 $DB_MAIN_PATH ".read pipeline/43_add_wordforms_manually.sql"
@@ -220,7 +230,7 @@ if [ $RUN_TESTS ] ; then
 		diff tests/wordform.test -
 fi
 
-if [ $CLEAN_TEMP_TABLES ] ; then
+if [ $CLEAN_TEMP_DATA ] ; then
 	# drop rechko_lemma and rbe_lemma tables
 	echo Deleting old lemma tables
 	sqlite3 $DB_MAIN_PATH "DROP TABLE rbe_lemma;" "DROP TABLE rechko_lemma;" "DROP TABLE rbe_lemma_ft;" "DROP TABLE rechko_word_type;"
