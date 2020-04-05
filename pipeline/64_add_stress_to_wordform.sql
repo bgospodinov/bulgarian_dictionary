@@ -71,6 +71,17 @@ WHERE lemma_id IN (
     )
 AND (tag LIKE 'N__pi' OR tag LIKE 'N__pd');
 
+-- check for -и`ща
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma IN ('плет', 'град', 'дол'))
+    UPDATE wordform SET wordform_stressed = stress_syllable(wordform, 2)
+    WHERE lemma_id IN (SELECT lemma_id FROM ctx) AND wordform LIKE '%ища%' AND tag IN ('Ncmpi', 'Ncmpd');
+
+-- check for `-ища
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma IN ('гюл', 'гьол', 'трап', 'друм'))
+    UPDATE wordform SET wordform_stressed = stress_syllable(wordform, 1)
+    WHERE lemma_id IN (SELECT lemma_id FROM ctx) AND wordform LIKE '%ища%' AND tag IN ('Ncmpi', 'Ncmpd');
+
+
 -- deal with feminite nouns that end in a consonant that move their stress when their article is suffixed
 UPDATE wordform
 SET wordform_stressed =
@@ -134,5 +145,12 @@ WHERE lemma_id = 102948 AND wordform like 'хиляди%';
 
 -- deal with prepositions
 UPDATE wordform SET wordform = 'ѝ', wordform_stressed = 'ѝ`' WHERE wordform = 'й' and num_stresses = 0;
+
+-- deal with verbs like чета which change their stress in aorist
+UPDATE wordform
+SET wordform_stressed 
+    = stress_syllable(wordform, MAX(1, (SELECT find_nth_stressed_syllable(lemma_stressed, 1) FROM lemma WHERE lemma_id = wordform.lemma_id) - 1))
+WHERE lemma_id IN (SELECT lemma_id FROM lemma WHERE lemma LIKE '%чета' AND pos = 'V') AND
+(tag LIKE 'V___f_o__' OR tag LIKE 'V___cv_____' OR tag LIKE 'V___cao____');
 
 END TRANSACTION;

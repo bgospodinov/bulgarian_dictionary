@@ -53,6 +53,7 @@ WHERE lemma_id = 102923;
 -- this helps evade rechko mismatches for reflexive verbs and adjectives
 UPDATE rechko_wordform SET wordform = REPLACE(wordform, ' се', ''), wordform_stressed = REPLACE(wordform_stressed, ' се', '')
 WHERE classification = 'reflexive' or classification = '+reflexive';
+DELETE FROM rechko_wordform WHERE wordform = 'начета' AND tag LIKE 'V%' AND is_lemma = 1;
 
 CREATE TABLE main.wordform (
 	wordform_id INTEGER PRIMARY KEY,

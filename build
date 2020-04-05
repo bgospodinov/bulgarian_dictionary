@@ -185,8 +185,7 @@ fi
 	sed -n -e "485,1132 p" $SCRATCH_PATH/db-rechko.sql > $SCRATCH_PATH/db_rechko.prep
 	parallel -a $SCRATCH_PATH/db_rechko.prep --pipe-part \
 		"sed -n -E -f $PIPELINE_PATH/22_*.sed |\
-			sed -E -f $PIPELINE_PATH/23_*.sed |\
-			sed -E -f $PIPELINE_PATH/24_*.sed" \
+			sed -E -f $PIPELINE_PATH/23_*.sed"\
 				>$SCRATCH_PATH/rechko_wordform.csv &
 	RECHKO_PARALLEL_PID=$!
 

@@ -136,12 +136,47 @@ WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'вир' ORDER BY lemma_id
     ((SELECT * FROM ctx), 'вира', 'ви`ра', 'Ncmsh', 2),
     ((SELECT * FROM ctx), 'вирът', 'ви`рът', 'Ncmsf', 2);
 
--- ръст
+-- план
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'план' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'плана', 'плана`', 'Ncmsh', 2),
+    ((SELECT * FROM ctx), 'планът', 'планъ`т', 'Ncmsf', 2);
 
--- щит, клип, клуб, джип, дол, зид, куб, кръст, лен, лук, люк, мех, пик, план
--- ЛИСТ1, лѝстът, лѝста, мн. листа̀, (поет.) лѝсти, (диал.) лѝсте и листя̀, (остар., рядко) лѝстове, след числ. лѝста, м. 
+-- лен
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'лен' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'лена', 'лена`', 'Ncmsh', 2),
+    ((SELECT * FROM ctx), 'ленът', 'ленъ`т', 'Ncmsf', 2);
 
--- check for -ища
--- <p><b>ПЛЕТ</b>, плетъ`т, плета`, <i>мн.</i> плетове` и плети`ща, след <i>числ.</i> пле`та, <i>м.</i> 
+-- дол
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'дол' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'дола', 'до`ла', 'Ncmsh', 2),
+    ((SELECT * FROM ctx), 'долът', 'до`лът', 'Ncmsf', 2);
+
+-- плет
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'плет' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'плета', 'пле`та', 'Ncmsh', 2),
+    ((SELECT * FROM ctx), 'плетът', 'пле`тът', 'Ncmsf', 2);
+
+-- лист
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'лист' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'листи', 'ли`сти', 'Ncmpi', 2),
+    ((SELECT * FROM ctx), 'листите', 'ли`стите', 'Ncmpd', 3),
+    ((SELECT * FROM ctx), 'листа', 'листа`', 'Ncmpi', 2),
+    ((SELECT * FROM ctx), 'листата', 'листа`та', 'Ncmpd', 3),
+    ((SELECT * FROM ctx), 'листя', 'листя`', 'Ncmpi', 2),
+    ((SELECT * FROM ctx), 'листята', 'листя`та', 'Ncmpd', 3);
+
+-- двор
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'двор' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'дворища', 'дво`рища', 'Ncmpi', 3),
+    ((SELECT * FROM ctx), 'дворищата', 'дво`рищата', 'Ncmpd', 4);
+
+UPDATE wordform SET wordform_stressed = stress_syllable(wordform, 1)
+    WHERE lemma_id = 272 AND wordform LIKE 'двори%' AND tag IN ('Ncmpi', 'Ncmpd');
 
 END TRANSACTION;
