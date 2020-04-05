@@ -14,9 +14,6 @@ FROM
 	main.derivative_form rd
 LEFT JOIN main.rechko_lemma rl ON rd.base_word_id = rl.id;
 
--- delete all impossible wordforms inherited from rechko
-DELETE FROM rechko_wordform WHERE wordform = "—";
-
 -- delete misspelled wordforms
 DELETE FROM rechko_wordform WHERE lemma_id = 782; -- прираст is misspelled as приръст
 
@@ -54,6 +51,17 @@ WHERE lemma_id = 102923;
 UPDATE rechko_wordform SET wordform = REPLACE(wordform, ' се', ''), wordform_stressed = REPLACE(wordform_stressed, ' се', '')
 WHERE classification = 'reflexive' or classification = '+reflexive';
 DELETE FROM rechko_wordform WHERE wordform = 'начета' AND tag LIKE 'V%' AND is_lemma = 1;
+
+-- fix rechko bugs, where reflexive verbs have wrong imperative forms and are considered lemmata
+UPDATE rechko_wordform
+	SET is_lemma = 0,
+		(wordform, wordform_stressed) =
+			(SELECT IFNULL(w2.wordform, rechko_wordform.wordform), IFNULL(w2.wordform_stressed, rechko_wordform.wordform) FROM lemma l
+			INNER JOIN rechko_wordform w ON l.lemma_id = w.lemma_id AND w.is_lemma = 1 AND w.wordform = l.lemma
+			INNER JOIN lemma l2 ON l.lemma = l2.lemma AND l.pos = l2.pos AND l.lemma_id != l2.lemma_id
+			INNER JOIN rechko_wordform w2 ON l2.lemma_id = w2.lemma_id AND w.tag = w2.tag AND w.wordform != w2.wordform
+			WHERE w.tag LIKE 'V___z__2_' AND l.lemma_id = rechko_wordform.lemma_id)
+WHERE rechko_wordform.tag LIKE 'V___z__2_' AND rechko_wordform.is_lemma = 1;
 
 CREATE TABLE main.wordform (
 	wordform_id INTEGER PRIMARY KEY,

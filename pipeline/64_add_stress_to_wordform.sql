@@ -58,6 +58,7 @@ WHERE lemma_id IN
         WHERE pos = 'Ncm' AND num_syllables = 1 AND
         definition LIKE ('%' || replace(replace(l.lemma, 'я', 'е'), 'ръ', 'ър') || 'о`ве%')
 		AND lemma NOT IN ('бой', 'клон') -- false positives
+        UNION SELECT lemma_id FROM lemma WHERE lemma IN ('мост') AND pos = 'Ncm' -- false negatives
     )
     AND (tag LIKE 'N__pi' OR tag LIKE 'N__pd' OR (tag LIKE 'N__t' AND wordform LIKE '%ове'));
 
@@ -127,6 +128,11 @@ UPDATE wordform
 SET wordform_stressed = stress_syllable(wordform, num_syllables - 1)
 WHERE lemma_id IN (SELECT lemma_id FROM wordform WHERE (wordform LIKE '%ена' OR wordform LIKE '%еса') AND tag = 'Ncnpi') AND tag = 'Ncnpd';
 
+-- put stress on penultimate syllablefor all disyllabic vocative forms of nouns
+UPDATE wordform
+SET wordform_stressed = stress_syllable(wordform, 1)
+WHERE tag = 'Ncms-v' AND num_syllables = 2 AND wordform LIKE '%ьо';
+
 -- deal with numerals after "three" where the suffixed article receives the stress e.g. chetirite`
 UPDATE wordform
 SET wordform_stressed = stress_syllable(wordform, num_syllables)
@@ -150,7 +156,21 @@ UPDATE wordform SET wordform = 'ѝ', wordform_stressed = 'ѝ`' WHERE wordform = 
 UPDATE wordform
 SET wordform_stressed 
     = stress_syllable(wordform, MAX(1, (SELECT find_nth_stressed_syllable(lemma_stressed, 1) FROM lemma WHERE lemma_id = wordform.lemma_id) - 1))
-WHERE lemma_id IN (SELECT lemma_id FROM lemma WHERE lemma LIKE '%чета' AND pos = 'V') AND
+WHERE lemma_id IN (SELECT lemma_id FROM lemma WHERE (lemma LIKE '%чета' OR lemma LIKE '%плета') AND pos = 'V') AND
 (tag LIKE 'V___f_o__' OR tag LIKE 'V___cv_____' OR tag LIKE 'V___cao____');
+
+-- deal with verbs whose lemmata have an internal syllable stressed and move their stress in imperative form
+UPDATE wordform
+SET wordform_stressed 
+    = stress_syllable(wordform, MIN(num_syllables, (SELECT find_nth_stressed_syllable(lemma_stressed, 1) FROM lemma WHERE lemma_id = wordform.lemma_id) + 1))
+WHERE num_syllables > 1 AND lemma_id IN (SELECT lemma_id FROM lemma WHERE find_nth_stressed_syllable_rev(lemma_stressed, 1) < num_syllables AND pos = 'V') AND
+tag LIKE 'V___z__2_';
+
+-- deal with verbs like ям where stress moves one syllable to the right of its position in the lemma
+UPDATE wordform SET wordform_stressed =
+    stress_syllable(wordform,
+        MIN(num_syllables, (SELECT find_nth_stressed_syllable_rev(lemma_stressed, 1) FROM lemma WHERE lemma_id = wordform.lemma_id) + 1))
+WHERE lemma_id IN (SELECT lemma_id FROM lemma WHERE lemma_stressed LIKE '%я`м' AND pos = 'V') AND
+(tag LIKE 'V___f_r__' OR tag LIKE 'V___f_m__' OR tag LIKE 'V___cam____' OR tag LIKE 'V___car____' OR tag = 'Vpitg');
 
 END TRANSACTION;

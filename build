@@ -182,16 +182,11 @@ fi
 
 	# then derivative forms into a csv
 	echo Extracting rechko derivative forms to csv
-	sed -n -e "485,1132 p" $SCRATCH_PATH/db-rechko.sql > $SCRATCH_PATH/db_rechko.prep
-	parallel -a $SCRATCH_PATH/db_rechko.prep --pipe-part \
-		"sed -n -E -f $PIPELINE_PATH/22_*.sed |\
+	sed -n -e "485,1132 p" $SCRATCH_PATH/db-rechko.sql |\
+	parallel --pipe "sed -n -E -f $PIPELINE_PATH/22_*.sed |\
 			sed -E -f $PIPELINE_PATH/23_*.sed"\
 				>$SCRATCH_PATH/rechko_wordform.csv &
 	RECHKO_PARALLEL_PID=$!
-
-	if [ $CLEAN_TEMP_DATA ] ; then
-		rm -f $SCRATCH_PATH/db-rechko.sql
-	fi
 	##### RECHKO SECTION END #####
 ) &
 
@@ -234,7 +229,7 @@ sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_wordform_stressed
 sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_rechko_wordform_wordform_tag ON rechko_wordform(wordform, tag);"
 
 if [ $CLEAN_TEMP_DATA ] ; then
-	rm -f $SCRATCH_PATH/db_rechko.prep
+	rm -f $SCRATCH_PATH/db-rechko.sql
 	rm -f $SCRATCH_PATH/rechko_wordform.csv
 	rm -f $SCRATCH_PATH/db_schema_rechko_wordform.sqlite
 fi

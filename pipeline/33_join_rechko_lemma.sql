@@ -42,6 +42,7 @@ UPDATE main.rechko_lemma SET name_stressed = 'боя`' WHERE id = 114442;
 -- fix other stressing mistakes
 UPDATE main.rechko_lemma SET name_stressed = 'чета`' WHERE id = 98942;
 UPDATE main.rechko_lemma SET name_stressed = 'хиля`да' WHERE id = 102948;
+UPDATE main.rechko_lemma SET name_stressed = 'разме`ням' WHERE id = 97770;
 
 -- fix some spelling mistakes
 UPDATE main.rechko_lemma SET name = 'четиринайсет', name_stressed = 'четирина`йсет' WHERE id = 102923;

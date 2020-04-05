@@ -179,4 +179,16 @@ WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'двор' ORDER BY lemma_
 UPDATE wordform SET wordform_stressed = stress_syllable(wordform, 1)
     WHERE lemma_id = 272 AND wordform LIKE 'двори%' AND tag IN ('Ncmpi', 'Ncmpd');
 
+-- село
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'село' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'село', 'село`', 'Ncnsi', 2),
+    ((SELECT * FROM ctx), 'селото', 'село`то', 'Ncnsd', 3);
+
+-- чело
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'чело' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'чело', 'чело`', 'Ncnsi', 2),
+    ((SELECT * FROM ctx), 'челото', 'чело`то', 'Ncnsd', 3);
+
 END TRANSACTION;

@@ -10,7 +10,8 @@ INSERT INTO _res VALUES('monosyllabic_wordforms_without_stress',
 	(SELECT COUNT(*) FROM wordform WHERE num_syllables = 1 AND num_stresses = 0));
 
 -- should be 0
-INSERT INTO _res VALUES('wordforms_that_dont_match_their_lemma_stress', (SELECT
+INSERT INTO _res VALUES('wordforms_that_dont_match_their_lemma_stress', (
+SELECT
 	COUNT(*)
 FROM lemma l
 LEFT JOIN wordform w ON l.lemma_id = w.lemma_id AND w.is_lemma = 1
@@ -162,6 +163,24 @@ INSERT INTO _res VALUES("че`тен_stress", (SELECT COUNT(*) > 0 FROM wordform
 
 -- should be 1
 INSERT INTO _res VALUES("че`лия_stress", (SELECT COUNT(*) > 0 FROM wordform WHERE wordform_stressed = 'че`лия'));
+
+-- should be 1
+INSERT INTO _res VALUES("носи`_stress", (SELECT COUNT(*) > 0 FROM wordform WHERE wordform_stressed = 'носи`'));
+
+-- should be 1
+INSERT INTO _res VALUES("носе`те_stress", (SELECT COUNT(*) > 0 FROM wordform WHERE wordform_stressed = 'носе`те'));
+
+-- should be 1
+INSERT INTO _res VALUES("о`рльо_stress", (SELECT COUNT(*) > 0 FROM wordform WHERE wordform_stressed = 'о`рльо'));
+
+-- should be 1
+INSERT INTO _res VALUES("пе`тльо_stress", (SELECT COUNT(*) > 0 FROM wordform WHERE wordform_stressed = 'пе`тльо'));
+
+-- should be 1
+INSERT INTO _res VALUES("мосто`ве_stress", (SELECT COUNT(*) > 0 FROM wordform WHERE wordform_stressed = 'мосто`ве'));
+
+-- should be 1
+INSERT INTO _res VALUES("яде`м_stress", (SELECT COUNT(*) > 0 FROM wordform WHERE wordform_stressed = 'яде`м'));
 
 SELECT * FROM _res;
 
