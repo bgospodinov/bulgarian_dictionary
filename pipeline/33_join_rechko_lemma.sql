@@ -71,17 +71,14 @@ LEFT JOIN rbe_lemma m
 -- here we autoincrement lemma_id correctly to make it unique
 CREATE TABLE lemma (
 	lemma_id INTEGER PRIMARY KEY,
-	derivative_id INT,
 	lemma,
 	lemma_stressed,
 	definition TEXT,
-	derivative_type TEXT,
 	ner TEXT,
 	pos TEXT,
 	source TEXT,
 	num_syllables INT,
-	num_stresses INT GENERATED ALWAYS AS (LENGTH(lemma_stressed) - LENGTH(REPLACE(lemma_stressed, '`', ''))) STORED, -- only supported in sqlite >= 3.31.0
-	FOREIGN KEY(derivative_id) REFERENCES lemma(lemma_id) ON DELETE CASCADE ON UPDATE CASCADE
+	num_stresses INT GENERATED ALWAYS AS (LENGTH(lemma_stressed) - LENGTH(REPLACE(lemma_stressed, '`', ''))) STORED -- only supported in sqlite >= 3.31.0
 );
 
 INSERT INTO lemma (
