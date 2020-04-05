@@ -4,6 +4,7 @@ The build script requires a Linux distribution, although the resulting artifact 
 
 For best results mount /tmp to main memory as tmpfs or ramfs.
 
-The Slovnik dictionary is encrypted as it is not intended for public use. Add option --no-slovnik to skip augmenting Slovnik into the final artifact. If you want to gain access to Slovnik, contact a BTB member at http://bultreebank.org. Afterwards, I will provide you with the password to decrypt Slovnik.
+All wordforms in the database are annotated using the BulTreeBank morphosyntactic tagset. To learn more about it, please refer to the technical report inside resources/.
+The Slovnik dictionary, however, is encrypted as it is not intended for public use. Add option --no-slovnik to skip augmenting Slovnik into the final artifact. If you want to gain access to Slovnik, contact a BTB member at http://bultreebank.org. Afterwards, I will provide you with the password to decrypt Slovnik.
 
 If you find any mistakes in the scripts or the dictionary itself, please raise an issue or contact the maintainer: b g o s p o d i n o v at pr ot on m ail dot c o m.

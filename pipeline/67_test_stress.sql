@@ -151,6 +151,18 @@ INSERT INTO _res VALUES("четири`ма_stress", (SELECT COUNT(*) > 0 FROM wo
 -- should be 0
 INSERT INTO _res VALUES("unstressed_numeral_lemmata", (SELECT COUNT(*) FROM lemma WHERE pos = 'M' and num_stresses = 0));
 
+-- should be 1
+INSERT INTO _res VALUES("че`тох_stress", (SELECT COUNT(*) > 0 FROM wordform WHERE wordform_stressed = 'че`тох'));
+
+-- should be 1
+INSERT INTO _res VALUES("че`тохме_stress", (SELECT COUNT(*) > 0 FROM wordform WHERE wordform_stressed = 'че`тохме'));
+
+-- should be 1
+INSERT INTO _res VALUES("че`тен_stress", (SELECT COUNT(*) > 0 FROM wordform WHERE wordform_stressed = 'че`тен'));
+
+-- should be 1
+INSERT INTO _res VALUES("че`лия_stress", (SELECT COUNT(*) > 0 FROM wordform WHERE wordform_stressed = 'че`лия'));
+
 SELECT * FROM _res;
 
 DROP TABLE _vars;
