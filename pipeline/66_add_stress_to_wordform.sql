@@ -128,7 +128,7 @@ UPDATE wordform
 SET wordform_stressed = stress_syllable(wordform, num_syllables - 1)
 WHERE lemma_id IN (SELECT lemma_id FROM wordform WHERE (wordform LIKE '%ена' OR wordform LIKE '%еса') AND tag = 'Ncnpi') AND tag = 'Ncnpd';
 
--- put stress on penultimate syllablefor all disyllabic vocative forms of nouns
+-- put stress on penultimate syllable for all disyllabic vocative forms of nouns
 UPDATE wordform
 SET wordform_stressed = stress_syllable(wordform, 1)
 WHERE tag = 'Ncms-v' AND num_syllables = 2 AND wordform LIKE '%ьо';

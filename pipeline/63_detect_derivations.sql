@@ -30,4 +30,28 @@ WHERE
 	)
 ;
 
+-- add verbs derived from other verbs
+INSERT INTO derivation (parent_id, child_id, type)
+SELECT
+	l1.lemma_id AS parent_id,
+	l2.lemma_id AS child_id,
+	'verb-to-verb' AS type
+FROM lemma l1
+INNER JOIN lemma l2 ON l1.pos = l2.pos
+WHERE
+	l1.lemma IN ('чета', 'плета') AND
+	l1.pos = 'V' AND
+	l2.lemma LIKE '%' || l1.lemma
+UNION ALL SELECT
+	l1.lemma_id AS parent_id,
+	l2.lemma_id AS child_id,
+	'verb-to-verb' AS type
+FROM lemma l1
+INNER JOIN lemma l2 ON l1.pos = l2.pos
+WHERE
+	l1.lemma_stressed IN ('я`м') AND
+	l1.pos = 'V' AND
+	l2.lemma_stressed LIKE '%' || l1.lemma_stressed
+;
+
 END TRANSACTION;

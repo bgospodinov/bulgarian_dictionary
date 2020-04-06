@@ -211,9 +211,6 @@ fi
 echo NER processing in existing lemmata
 sqlite3 $DB_MAIN_PATH ".read pipeline/35_ner_processing.sql"
 
-echo Detecting morphological derivations e.g. diminutives
-sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/36_detect_derivations.sql"
-
 echo Creating lemma fulltext index;
 sqlite3 $DB_MAIN_PATH "CREATE VIRTUAL TABLE lemma_ft USING fts5(definition, content=lemma);" "INSERT INTO lemma_ft SELECT definition FROM lemma;";
 
@@ -275,20 +272,23 @@ sqlite3 $DB_MAIN_PATH ".read pipeline/60_create_stress.sql"
 echo Fixing lemmata table...
 sqlite3 $DB_MAIN_PATH ".read pipeline/61_fix_stress_errors.sql"
 
+echo Detecting morphological derivations
+sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/62_add_stress_to_lemma.sql" ".read pipeline/63_detect_derivations.sql"
+
 echo Populating lemma table with stresses
-sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/62_add_stress_to_lemma.sql" ".read pipeline/63_add_stress_to_lemma_manually.sql"
+sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/64_add_stress_to_lemma.sql" ".read pipeline/65_add_stress_to_lemma_manually.sql"
 
 echo Populating wordform table with stresses
-sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/64_add_stress_to_wordform.sql" ".read pipeline/65_add_stress_to_wordform_manually.sql"
+sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/66_add_stress_to_wordform.sql" ".read pipeline/67_add_stress_to_wordform_manually.sql"
 
 if [ $RUN_TESTS ] ; then
 	echo Run tests on stresses
-	sqlite3 -list $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/67_test_stress.sql" 2>/dev/null |
+	sqlite3 -list $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/70_test_stress.sql" 2>/dev/null |
 		diff tests/stress.test -
 fi
 
 echo Create pronunciation table...
-sqlite3 $DB_MAIN_PATH ".read pipeline/70_create_pronunciation.sql"
+sqlite3 $DB_MAIN_PATH ".read pipeline/80_create_pronunciation.sql"
 
 echo Vacuum...
 sqlite3 $DB_MAIN_PATH "VACUUM"
