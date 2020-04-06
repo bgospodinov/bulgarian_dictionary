@@ -191,4 +191,10 @@ WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'чело' ORDER BY lemma_
     ((SELECT * FROM ctx), 'чело', 'чело`', 'Ncnsi', 2),
     ((SELECT * FROM ctx), 'челото', 'чело`то', 'Ncnsd', 3);
 
+-- бодил
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'бодил' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'бодли', 'бодли`', 'Ncmpi', 2),
+    ((SELECT * FROM ctx), 'бодлите', 'бодли`те', 'Ncmpd', 3);
+
 END TRANSACTION;

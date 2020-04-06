@@ -211,8 +211,8 @@ fi
 echo NER processing in existing lemmata
 sqlite3 $DB_MAIN_PATH ".read pipeline/35_ner_processing.sql"
 
-echo Detecting lemmata diminutives
-sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/36_select_diminutives.sql"
+echo Detecting morphological derivations e.g. diminutives
+sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/36_detect_derivations.sql"
 
 echo Creating lemma fulltext index;
 sqlite3 $DB_MAIN_PATH "CREATE VIRTUAL TABLE lemma_ft USING fts5(definition, content=lemma);" "INSERT INTO lemma_ft SELECT definition FROM lemma;";
@@ -240,9 +240,6 @@ if [ $PROCESS_SLOVNIK ] ; then
 	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_slovnik_wordform_lemma_tag ON slovnik_wordform(lemma, tag);"
 	sqlite3 $DB_MAIN_PATH ".read pipeline/41_join_slovnik_wordforms.sql"
 fi
-
-echo Add wordforms manually...
-sqlite3 $DB_MAIN_PATH ".read pipeline/43_add_wordforms_manually.sql"
 
 echo Cleaning lemma and wordforms table
 sqlite3 $DB_MAIN_PATH ".read pipeline/45_clean_lemma_table.sql"

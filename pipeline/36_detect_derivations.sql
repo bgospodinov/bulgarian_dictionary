@@ -12,6 +12,7 @@ CREATE TABLE derivation(
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_derivation_parent_id_child_id ON derivation(parent_id, child_id);
 
+-- detect diminutives
 INSERT INTO derivation (parent_id, child_id, type)
 SELECT
 	l2.lemma_id as parent_id,
