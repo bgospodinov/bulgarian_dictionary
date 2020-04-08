@@ -89,20 +89,36 @@ UPDATE wordform
 SET wordform_stressed =
     stress_syllable(wordform, find_nth_stressed_syllable_rev(wordform_stressed, 1) + 1)
 WHERE lemma_id IN (
-    SELECT lemma_id FROM lemma l
-    WHERE pos = 'Ncm' AND lemma IN ('мъж', 'княз', 'цар', 'крал', 'кон')
+        WITH RECURSIVE ctx(lemma_id) AS (
+            SELECT lemma_id FROM lemma l
+            WHERE pos = 'Ncm' AND lemma IN ('мъж', 'княз', 'цар', 'крал', 'кон')
+            UNION SELECT d.child_id FROM ctx c
+            INNER JOIN lemma l1 ON l1.lemma_id = c.lemma_id
+            INNER JOIN derivation d ON d.parent_id = c.lemma_id
+            INNER JOIN lemma l2 ON d.child_id = l2.lemma_id AND l1.pos = l2.pos
+        ) SELECT * FROM ctx
     )
 AND (tag LIKE 'N__pi' OR tag LIKE 'N__pd');
 
 -- check for -и`ща
-WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma IN ('плет', 'град', 'дол'))
-    UPDATE wordform SET wordform_stressed = stress_syllable(wordform, 2)
-    WHERE lemma_id IN (SELECT lemma_id FROM ctx) AND wordform LIKE '%ища%' AND tag IN ('Ncmpi', 'Ncmpd');
+UPDATE wordform SET wordform_stressed = stress_syllable(wordform, 2)
+WHERE lemma_id IN (
+        WITH RECURSIVE ctx(lemma_id) AS (
+            SELECT lemma_id FROM lemma WHERE lemma IN ('плет', 'град', 'дол') AND pos = 'Ncm'
+            UNION SELECT d.child_id FROM ctx c
+            INNER JOIN lemma l1 ON l1.lemma_id = c.lemma_id
+            INNER JOIN derivation d ON d.parent_id = c.lemma_id
+            INNER JOIN lemma l2 ON d.child_id = l2.lemma_id AND l1.pos = l2.pos
+        ) SELECT * FROM ctx
+    )
+AND wordform LIKE '%ища%' AND tag IN ('Ncmpi', 'Ncmpd');
 
 -- check for `-ища
-WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma IN ('гюл', 'гьол', 'трап', 'друм'))
-    UPDATE wordform SET wordform_stressed = stress_syllable(wordform, 1)
-    WHERE lemma_id IN (SELECT lemma_id FROM ctx) AND wordform LIKE '%ища%' AND tag IN ('Ncmpi', 'Ncmpd');
+UPDATE wordform SET wordform_stressed = stress_syllable(wordform, 1)
+WHERE lemma_id IN (
+        SELECT lemma_id FROM lemma WHERE lemma IN ('гюл', 'гьол', 'трап', 'друм') AND pos = 'Ncm'
+    )
+AND wordform LIKE '%ища%' AND tag IN ('Ncmpi', 'Ncmpd');
 
 
 -- deal with feminite nouns that end in a consonant that move their stress when their article is suffixed
@@ -144,11 +160,15 @@ WHERE tag LIKE 'N_np_' AND ((
 -- deal with nouns whose plural ends in 'ена'
 UPDATE wordform
 SET wordform_stressed = stress_syllable(wordform, num_syllables)
-WHERE lemma_id IN (SELECT lemma_id FROM wordform WHERE (wordform LIKE '%ена' OR wordform LIKE '%еса') AND tag = 'Ncnpi') AND tag = 'Ncnpi';
+WHERE lemma_id IN (
+    SELECT lemma_id FROM wordform WHERE (wordform LIKE '%ена' OR wordform LIKE '%еса') AND tag = 'Ncnpi'
+) AND tag = 'Ncnpi';
 
 UPDATE wordform
 SET wordform_stressed = stress_syllable(wordform, num_syllables - 1)
-WHERE lemma_id IN (SELECT lemma_id FROM wordform WHERE (wordform LIKE '%ена' OR wordform LIKE '%еса') AND tag = 'Ncnpi') AND tag = 'Ncnpd';
+WHERE lemma_id IN (
+    SELECT lemma_id FROM wordform WHERE (wordform LIKE '%ена' OR wordform LIKE '%еса') AND tag = 'Ncnpi'
+) AND tag = 'Ncnpd';
 
 -- put stress on penultimate syllable for all disyllabic vocative forms of nouns
 UPDATE wordform
@@ -178,8 +198,17 @@ UPDATE wordform SET wordform = 'ѝ', wordform_stressed = 'ѝ`' WHERE wordform = 
 UPDATE wordform
 SET wordform_stressed 
     = stress_syllable(wordform, MAX(1, (SELECT find_nth_stressed_syllable(lemma_stressed, 1) FROM lemma WHERE lemma_id = wordform.lemma_id) - 1))
-WHERE lemma_id IN (SELECT lemma_id FROM lemma WHERE (lemma LIKE '%чета' OR lemma LIKE '%плета') AND pos = 'V') AND
-(tag LIKE 'V___f_o__' OR tag LIKE 'V___cv_____' OR tag LIKE 'V___cao____');
+WHERE lemma_id IN (
+    WITH RECURSIVE ctx(lemma_id) AS (
+        SELECT lemma_id FROM lemma WHERE lemma IN ('чета', 'плета') AND pos = 'V'
+        UNION SELECT d.child_id FROM ctx c
+        INNER JOIN lemma l1 ON l1.lemma_id = c.lemma_id
+        INNER JOIN derivation d ON d.parent_id = c.lemma_id
+        INNER JOIN lemma l2 ON d.child_id = l2.lemma_id AND l1.pos = l2.pos
+        WHERE l2.num_stresses > 0
+    ) SELECT * FROM ctx
+)
+AND (tag LIKE 'V___f_o__' OR tag LIKE 'V___cv_____' OR tag LIKE 'V___cao____');
 
 -- deal with verbs whose lemmata have an internal syllable stressed and move their stress in imperative form
 UPDATE wordform
@@ -192,7 +221,15 @@ tag LIKE 'V___z__2_';
 UPDATE wordform SET wordform_stressed =
     stress_syllable(wordform,
         MIN(num_syllables, (SELECT find_nth_stressed_syllable_rev(lemma_stressed, 1) FROM lemma WHERE lemma_id = wordform.lemma_id) + 1))
-WHERE lemma_id IN (SELECT lemma_id FROM lemma WHERE lemma_stressed LIKE '%я`м' AND pos = 'V') AND
-(tag LIKE 'V___f_r__' OR tag LIKE 'V___f_m__' OR tag LIKE 'V___cam____' OR tag LIKE 'V___car____' OR tag = 'Vpitg');
+WHERE lemma_id IN (
+    WITH RECURSIVE ctx(lemma_id) AS (
+        SELECT lemma_id FROM lemma WHERE lemma IN ('ям') AND pos = 'V'
+        UNION SELECT d.child_id FROM ctx c
+        INNER JOIN lemma l1 ON l1.lemma_id = c.lemma_id
+        INNER JOIN derivation d ON d.parent_id = c.lemma_id
+        INNER JOIN lemma l2 ON d.child_id = l2.lemma_id AND l1.pos = l2.pos
+    ) SELECT * FROM ctx
+) 
+AND (tag LIKE 'V___f_r__' OR tag LIKE 'V___f_m__' OR tag LIKE 'V___cam____' OR tag LIKE 'V___car____' OR tag = 'Vpitg');
 
 END TRANSACTION;
