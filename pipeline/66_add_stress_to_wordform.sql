@@ -26,11 +26,19 @@ SET wordform_stressed =
     stress_syllable(wordform, find_nth_stressed_syllable_rev(wordform_stressed, 1) + 1)
 WHERE lemma_id IN
     (
-        SELECT lemma_id FROM lemma WHERE pos = 'Ncm' AND num_syllables = 1 AND
-                    (definition LIKE '%ъ`т%' OR definition LIKE '%ъ̀т%' OR definition LIKE '%я`т,%')
-                    AND lemma NOT IN ('кът', 'хрът') -- false positives
-        UNION SELECT lemma_id FROM lemma WHERE lemma IN ('тел', 'син', 'рев', 'ред', 'рид', 'род',
-                'ръб', 'ръст', 'слух', 'срам', 'смях', 'сняг', 'полусън', 'тим') AND pos = 'Ncm' -- false negatives
+        WITH RECURSIVE ctx(lemma_id) AS (
+            -- base case
+            SELECT l1.lemma_id FROM lemma l1 WHERE l1.pos = 'Ncm' AND l1.num_syllables = 1 AND
+            (l1.definition LIKE '%ъ`т%' OR l1.definition LIKE '%ъ̀т%' OR l1.definition LIKE '%я`т,%')
+            AND l1.lemma NOT IN ('кът', 'хрът') -- false positives
+            UNION ALL SELECT l1.lemma_id FROM lemma l1 WHERE l1.lemma IN ('тел', 'син', 'рев', 'ред', 'рид', 'род',
+            'ръб', 'ръст', 'слух', 'срам', 'смях', 'сняг', 'тим') AND l1.pos = 'Ncm' -- false negatives
+            -- inductive case
+            UNION ALL SELECT d.child_id FROM ctx c
+            INNER JOIN lemma l1 ON l1.lemma_id = c.lemma_id
+            INNER JOIN derivation d ON d.parent_id = c.lemma_id
+            INNER JOIN lemma l2 ON d.child_id = l2.lemma_id AND l1.pos = l2.pos
+        ) SELECT * FROM ctx
     )
     AND (tag LIKE 'N__sh' OR tag LIKE 'N__sf');
 
