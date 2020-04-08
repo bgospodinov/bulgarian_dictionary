@@ -19,7 +19,7 @@ SELECT
 	l1.lemma_id as child_id,
 	'diminutive' as type
 FROM lemma l1
-INNER JOIN lemma l2 ON l2.lemma = DIMINUTIVE_TO_BASE(l1.lemma)
+INNER JOIN lemma l2 ON l2.lemma = DIMINUTIVE_TO_BASE(l1.lemma) AND l1.lemma_id != l2.lemma_id
 WHERE
 	l1.pos LIKE 'N%' AND l2.pos LIKE 'N%' AND l1.ner IS NULL AND
 	(
@@ -60,11 +60,12 @@ SELECT *, 'noun-to-noun' FROM
 (
 	SELECT
 		l1.lemma_id AS parent_id,
-		l2.lemma_id AS child_id,
+		l2.lemma_id AS child_id
 	FROM lemma l1
 	INNER JOIN lemma l2 ON l1.pos = l2.pos AND l1.lemma_id != l2.lemma_id
 	WHERE
-		l1.lemma IN ('сън', 'смях', 'глад', 'град', 'дял', 'звук', 'кръг', 'труд') AND
+		l1.lemma IN ('сън', 'смях', 'глад', 'град', 'дял', 'звук', 'кръг', 'труд', 'бог', 'клас', 'прах', 'страх', 'час') AND
+		l1.lemma_id NOT IN (321) AND
 		l1.pos LIKE 'N%' AND
 		l2.lemma_stressed LIKE '%' || l1.lemma_stressed
 	-- век
@@ -76,7 +77,7 @@ SELECT *, 'noun-to-noun' FROM
 	UNION ALL SELECT 234, 596
 	UNION ALL SELECT 234, 34169
 	-- стил
-	UNION ALL SELECT 974. 381
+	UNION ALL SELECT 974, 381
 	UNION ALL SELECT 974, 744
 );
 
