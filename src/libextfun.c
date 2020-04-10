@@ -18,7 +18,6 @@ static void sqlite_reverse(sqlite3_context *context, int argc, sqlite3_value **a
 int sqlite3_extfun_init(sqlite3 *db, char **pzErrMsg, const sqlite3_api_routines *pApi) {
 	int rc = SQLITE_OK;
 	SQLITE_EXTENSION_INIT2(pApi);
-	fprintf(stderr, "%s\n", "Loading libextfun.so...");
 	// registering all custom sqlite functions
 	sqlite3_create_function(db, "is_lemma", 3, SQLITE_UTF8, NULL, &sqlite_is_lemma, NULL, NULL);
 	sqlite3_create_function(db, "is_vowel", 1, SQLITE_UTF8, NULL, &sqlite_is_vowel, NULL, NULL);

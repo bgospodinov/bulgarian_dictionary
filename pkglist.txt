@@ -1,3 +1,5 @@
 parallel
 sqlite3
 git-lfs
+python3
+miniconda3

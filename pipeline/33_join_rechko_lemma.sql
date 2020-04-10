@@ -35,6 +35,7 @@ LEFT JOIN rechko_word_type rwt
 -- fix some mistakes in rechko
 UPDATE main.rechko_lemma SET pos = 'V' WHERE name = 'недей';
 UPDATE main.rechko_lemma SET name_stressed = name WHERE name_stressed IS NULL;
+UPDATE main.rechko_lemma SET name = 'Мезозой', name_stressed = 'Мезозо`й' WHERE id = 84008;
 
 -- fix accidental double stressing
 UPDATE main.rechko_lemma SET name_stressed = 'боя`' WHERE id = 114442;

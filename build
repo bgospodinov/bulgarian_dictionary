@@ -130,6 +130,12 @@ fi
 		##### SLOVNIK SECTION END #####
 	fi
 
+	###### MURDAROV SECTION START #####
+	echo Importing Murdarov lemmata...
+	sqlite3 $DB_MAIN_PATH "CREATE TABLE murdarov_lemma(lemma_stressed TEXT);" ".mode csv" ".import $RESOURCES_PATH/murdarov.txt murdarov_lemma" \
+".read pipeline/13_import_murdarov_lemma.sql"
+	##### MURDAROV SECTION END #####
+
 	###### RBE SECTION START #####
 	echo Unpacking RBE...
 	zcat $RESOURCES_PATH/db-rbe.sql.gz > $SCRATCH_PATH/db-rbe.sql
@@ -208,8 +214,11 @@ if [ $PROCESS_SLOVNIK ] ; then
 	sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/34_join_slovnik_lemma.sql"
 fi
 
+echo Joining Murdarov lemmata with lemmata
+sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/35_join_murdarov_lemma.sql"
+
 echo NER processing in existing lemmata
-sqlite3 $DB_MAIN_PATH ".read pipeline/35_ner_processing.sql"
+sqlite3 $DB_MAIN_PATH ".read pipeline/38_ner_processing.sql"
 
 echo Creating lemma fulltext index;
 sqlite3 $DB_MAIN_PATH "CREATE VIRTUAL TABLE lemma_ft USING fts5(definition, content=lemma);" "INSERT INTO lemma_ft SELECT definition FROM lemma;";
@@ -254,7 +263,7 @@ fi
 if [ $CLEAN_TEMP_DATA ] ; then
 	# drop rechko_lemma and rbe_lemma tables
 	echo Deleting old lemma tables
-	sqlite3 $DB_MAIN_PATH "DROP TABLE rbe_lemma;" "DROP TABLE rechko_lemma;" "DROP TABLE rbe_lemma_ft;" "DROP TABLE rechko_word_type;"
+	sqlite3 $DB_MAIN_PATH "DROP TABLE rbe_lemma;" "DROP TABLE rechko_lemma;" "DROP TABLE murdarov_lemma;" "DROP TABLE rbe_lemma_ft;" "DROP TABLE rechko_word_type;"
 
 	echo Deleting rechko wordforms table
 	sqlite3 $DB_MAIN_PATH "DROP TABLE IF EXISTS derivative_form;"
