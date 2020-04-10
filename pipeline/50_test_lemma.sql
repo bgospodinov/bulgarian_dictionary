@@ -75,6 +75,13 @@ INSERT INTO _res VALUES('lemmata_with_null_stress_column', (SELECT COUNT(*) FROM
 
 INSERT INTO _res VALUES("number_of_lemmata", (SELECT COUNT(*) FROM lemma));
 
+-- should be 0
+INSERT INTO _res VALUES("number_of_lemmata_without_wordforms", (
+	SELECT COUNT(*) FROM lemma l
+	LEFT JOIN wordform w ON l.lemma_id = w.lemma_id
+	WHERE w.lemma_id IS NULL)
+);
+
 SELECT * FROM _res;
 
 DROP TABLE _vars;

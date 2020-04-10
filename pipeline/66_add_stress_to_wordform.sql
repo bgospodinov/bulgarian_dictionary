@@ -184,7 +184,8 @@ wordform LIKE '%те' AND wordform NOT IN ('тринките', 'тричките
 
 UPDATE wordform
 SET wordform_stressed = stress_syllable(wordform, CASE WHEN tag LIKE '%i' THEN num_syllables - 1 ELSE num_syllables - 2 END)
-WHERE (tag like 'Mc-s_' or tag like 'My-p_') and lemma_id not in (102897, 102898, 102947, 102948, 102949, 102950, 102951);
+WHERE (tag like 'Mc-s_' or tag like 'My-p_') and lemma_id not in (102897, 102898, 102947, 102948, 102949, 102950, 102951)
+AND is_lemma = 0;
 
 -- deal with the numeral хи`ляди
 UPDATE wordform

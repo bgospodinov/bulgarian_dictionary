@@ -239,7 +239,7 @@ if [ $PROCESS_SLOVNIK ] ; then
 fi
 
 echo Cleaning lemma and wordforms table
-sqlite3 $DB_MAIN_PATH ".read pipeline/45_clean_lemma_table.sql"
+sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/45_postprocess_lemma_table.sql"
 
 if [ $RUN_TESTS ] ; then
 	echo Run tests on lemmata tables
