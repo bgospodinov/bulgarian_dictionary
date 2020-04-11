@@ -44,7 +44,7 @@ do
 			shift;
 		;;
 		--help)
-			echo "./build [--help --no-slovnik --no-tests --no-fail --clean --debug --no-trap]"
+			echo "./build [--help --no-slovnik --no-tests --no-fail --clean --debug --no-trap --no-copy]"
 			exit 0;
 		;;
 		*)
