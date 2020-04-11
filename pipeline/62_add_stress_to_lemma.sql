@@ -72,8 +72,8 @@ UPDATE lemma
 SET lemma_stressed = stress_syllable(lemma, num_syllables - 2)
 WHERE num_syllables > 0 AND num_stresses = 0 AND lemma LIKE '%нича' AND lemma_id NOT IN (96881, 102265, 100420, 100428, 180802);
 
--- TODO: 70% of Ncm is 01
--- TODO: 85% of Ncf is 10
--- TODO: При повече от 84% от глаголите ударението е пенултимно (ходя, чакам), а при останалите оксинонно (чета, благодаря)
+-- TODO: 70% of disyllabic Ncm is 01
+-- TODO: 85% of disyllabic Ncf is 10
+-- TODO: При повече от 84% от глаголите ударението е пенултимно 10 (ходя, чакам), а при останалите оксинонно 01 (чета, благодаря)
 
 END TRANSACTION;

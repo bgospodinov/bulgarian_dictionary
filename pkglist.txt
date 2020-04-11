@@ -1,5 +1,6 @@
+# system dependencies
 parallel
 sqlite3
 git-lfs
-python3
-miniconda3
+python3 # only for building murdarov dict
+miniconda3 # only for building murdarov dict
