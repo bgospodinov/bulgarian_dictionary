@@ -1,4 +1,3 @@
-CREATE TEMP TABLE _vars(key TEXT, value INTEGER);
 CREATE TEMP TABLE _res(key TEXT, value INTEGER);
 
 -- should be 0
@@ -16,6 +15,14 @@ SELECT
 FROM lemma l
 LEFT JOIN wordform w ON l.lemma_id = w.lemma_id AND w.is_lemma = 1
 WHERE lemma_stressed LIKE '%`%' AND l.lemma_stressed != w.wordform_stressed));
+
+-- should be 0
+INSERT INTO _res VALUES("lemmata_that_dont_match_their_wordform_stress", (
+SELECT
+	COUNT(*)
+FROM lemma l
+INNER JOIN wordform w ON l.lemma_id = w.lemma_id
+WHERE l.num_stresses != w.num_stresses AND l.pos != 'Ncf' AND l.num_stresses > 0 AND w.pos NOT LIKE 'N__s-v'));
 
 -- should be 0
 INSERT INTO _res VALUES('number_of_lemma_stress_mismatches', (SELECT COUNT(*) FROM lemma WHERE lemma != REPLACE(lemma_stressed, '`', '')));
@@ -183,6 +190,4 @@ INSERT INTO _res VALUES("мосто`ве_stress", (SELECT COUNT(*) > 0 FROM word
 INSERT INTO _res VALUES("яде`м_stress", (SELECT COUNT(*) > 0 FROM wordform WHERE wordform_stressed = 'яде`м'));
 
 SELECT * FROM _res;
-
-DROP TABLE _vars;
 DROP TABLE _res;

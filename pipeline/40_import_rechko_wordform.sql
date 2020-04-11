@@ -47,6 +47,10 @@ SET wordform = REPLACE(wordform, 'черири', 'четири'),
 	wordform_stressed = REPLACE(wordform_stressed, 'черири', 'четири')
 WHERE lemma_id = 102923;
 
+-- deals with wrong inflections
+DELETE FROM main.rechko_wordform WHERE wordform LIKE 'полугласи%' AND lemma_id = 34169;
+DELETE FROM main.rechko_wordform WHERE wordform LIKE 'радиочаси%' AND lemma_id = 34598;
+
 -- this helps evade rechko mismatches for reflexive verbs and adjectives
 UPDATE rechko_wordform SET wordform = REPLACE(wordform, ' се', ''), wordform_stressed = REPLACE(wordform_stressed, ' се', '')
 WHERE classification = 'reflexive' or classification = '+reflexive';

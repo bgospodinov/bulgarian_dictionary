@@ -17,7 +17,8 @@ INSERT INTO _res VALUES('missing_slovnik_lemmata',
 
 -- should be 0
 INSERT INTO _res VALUES('missing_murdarov_lemmata',
-	(SELECT COUNT(*) FROM murdarov_lemma m WHERE NOT EXISTS(SELECT lemma_id FROM lemma l WHERE m.lemma = l.lemma))
+	-- make sure murdarov stress takes precedence
+	(SELECT COUNT(*) FROM murdarov_lemma m WHERE NOT EXISTS(SELECT lemma_id FROM lemma l WHERE m.lemma_stressed = l.lemma_stressed))
 );
 
 -- test whether there are lemmata with NULL stress columns
@@ -34,5 +35,4 @@ INSERT INTO _res VALUES("number_of_lemmata_without_wordforms", (
 );
 
 SELECT * FROM _res;
-
 DROP TABLE _res;

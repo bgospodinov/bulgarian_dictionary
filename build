@@ -208,6 +208,7 @@ fi
 echo Creating lemma indices
 sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_lemma_lemma_pos ON lemma(lemma, pos);"
 sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_lemma_lemma_stressed_pos ON lemma(lemma_stressed, pos);"
+sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_lemma_num_syllables ON lemma(num_syllables);"
 
 if [ $PROCESS_SLOVNIK ] ; then
 	echo Joining Slovnik lemmata with lemmata

@@ -134,6 +134,26 @@ copy:
 	return res;
 }
 
+const char * remove_last_char(const char * word, const char * c) {
+	setlocale(LC_ALL, "");
+	wchar_t * wword = convert_to_wstring(word);
+	const size_t wword_len = wcslen(wword);
+	wchar_t * wc = convert_to_wstring(c);
+	wchar_t * const wc_o = wc;
+
+	// last occurence of char
+	wchar_t * lwc = wcsrchr(wword, *wc);
+
+	if (lwc != NULL) {
+		wmemmove(lwc, lwc + 1, wword_len - (lwc - wword));
+	}
+
+	free(wc_o);
+	char * res = convert_to_mbstring(wword);
+	free(wword);
+	return res;
+}
+
 int find_nth_stressed_syllable(const char * word, int n) {
 	wchar_t * wword = convert_to_wstring(word);
 	wchar_t * const wword_o = wword;

@@ -24,7 +24,7 @@ WHERE (SELECT COUNT(*) FROM wordform w WHERE w.wordform = s.wordform AND w.tag =
 
 -- add lemma manually for some slovnik wordforms
 UPDATE wordform
-SET lemma_id = (SELECT lemma_id FROM lemma WHERE lemma = 'повече' AND pos = 'M' AND source = 'slovnik')
+SET lemma_id = (SELECT lemma_id FROM lemma WHERE lemma = 'повече' AND pos = 'M' AND source LIKE '%slovnik%')
 WHERE wordform = 'повечето' AND lemma_id IS NULL;
 
 END TRANSACTION;
