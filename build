@@ -6,6 +6,7 @@ EXIT_ON_FAILURE=true
 CLEAN_TEMP_DATA=true
 RUN_TESTS=true
 SET_TRAP=true
+COPY_FINAL=true
 
 set -b
 
@@ -36,6 +37,10 @@ do
 		;;
 		--no-trap)
 			SET_TRAP=
+			shift;
+		;;
+		--no-copy)
+			COPY_FINAL=
 			shift;
 		;;
 		--help)
@@ -303,7 +308,9 @@ sqlite3 $DB_MAIN_PATH ".read pipeline/80_create_pronunciation.sql"
 echo Vacuum...
 sqlite3 $DB_MAIN_PATH "VACUUM"
 
-echo Persisting temp database...
-cp $DB_MAIN_PATH $DB_FINAL_PATH
+if [ $COPY_FINAL ] ; then
+	echo Persisting temp database...
+	cp $DB_MAIN_PATH $DB_FINAL_PATH
+fi
 
 echo Build finished. Artifact generated.
