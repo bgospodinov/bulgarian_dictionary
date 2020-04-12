@@ -25,6 +25,13 @@ INNER JOIN wordform w ON l.lemma_id = w.lemma_id
 WHERE l.num_stresses != w.num_stresses AND l.pos != 'Ncf' AND l.num_stresses > 0 AND w.pos NOT LIKE 'N__s-v'));
 
 -- should be 0
+-- check again after amending some stresses
+INSERT INTO _res VALUES('missing_murdarov_lemmata',
+	-- make sure murdarov stress takes precedence
+	(SELECT COUNT(*) FROM murdarov_lemma m WHERE NOT EXISTS(SELECT lemma_id FROM lemma l WHERE m.lemma_stressed = l.lemma_stressed))
+);
+
+-- should be 0
 INSERT INTO _res VALUES('number_of_lemma_stress_mismatches', (SELECT COUNT(*) FROM lemma WHERE lemma != REPLACE(lemma_stressed, '`', '')));
 
 -- should be 0
