@@ -180,8 +180,35 @@ UPDATE lemma
 SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
 WHERE num_syllables > 0 AND num_stresses = 0 AND lemma LIKE '%ест' and pos != 'Np';
 
+-- most verbs (84%) have stress on their penultimate syllable, for the rest it is on the last syllable (with very few exceptions)
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables)
+WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'V' and lemma in (
+    'дъхтя', 'кълбя', 'сърбя', 'лумтя', 'рося', 'сладя',
+    'хладя', 'снежа', 'двоя', 'слоя', 'дуя', 'плуя',
+    'скривя', 'сдуша', 'спеша', 'вдълбя', 'взломя', 'вледя',
+    'влудя', 'вплътня', 'вродя', 'вталя', 'свеня', 'сградя',
+    'сдвоя', 'снизя', 'спластя', 'стъмня', 'вклиня', 'сговня',
+    'стъжня', 'сноша', 'удам', 'превра', 'всмърдя', 'възвря',
+    'повря', 'превря', 'развря', 'слетя', 'вмета', 'впреда',
+    'втреса', 'враста', 'всека', 'вчета', 'еба', 'смълча',
+    'поям', 'доспя', 'отспя', 'отям', 'приям', 'отща', 'прища',
+    'поям', 'презра', 'гоя', 'боде', 'боли', 'вали', 'втресе',
+    'върви', 'горчи', 'доспи', 'доще', 'здрачи', 'люти',
+    'мързи', 'отще', 'поще', 'приспи', 'прище', 'тежи',
+    'роси', 'ръми', 'слади', 'смрачи', 'снежи', 'стъмни',
+    'тресе', 'цари', 'завря', 'зоря', 'мъгля', 'мълзя',
+    'помра', 'сгоря', 'сдробя', 'словя', 'смърся', 'сребря',
+    'студя', 'стървя', 'сцедя', 'троя', 'тумтя', 'томя',
+    'тълмя', 'търня', 'фиря', 'хитря', 'хруптя', 'язвя'
+);
+
+-- assume penultimate stress for the rest
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
+WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'V';
+
 -- TODO: 70% of disyllabic Ncm is 01
 -- TODO: 85% of disyllabic Ncf is 10
--- TODO: При повече от 84% от глаголите ударението е пенултимно 10 (ходя, чакам), а при останалите оксинонно 01 (чета, благодаря)
 
 END TRANSACTION;

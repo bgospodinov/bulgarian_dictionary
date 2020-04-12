@@ -15,7 +15,7 @@ UPDATE rbe_lemma SET pos = 'C'
 WHERE pos IS NULL AND ROWID IN (select ROWID from rbe_lemma_ft WHERE rbe_lemma_ft MATCH '"<i>съюз."');
 
 UPDATE rbe_lemma SET pos = 'T'
-WHERE pos IS NULL AND ROWID IN (select ROWID from rbe_lemma_ft WHERE rbe_lemma_ft MATCH '"<i>частица"');
+WHERE pos IS NULL AND ROWID IN (select ROWID from rbe_lemma_ft WHERE rbe_lemma_ft MATCH '"<i>частица" OR "Първа съставна част" OR "Втора съставна част"');
 
 UPDATE rbe_lemma SET pos = 'I'
 WHERE pos IS NULL AND ROWID IN (select ROWID from rbe_lemma_ft WHERE rbe_lemma_ft MATCH '"<i>междум."');
