@@ -168,7 +168,7 @@ SET wordform_stressed =
     replace_last_stress(wordform_stressed, num_syllables)
 WHERE tag LIKE 'N_fsd' AND (
     SELECT COUNT(*) FROM wordform w
-    WHERE w.lemma_id = wordform.lemma_id AND w.is_lemma = 1 AND NOT is_vowel(SUBSTR(w.wordform, LENGTH(w.wordform)))
+    WHERE w.lemma_id = wordform.lemma_id AND w.is_lemma = 1 AND NOT is_vocal(SUBSTR(w.wordform, LENGTH(w.wordform)))
 ) > 0;
 
 -- deal with feminite nouns that end in a stressed vowel 'a' or 'я' that move their stress one syllable backwards in vocative form

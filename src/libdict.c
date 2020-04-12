@@ -7,20 +7,20 @@
 #include "../inc/libdict.h"
 #include "../inc/string_aux.h"
 
-const wchar_t lc_vowels[] = { u'\u0430', u'\u0435', u'\u0438', u'\u043E', u'\u0443', u'\u044A', u'\u044E', u'\u044F' };
+const wchar_t lc_vocals[] = { u'\u0430', u'\u0435', u'\u0438', u'\u043E', u'\u0443', u'\u044A', u'\u044E', u'\u044F' };
 
 int is_capitalized(const wchar_t * const word) {
 	return *word >= u'\u0410' && *word < u'\u0430';
 }
 
-int is_vowel(wchar_t wc) {
+int is_vocal(wchar_t wc) {
 	// account for capital letters
 	if (wc < u'\u0430') {
 		wc += 32;
 	}
 
-	for (int j = 0; j < sizeof(lc_vowels) / 2; j++) {
-		int sign = (lc_vowels[j] > wc) - (lc_vowels[j] < wc);
+	for (int j = 0; j < sizeof(lc_vocals) / 2; j++) {
+		int sign = (lc_vocals[j] > wc) - (lc_vocals[j] < wc);
 		if (sign == -1) continue;
 		else if (sign == 0) return 1;
 		else break;
@@ -65,8 +65,8 @@ int count_syllables(const char * str) {
 	wchar_t * wstr = convert_to_wstring(str);
 
 	for (size_t i = 0; wstr[i]; ++i) {
-		// count vowels as a proxy
-		if (is_vowel(wstr[i]))
+		// count graphemes corresponding to vowels as a proxy
+		if (is_vocal(wstr[i]))
 			cnt++;
 	}
 
@@ -113,7 +113,7 @@ const char * stress_syllable(const char * word, int n) {
 
 	int k = 0;
 	for (; *wword != '\0' && n > 0; k++, wword++) {
-		if (is_vowel(*wword)) {
+		if (is_vocal(*wword)) {
 			n--;
 		}
 	}
@@ -161,7 +161,7 @@ int find_nth_stressed_syllable(const char * word, int n) {
 
 	int syllable_count = 0;
 	for (; *wword != '\0' && n > 0; wword++) {
-		if (is_vowel(*wword)) {
+		if (is_vocal(*wword)) {
 			syllable_count++;
 		}
 		else if (*wword == L'`') {
