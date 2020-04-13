@@ -180,6 +180,38 @@ UPDATE lemma
 SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
 WHERE num_syllables > 0 AND num_stresses = 0 AND lemma LIKE '%ест' and pos != 'Np';
 
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
+where num_stresses = 0 and pos = 'Ncm' and num_syllables = 2 and lemma like '%инг';
+
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
+where num_stresses = 0 and pos = 'Ncm' and num_syllables = 2 and lemma like '%ий';
+
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
+where num_stresses = 0 and pos = 'Ncm' and num_syllables = 2 and lemma like '%ър';
+
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
+where num_stresses = 0 and pos = 'Ncm' and num_syllables = 2 and lemma like '%ьо';
+
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
+where num_stresses = 0 and pos = 'Ncm' and num_syllables = 2 and lemma like '%чо';
+
+-- stress lemma that are duplicated with the same stress as their siblings
+UPDATE lemma
+SET lemma_stressed = IFNULL(
+	(select l2.lemma_stressed from lemma l2
+	where lemma.lemma = l2.lemma
+	and lemma.lemma_id != l2.lemma_id
+	and l2.num_stresses > 0
+	and SUBSTR(lemma.pos, 1, 1) = SUBSTR(l2.pos, 1, 1)),
+	lemma.lemma_stressed
+)
+where lemma.num_stresses = 0;
+
 -- most verbs (84%) have stress on their penultimate syllable, for the rest it is on the last syllable (with very few exceptions)
 UPDATE lemma
 SET lemma_stressed = stress_syllable(lemma, num_syllables)
@@ -208,7 +240,68 @@ UPDATE lemma
 SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
 WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'V';
 
--- TODO: 70% of disyllabic Ncm is 01
--- TODO: 85% of disyllabic Ncf is 10
+-- 85% of disyllabic Ncf is stressed on penultimate syllable
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables)
+WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'Ncf' and lemma in (
+    'свръхмощ', 'катма', 'дрисня', 'пикня', 'скрипя', 'смутня',
+    'тъпня', 'фукня', 'черпня', 'свръхсплав', 'секснощ', 'спецчаст',
+    'евзон', 'мадам', 'махла', 'мъзда', 'ритня', 'тасма'
+);
+
+-- assume penultimate stress for the rest
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
+WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'Ncf';
+
+-- 70% of disyllabic Ncm is stressed on last syllable
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
+WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'Ncm' and lemma in (
+    'тайбрек', 'тъчпад', 'тъчскрийн', 'фейсбук', 'фейслифт', 'фрийстайл', 'хардкор', 'айдъл',
+    'булшит', 'бърбън', 'допуск', 'енджин', 'епъл', 'изглас', 'изказ', 'изрез', 'йогурт', 'каперс',
+    'капсул', 'каркас', 'карлсберг', 'карнет', 'картоп', 'картридж', 'келвин',
+    'киликс', 'кокпит', 'команч', 'конкум', 'концепт', 'кончов', 'кортекс',
+    'кромлех', 'левъл', 'лейбъл', 'лексус', 'линкълн', 'магнум', 'макрос', 'Маргин',
+    'маржин', 'матрикс', 'метъл', 'мишунг', 'морбил', 'морон',
+    'мъпет', 'ориндж', 'отврат', 'памперс', 'паунд',  'пеналт',
+    'пикчърс', 'пинбол', 'питбул', 'питлейн', 'плейлист',   'плимут',
+    'плъгин', 'попъп', 'преслап', 'примас', 'припас', 'прицеп', 'провес',
+    'профайл', 'пфениг',  'разсип', 'райком', 'резус', 'ролекс', 'самсунг',
+    'санпласт', 'сексроб', 'сексфилм', 'сетбол', 'сешън', 'сименс', 'симплекс',
+    'ситком', 'скендъл', 'скинхед', 'скрабъл', 'скрупул', 'слоган', 'смартфон',
+    'сникърс',  'сокет',  'софтбол', 'софткор',  'спандекс', 'стейшън', 'стилет', 'сторидж',
+    'суплекс', 'сървлет', 'талвег', 'тамбур', 'татус', 'телбод', 'тетрев', 'техникс',  'топлес', 'трайбъл',
+    'тракшън', 'требъл', 'тременс', 'туборг', 'тъчпад', 'тъчскрийн', 'ултрас',
+    'уплах', 'фасет', 'фейслифт', 'фешън', 'фикшън', 'филипс', 'форинт', 'франчайз', 'фрийстайл',
+    'футзал', 'фюжън', 'фючърс', 'хайбол',  'хардкор',
+    'хоркрукс',   'цикас', 'циркус', 'чадор', 'чекпойнт', 'ченъл', 'чикън', 'чипсет', 'шлаух',
+    'шумол', 'щолен', 'ърбън', 'юникс', 'юнит',  'батсмен',
+    'гоблин', 'грийнхорн', 'зулус', 'клитор',  'компир', 'кустос', 'могол',  'претор',
+    'тайсън', 'херолд', 'хобит', 'юрод', 'русин', 'приказ', 'батик', 'готик', 'квасник',
+    'клашник', 'кодек', 'крайшник', 'кубрик', 'листник', 'лучник', 'мимик', 'нетбук',
+    'пчелник', 'ровник', 'сивик', 'сладник', 'снежник', 'стрелник', 'струнник', 'съсък',
+    'тайбрек', 'тайник', 'тупик', 'фейсбук', 'фийдбек', 'хай-тек', 'ходник', 'хроник',
+    'гадник', 'зуек', 'къщник', 'стражник', 'страшник', 'хулник',  'сървей',
+    'калец', 'колец', 'сърнец', 'щипец', 'джингъл', 'спазъм', 'вартбург', 'кърчаг',
+    'самсунг', 'туборг', 'Странджа', 'чичка', 'чукча', 'Етър', 'Лувър',
+    'Гошо', 'зайко', 'зайо', 'мурджо', 'рамбо', 'снежко', 'сръчко',
+    'хахо',   'шаро', 'ардъч', 'близък', 'бонза', 'желъд', 'запив', 'зарив', 'заръч', 'змейно',
+    'издих', 'камен', 'кечуп', 'кечъп', 'клирос', 'клубен',  'крякот',
+    'лелин', 'лепет', 'ликтор', 'лимец', 'логой', 'лодос',
+    'магнет',  'молберт', 'момко',  'панцир', 'плътник', 'привод',
+    'приглед', 'пробир', 'пролез', 'просек', 'пукъл', 'рабиц', 'росен', 'рупец',
+    'ръбец',  'свършък', 'серей', 'сечник',  'скокот', 'скрежец',
+    'скъпец', 'сламник', 'слапей',  'служещ', 'сметник', 'сопот', 'спонец',
+    'столник', 'стратор', 'стрико', 'стропник', 'стълбец', 'схимник', 'съвлек',
+    'сърпец', 'съсек', 'талог',   'тетин', 'тилник', 'титър',
+    'тлъчник', 'топот', 'тревник', 'тъжек', 'тълчник', 'търсей', 'фьотър', 'хлопот',
+    'хумник', 'цванец', 'цвъркот', 'църкот', 'чашник', 'черен', 'чукот', 'шерпа', 'шляхтич'
+);
+
+-- assume ultimate stress for the rest
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables)
+WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'Ncm';
 
 END TRANSACTION;
