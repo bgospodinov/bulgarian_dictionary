@@ -52,7 +52,7 @@ in %s.", path);
 	char *line = NULL;
 	char *delim = "\t";
 	size_t len = 0;
-	ssize_t read;
+	size_t read;
 	const int maxcols = 3;
 	char *toks[maxcols];
 

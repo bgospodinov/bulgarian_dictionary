@@ -1,5 +1,7 @@
 #include <sqlite3ext.h>
 #include <stdio.h>
+#include <string.h>
+#include <locale.h>
 #include <stdlib.h>
 #include "../inc/libdict.h"
 #include "../inc/string_aux.h"
@@ -18,6 +20,7 @@ static void sqlite_diminutive_to_base(sqlite3_context *context, int argc, sqlite
 static void sqlite_reverse(sqlite3_context *context, int argc, sqlite3_value **argv);
 
 int sqlite3_extfun_init(sqlite3 *db, char **pzErrMsg, const sqlite3_api_routines *pApi) {
+	setlocale(LC_ALL, "");
 	int rc = SQLITE_OK;
 	SQLITE_EXTENSION_INIT2(pApi);
 	// registering all custom sqlite functions
@@ -54,10 +57,11 @@ static void sqlite_is_vocal(sqlite3_context *context, int argc, sqlite3_value **
 	if (argc == 1) {
 		const char * word = sqlite3_value_text(argv[0]);
 		if (word) {
-			wchar_t * wword = convert_to_wstring(word);
-			int result = is_vocal(*wword);
+			wchar_t wchar = 0;
+			wchar_t * pwchar = &wchar;
+			mbstowcs(pwchar, word, 1);
+			int result = is_vocal(*pwchar);
 			sqlite3_result_int(context, result);
-			free(wword);
 			return;
 		}
 	}

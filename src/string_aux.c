@@ -1,5 +1,4 @@
 #include <wchar.h>
-#include <locale.h>
 #include <string.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -9,7 +8,6 @@
 wchar_t * strip_longest_suffix(wchar_t * const wword, 
 										const wchar_t * const suff[],
 										size_t suffsz, int * sfxmidx) {
-	setlocale(LC_ALL, "");
 	const size_t wlen = wcslen(wword);
 	wchar_t * const pewword = wword + wlen - 1;
 	wchar_t * pwword = pewword;
@@ -58,31 +56,39 @@ wchar_t * strip_longest_suffix(wchar_t * const wword,
 	return wword;
 }
 
-wchar_t * convert_to_wstring(const char * str) {
-	setlocale(LC_ALL, "");
-	size_t strl = strlen(str);
-	wchar_t *wstr = (wchar_t *) calloc(strl, sizeof(wchar_t));
-	int rc = mbstowcs(wstr, str, strl);
+size_t convert_to_wstring_h(wchar_t * result, const char * str, size_t strl) {
+	int rc = mbstowcs(result, str, strl);
 
 	if (rc < 0) {
-		fprintf(stderr, "Error converting to wide char string.");
+		fprintf(stderr, "Error converting to wide char string.\n");
 		exit(EXIT_FAILURE);
 	}
 
+	return rc;
+}
+
+wchar_t * convert_to_wstring(const char * str) {
+	size_t strl = strlen(str);
+	wchar_t *wstr = (wchar_t *) calloc(strl, sizeof(wchar_t));
+	convert_to_wstring_h(wstr, str, strl);
 	return wstr;
 }
 
-char * convert_to_mbstring(const wchar_t * wstr) {
-	setlocale(LC_ALL, "");
-	size_t wstrl = wcslen(wstr) * 4 + 1;
-	char * str = (char *) calloc(wstrl, sizeof(char));
-	size_t rc = wcstombs(str, wstr, wstrl);
+size_t convert_to_mbstring_h(char * buffer, const wchar_t * wstr, size_t buffsz) {
+	size_t rc = wcstombs(buffer, wstr, buffsz);
 
 	if (rc < 0) {
 		fprintf(stderr, "Error converting to multibyte string: %s \n", strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 
+	return rc;
+}
+
+char * convert_to_mbstring(const wchar_t * wstr) {
+	size_t wstrl = wcslen(wstr) * 4 + 1;
+	char * str = (char *) calloc(wstrl, sizeof(char));
+	convert_to_mbstring_h(str, wstr, wstrl);
 	return str;
 }
 

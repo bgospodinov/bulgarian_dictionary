@@ -3,7 +3,6 @@
 #include <wchar.h>
 #include <stdio.h>
 #include <assert.h>
-#include <locale.h>
 #include "../inc/libdict.h"
 #include "../inc/string_aux.h"
 
@@ -62,7 +61,9 @@ int is_lemma(const char * wordform, const char * lemma, const char * tag) {
 
 int count_syllables(const char * str) {
 	int cnt = 0;
-	wchar_t * wstr = convert_to_wstring(str);
+	size_t strl = strlen(str);
+	wchar_t wstr[strl];
+	convert_to_wstring_h(wstr, str, strl);
 
 	for (size_t i = 0; wstr[i]; ++i) {
 		// count graphemes corresponding to vowels as a proxy
@@ -70,12 +71,10 @@ int count_syllables(const char * str) {
 			cnt++;
 	}
 
-	free(wstr);
 	return cnt;
 }
 
 const char * diminutive_to_base(const char * word) {
-	setlocale(LC_ALL, "");
 	static const wchar_t * const suff[] = 
 	// only append new elements to the end or check the switch statement below
 				{ L"че", L"це", L"йка", L"чица", L"джийка", L"нце" };
@@ -101,7 +100,6 @@ const char * diminutive_to_base(const char * word) {
 }
 
 const char * stress_syllable(const char * word, int n) {
-	setlocale(LC_ALL, "");
 	wchar_t * wword = convert_to_wstring(word);
 	wchar_t * const wword_o = wword;
 	const size_t wword_len = wcslen(wword);
@@ -135,7 +133,6 @@ copy:
 }
 
 const char * remove_last_char(const char * word, const char * c) {
-	setlocale(LC_ALL, "");
 	wchar_t * wword = convert_to_wstring(word);
 	const size_t wword_len = wcslen(wword);
 	wchar_t * wc = convert_to_wstring(c);
