@@ -17,6 +17,7 @@ static void sqlite_remove_last_char(sqlite3_context *context, int argc, sqlite3_
 static void sqlite_find_nth_stressed_syllable(sqlite3_context *context, int argc, sqlite3_value **argv);
 static void sqlite_find_nth_stressed_syllable_rev(sqlite3_context *context, int argc, sqlite3_value **argv);
 static void sqlite_diminutive_to_base(sqlite3_context *context, int argc, sqlite3_value **argv);
+static void sqlite_accent_model(sqlite3_context *context, int argc, sqlite3_value **argv);
 static void sqlite_reverse(sqlite3_context *context, int argc, sqlite3_value **argv);
 
 int sqlite3_extfun_init(sqlite3 *db, char **pzErrMsg, const sqlite3_api_routines *pApi) {
@@ -34,6 +35,7 @@ int sqlite3_extfun_init(sqlite3 *db, char **pzErrMsg, const sqlite3_api_routines
 	sqlite3_create_function(db, "find_nth_stressed_syllable", 2, SQLITE_UTF8, NULL, &sqlite_find_nth_stressed_syllable, NULL, NULL);
 	sqlite3_create_function(db, "find_nth_stressed_syllable_rev", 2, SQLITE_UTF8, NULL, &sqlite_find_nth_stressed_syllable_rev, NULL, NULL);
 	sqlite3_create_function(db, "diminutive_to_base", 1, SQLITE_UTF8, NULL, &sqlite_diminutive_to_base, NULL, NULL);
+	sqlite3_create_function(db, "accent_model", 1, SQLITE_UTF8, NULL, &sqlite_accent_model, NULL, NULL);
 	sqlite3_create_function(db, "reverse", 1, SQLITE_UTF8, NULL, &sqlite_reverse, NULL, NULL);
 	return rc;
 }
@@ -178,6 +180,20 @@ static void sqlite_diminutive_to_base(sqlite3_context *context, int argc, sqlite
 			char * result = (char *)diminutive_to_base(text);
 			sqlite3_result_text(context, result, -1, SQLITE_TRANSIENT);
 			free(result);
+			return;
+		}
+	}
+
+	sqlite3_result_null(context);
+}
+
+static void sqlite_accent_model(sqlite3_context *context, int argc, sqlite3_value **argv) {
+	if (argc == 1) {
+		const char * text = sqlite3_value_text(argv[0]);
+		if (text) {
+			char result[strlen(text) + 1];
+			accent_model(result, text);
+			sqlite3_result_text(context, result, -1, SQLITE_TRANSIENT);
 			return;
 		}
 	}

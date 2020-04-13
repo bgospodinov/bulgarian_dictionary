@@ -78,11 +78,12 @@ CREATE TABLE main.wordform (
 	source TEXT DEFAULT 'manual',
 	num_syllables INT,
 	num_stresses INT GENERATED ALWAYS AS (LENGTH(wordform_stressed) - LENGTH(REPLACE(wordform_stressed, '`', ''))) STORED, -- only supported in sqlite >= 3.31.0
+	accent_model CHAR,
 	FOREIGN KEY(lemma_id) REFERENCES lemma(lemma_id) ON DELETE CASCADE
 );
 
-INSERT INTO main.wordform SELECT
-	NULL as wordform_id,
+INSERT INTO main.wordform (lemma_id, wordform, wordform_stressed, is_lemma, tag, source, num_syllables)
+SELECT
 	r.lemma_id,
 	r.wordform,
 	CASE WHEN r.is_lemma = 0 THEN r.wordform_stressed ELSE l.lemma_stressed END AS wordform_stressed,
@@ -95,8 +96,8 @@ LEFT JOIN lemma l ON r.lemma_id = l.lemma_id;
 
 -- if a lemma doesn't have any wordforms assigned, then try to find an identical lemma that has wordforms 
 -- and assign those wordforms to it
-INSERT INTO main.wordform SELECT
-	NULL as wordform_id,
+INSERT INTO main.wordform (lemma_id, wordform, wordform_stressed, is_lemma, tag, source, num_syllables)
+SELECT
 	l1.lemma_id,
 	w2.wordform,
 	w2.wordform_stressed,

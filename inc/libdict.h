@@ -12,6 +12,7 @@ int find_nth_stressed_syllable(const char * word, int n);
 int find_nth_stressed_syllable_rev(const char * word, int n);
 void rechko_tag(char * res, const char * word, const char * pos, const char * prop);
 int is_vocal(wchar_t wc);
+void accent_model(char * result, const char * word);
 int is_capitalized(const wchar_t * const word);
 
 extern const wchar_t lc_vocals[8];

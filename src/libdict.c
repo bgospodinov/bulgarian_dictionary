@@ -74,6 +74,24 @@ int count_syllables(const char * str) {
 	return cnt;
 }
 
+void accent_model(char * result, const char * word) {
+	result[0] = '\0';
+	size_t wlen = strlen(word);
+	wchar_t wword[wlen];
+	size_t wwlen = convert_to_wstring_h(wword, word, wlen);
+
+	int rlen = 0;
+	for (int i = 0; i < wwlen; i++) {
+		if (is_vocal(wword[i])) {
+			strcat(result, "0");
+			rlen++;
+		}
+		else if (wword[i] == L'`' && rlen > 0) {
+			result[rlen - 1] = '1';
+		}
+	}
+}
+
 const char * diminutive_to_base(const char * word) {
 	static const wchar_t * const suff[] = 
 	// only append new elements to the end or check the switch statement below

@@ -79,7 +79,8 @@ CREATE TABLE lemma (
 	pos TEXT,
 	source TEXT,
 	num_syllables INT,
-	num_stresses INT GENERATED ALWAYS AS (LENGTH(lemma_stressed) - LENGTH(REPLACE(lemma_stressed, '`', ''))) STORED -- only supported in sqlite >= 3.31.0
+	num_stresses INT GENERATED ALWAYS AS (LENGTH(lemma_stressed) - LENGTH(REPLACE(lemma_stressed, '`', ''))) STORED, -- only supported in sqlite >= 3.31.0
+	accent_model CHAR
 );
 
 INSERT INTO lemma (

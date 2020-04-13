@@ -4,8 +4,8 @@ DELETE FROM slovnik_wordform WHERE wordform = 'хилядо' and tag = 'Mc-pi';
 
 -- join all wordforms from the morphological dictionary (slovnik_wordform table)
 -- with their corresponding lemmata and stresses from the RBE dictionary (lemma table)
-INSERT INTO wordform SELECT
-	NULL as wordform_id,
+INSERT INTO wordform (lemma_id, wordform, wordform_stressed, is_lemma, tag, source, num_syllables)
+SELECT
 	l.lemma_id as lemma_id,
 	s.wordform as wordform,
 	CASE WHEN s.is_lemma = 1 THEN COALESCE(l.lemma_stressed, s.wordform) ELSE s.wordform END AS wordform_stressed,

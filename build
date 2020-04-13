@@ -296,6 +296,9 @@ sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/64_add_stress_to_lem
 echo Populating wordform table with stresses
 sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/66_add_stress_to_wordform.sql" ".read pipeline/67_add_stress_to_wordform_manually.sql"
 
+echo Generating accent model...
+sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/69_add_accent_model.sql"
+
 if [ $RUN_TESTS ] ; then
 	echo Run tests on stresses
 	sqlite3 -list $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/70_test_stress.sql" 2>/dev/null |
