@@ -184,13 +184,19 @@ int find_nth_stressed_syllable_rev(const char * word, int n) {
 	return result;
 }
 
-const char * rechko_tag(const char * word, const char * pos, const char * prop) {
-	wchar_t * wword = convert_to_wstring(word);
-	wchar_t * wprop = convert_to_wstring(prop);
+void rechko_tag(char * res, const char * word, const char * pos, const char * prop) {
+	size_t word_len = strlen(word);
+	wchar_t wword_a[word_len];
+	wchar_t * wword = wword_a;
+	convert_to_wstring_h(wword, word, word_len);
+
+	size_t prop_len = strlen(prop);
+	wchar_t wprop_a[prop_len];
+	wchar_t * wprop = wprop_a;
+	convert_to_wstring_h(wprop, prop, prop_len);
+
 	wchar_t * const wword_o = wword;
 	wchar_t * const wprop_o = wprop;
-	char *res = (char *) malloc(15 * sizeof(char));
-	*res = '\0';
 
 	// NOUNS
 	if (strncmp(pos, "noun", 4) == 0) {
@@ -223,7 +229,7 @@ const char * rechko_tag(const char * word, const char * pos, const char * prop) 
 noun_case:
 		if (wcsncmp(wprop, L"звателна", 8) == 0) {
 			strcat(res, "s-v");
-			goto end;
+			return;
 		}
 		// no archaic accusative or dative in rechko
 
@@ -238,13 +244,13 @@ noun_number:
 		}
 		else if (wcsncmp(wprop, L"бройна", 6) == 0) {
 			strcat(res, "t");
-			goto end;
+			return;
 		}
 
 noun_article:
 		if(!*wprop) {
 			strcat(res, "i");
-			goto end;
+			return;
 		}
 
 		wprop++;
@@ -322,7 +328,7 @@ noun_article:
 		else if (wcsncmp(wprop, L"деепричастие", 7) == 0) {
 			*(res + 4) = 'g';
 			*(res + 5) = '\0';
-			goto end;
+			return;
 		}
 
 		if (*wprop == L',') {
@@ -446,7 +452,7 @@ noun_article:
 
 		if(!*wprop) {
 			strcat(res, "i");
-			goto end;
+			return;
 		}
 
 		wprop++;
@@ -593,12 +599,12 @@ noun_article:
 			wprop += 2;
 		}
 		else {
-			goto end;
+			return;
 		}
 
 		if (wcsncmp(wprop, L"крат", 4) == 0) {
 			*(res + 3) = 't';
-			goto end;
+			return;
 		}
 	}
 	// NUMERALS
@@ -643,7 +649,7 @@ noun_article:
 			wprop += 2;
 		}
 		else if(!*wprop) {
-			goto end;
+			return;
 		}
 
 		if (wcsncmp(wprop, L"ед.ч.", 3) == 0) {
@@ -658,7 +664,7 @@ noun_article:
 			wprop += 2;
 		}
 		else if(!*wprop) {
-			goto end;
+			return;
 		}
 
 		if (wcsncmp(wprop, L"членувано", 2) == 0) {
@@ -671,9 +677,4 @@ noun_article:
 			*(res + 4) = 'h';
 		}
 	}
-
-end:
-	free(wword_o);
-	free(wprop_o);
-	return res;
 }

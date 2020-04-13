@@ -10,7 +10,7 @@ const char * remove_last_char(const char * word, const char * c);
 const char * diminutive_to_base(const char * word);
 int find_nth_stressed_syllable(const char * word, int n);
 int find_nth_stressed_syllable_rev(const char * word, int n);
-const char * rechko_tag(const char * word, const char * pos, const char * prop);
+void rechko_tag(char * res, const char * word, const char * pos, const char * prop);
 int is_vocal(wchar_t wc);
 int is_capitalized(const wchar_t * const word);
 

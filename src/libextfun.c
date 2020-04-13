@@ -88,9 +88,9 @@ static void sqlite_rechko_tag(sqlite3_context *context, int argc, sqlite3_value 
 		const char *pos = sqlite3_value_text(argv[1]);
 		const char *prop = sqlite3_value_text(argv[2]);
 		if (word && pos && prop) {
-			char * result = (char *)rechko_tag(word, pos, prop);
+			char result[15];
+			rechko_tag(result, word, pos, prop);
 			sqlite3_result_text(context, result, -1, SQLITE_TRANSIENT);
-			free(result);
 			return;
 		}
 	}
