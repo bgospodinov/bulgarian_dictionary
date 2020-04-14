@@ -7,6 +7,7 @@ CLEAN_TEMP_DATA=true
 RUN_TESTS=true
 SET_TRAP=true
 COPY_FINAL=true
+SLOVNIK_PASS=
 
 set -b
 
@@ -14,34 +15,38 @@ while [[ $# -gt 0 ]]
 do
 	key="$1"
 	case $key in
-		--no-slovnik)
+		-ns|--no-slovnik)
 			PROCESS_SLOVNIK=
 			RUN_TESTS=
 			shift;
 		;;
-		--no-tests)
+		-nt|--no-tests)
 			RUN_TESTS=
 			shift;
 		;;
-		--no-fail)
+		-nf|--no-fail)
 			EXIT_ON_FAILURE=
 			shift;
 		;;
-		--clean)
+		-c|--clean)
 			make clean
 			shift;
 		;;
-		--debug)
+		-d|--debug)
 			CLEAN_TEMP_DATA=
 			shift;
 		;;
-		--no-trap)
+		-nt|--no-trap)
 			SET_TRAP=
 			shift;
 		;;
-		--no-copy)
+		-nc|--no-copy)
 			COPY_FINAL=
 			shift;
+		;;
+		-p|--pass)
+			SLOVNIK_PASS="$2"
+			shift 2;
 		;;
 		--help)
 			echo "./build [--help --no-slovnik --no-tests --no-fail --clean --debug --no-trap --no-copy]"
@@ -60,10 +65,18 @@ if [ $PROCESS_SLOVNIK ] ; then
 	function pass {
 		echo Enter Slovnik password \(or rerun with option --no-slovnik\):
 		read -s SLOVNIK_PASS
+		hash_pass
+	}
+
+	function hash_pass {
 		PASS_HASH=$(echo -n ${SLOVNIK_PASS}$SALT | sha512sum | sha512sum | awk '{print $1}')
 	}
 
-	pass
+	if [ -z "$SLOVNIK_PASS" ] ; then
+		pass
+	else
+		hash_pass
+	fi
 
 	while [[ "$PASS_HASH" != "6d70366494981ca988a60c2e9f72fc157496896a602981c80ba828e1ac5030462fc4704bff5cb475accf8dc0a3efac703922c47c33e3ecf5c1163ad7ae89378f" ]]
 	do
