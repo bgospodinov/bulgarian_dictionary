@@ -172,11 +172,11 @@ fi
 
 	echo Converting Rechko MySQL schema dump to SQLite
 	# first extract schema into a separate file
-	./scripts/mysql2sqlite.awk <( head -n 450 $SCRATCH_PATH/db-rechko.sql ) > $SCRATCH_PATH/db_schema_rechko_all.sqlite
+	./tools/mysql2sqlite.awk <( head -n 450 $SCRATCH_PATH/db-rechko.sql ) > $SCRATCH_PATH/db_schema_rechko_all.sqlite
 	sed -n -E -e '12,26 p' $SCRATCH_PATH/db_schema_rechko_all.sqlite > $SCRATCH_PATH/db_schema_rechko_wordform.sqlite
 
 	# then words/lemmata and word types into a sqlite file, since their definitions are hard to convert to csv and they are small
-	./scripts/mysql2sqlite.awk <( sed -n -E -e '1268,1301 p' -e '1370 p' $SCRATCH_PATH/db-rechko.sql ) > $SCRATCH_PATH/rechko_lemma_and_types.sqlite
+	./tools/mysql2sqlite.awk <( sed -n -E -e '1268,1301 p' -e '1370 p' $SCRATCH_PATH/db-rechko.sql ) > $SCRATCH_PATH/rechko_lemma_and_types.sqlite
 
 	echo Importing Rechko schema, lemmata and types...
 	sqlite3 $DB_RECHKO_PATH ".read $SCRATCH_PATH/db_schema_rechko_all.sqlite" ".read $SCRATCH_PATH/rechko_lemma_and_types.sqlite"

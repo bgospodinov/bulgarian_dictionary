@@ -196,5 +196,20 @@ INSERT INTO _res VALUES("мосто`ве_stress", (SELECT COUNT(*) > 0 FROM word
 -- should be 1
 INSERT INTO _res VALUES("яде`м_stress", (SELECT COUNT(*) > 0 FROM wordform WHERE wordform_stressed = 'яде`м'));
 
+-- should be 1
+INSERT INTO _res VALUES("а`мперчасове`_stress", (SELECT COUNT(*) > 0 FROM wordform WHERE wordform_stressed = 'а`мперчасове`'));
+
+-- should be 1
+INSERT INTO _res VALUES("а`мперчасове`те_stress", (SELECT COUNT(*) > 0 FROM wordform WHERE wordform_stressed = 'а`мперчасове`те'));
+
+-- should be 1
+INSERT INTO _res VALUES("и`нтернационализира`й_stress", (SELECT COUNT(*) > 0 FROM wordform WHERE wordform_stressed = 'и`нтернационализира`й'));
+
+-- should be 1
+INSERT INTO _res VALUES("и`нтернационализира`йте_stress", (SELECT COUNT(*) > 0 FROM wordform WHERE wordform_stressed = 'и`нтернационализира`йте'));
+
+-- should be 1
+INSERT INTO _res VALUES("не`колкоме`сечна_stress", (SELECT COUNT(*) > 0 FROM wordform WHERE wordform_stressed = 'не`колкоме`сечна'));
+
 SELECT * FROM _res;
 DROP TABLE _res;
