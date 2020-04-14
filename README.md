@@ -1,10 +1,11 @@
-To build the artifact (without Slovnik), run:
+Install dependencies listed in pkglist.txt (names will vary depending from distro to distro). Then, to build the artifact (without Slovnik), run:
 ```
 ./build --no-slovnik
 ```
+
 This repository contains code that produces a dictionary of 200 000 Bulgarian lemmata and 2 million wordforms along with their stress patterns, morphosyntactic properties and pronunciation. It is meant to be used as a dictionary to assist with translating or writing metric and rhymed poetry in Bulgarian. It is based on previous Bulgarian linguistic resources such as Slovnik, RBE, Rechko and Murdarov's dictionary.
 
-The build script requires a Linux distribution, although the resulting artifact is a platform-independent SQLite file. Recommended RAM > 2.5GB. The script uses as many cores as possible when parallelization is feasible.
+The build script requires a Linux distribution (it is developed on a standard Arch Linux setup), although the resulting artifact is a platform-independent SQLite file. To see how to set up on Ubuntu, please refer to .github/workflows/build.yml. Recommended RAM > 2.5GB. The script uses as many cores as possible, where parallelization is feasible.
 
 For best results mount /tmp to main memory as tmpfs or ramfs. Build time is 2 minutes on a quad-core i7 @ 3.4 GHz.
 

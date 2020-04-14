@@ -1,6 +1,7 @@
-# system dependencies
+# pacman system dependencies
 parallel
-sqlite3
+sqlite3 # >= 3.31.0
 git-lfs
-python3 # only for building murdarov dict
-miniconda3 # only for building murdarov dict
+# murdarov dependencies
+python3
+miniconda3

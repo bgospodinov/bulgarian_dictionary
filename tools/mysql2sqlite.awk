@@ -1,4 +1,4 @@
-#!/bin/awk -f
+#!/usr/bin/awk -f
 # based on this gist: https://gist.github.com/esperlu/943776
 
 BEGIN {
