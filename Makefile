@@ -18,7 +18,7 @@ LIBEXTFUN_DEPS = $(addprefix $(SRC_DIR)/,libextfun.c libdict.c string_aux.c)
 LIBDICT_DEPS = $(addprefix $(OBJ_DIR)/,libdict.o string_aux.o)
 
 REBUILDABLES = $(OBJ_DIR) $(EXEC_DIR) $(LIB_DIR)
-CLEANABLES = dictionary.db dictionary.db-journal
+CLEANABLES = dictionary.db dictionary.db-journal *.dump
 
 vpath %.c src
 vpath %.h inc

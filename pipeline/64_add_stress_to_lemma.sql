@@ -17,8 +17,6 @@ WITH diminutive AS (
         )
 	WHERE lemma.lemma_id IN (SELECT child_id FROM diminutive) AND lemma.num_stresses = 0;
 
--- stress lemma that are duplicated with the same stress as their siblings
-
--- stress the roots of disyllabic verbs by removing common prefixes and suffixes
+-- TODO: stress the roots of disyllabic verbs by removing common prefixes and suffixes
 
 END TRANSACTION;

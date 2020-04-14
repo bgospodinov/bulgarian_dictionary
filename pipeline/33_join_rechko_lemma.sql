@@ -48,6 +48,7 @@ UPDATE main.rechko_lemma SET name_stressed = 'разме`ням' WHERE id = 9777
 -- fix some spelling mistakes
 UPDATE main.rechko_lemma SET name = 'четиринайсет', name_stressed = 'четирина`йсет' WHERE id = 102923;
 DELETE FROM main.rechko_lemma WHERE id = 782; -- прираст is misspelled as приръст
+DELETE FROM main.rechko_lemma WHERE id = 901; -- скуош is misspelled as скоуш
 
 -- this helps evade rechko mismatches for reflexive verbs and adjectives
 UPDATE main.rechko_lemma SET name = REPLACE(name, ' се', ''), name_stressed = REPLACE(name_stressed, ' се', '')
