@@ -200,6 +200,10 @@ UPDATE lemma
 SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
 where num_stresses = 0 and pos = 'Ncm' and num_syllables = 2 and lemma like '%чо';
 
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables)
+WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'Ncn' and lemma like '%це';
+
 -- stress lemma that are duplicated with the same stress as their siblings
 UPDATE lemma
 SET lemma_stressed = IFNULL(
@@ -303,5 +307,34 @@ WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'Ncm' and lemma in (
 UPDATE lemma
 SET lemma_stressed = stress_syllable(lemma, num_syllables)
 WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'Ncm';
+
+-- add stress to Ncn
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables)
+WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'Ncn' and lemma in (
+    'булдо', 'мерло', 'недро', 'пежо', 'рено', 'шато',
+    'брюле', 'гурме', 'екрю', 'жабе', 'зебу', 'ключе',
+    'кроше', 'кунгфу', 'курве', 'мачле', 'менте', 'меше',
+    'мосю', 'пишле', 'порше', 'превю', 'рибе', 'розе',
+    'роле', 'саке', 'сорбе', 'сране', 'сръбче', 'тупе',
+    'уше', 'фишу', 'фламбе', 'фондю', 'франсе', 'фрапе',
+    'чушле', 'шалте', 'шевро', 'бърде', 'жиро', 'стлане',
+    'сюрме', 'теке', 'ткане', 'фуре'
+);
+
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
+WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'Ncn';
+
+-- stress nouns without gender
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables)
+WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'Nc-' and lemma in (
+    'дървя', 'колца', 'нозе', 'раи', 'скали', 'турча'
+);
+
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
+WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'Nc-';
 
 END TRANSACTION;
