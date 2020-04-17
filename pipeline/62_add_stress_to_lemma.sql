@@ -204,6 +204,35 @@ UPDATE lemma
 SET lemma_stressed = stress_syllable(lemma, num_syllables)
 WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'Ncn' and lemma like '%це';
 
+-- stress disyllabic adjectives
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
+where num_stresses = 0 and num_syllables = 2 and pos = 'A' and lemma LIKE '%ен';
+
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
+where num_stresses = 0 and num_syllables = 2 and pos = 'A' and lemma LIKE '%ски';
+
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
+where num_stresses = 0 and num_syllables = 2 and pos = 'A' and lemma LIKE '%ин';
+
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables)
+where num_stresses = 0 and num_syllables = 2 and pos = 'A' and lemma LIKE '%ящ';
+
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables)
+where num_stresses = 0 and num_syllables = 2 and pos = 'A' and lemma LIKE '%ущ';
+
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables)
+where num_stresses = 0 and num_syllables = 2 and pos = 'A' AND lemma like 'не%';
+
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables)
+where num_stresses = 0 and num_syllables = 2 and pos = 'A' AND lemma like 'свръх%';
+
 -- stress lemma that are duplicated with the same stress as their siblings
 UPDATE lemma
 SET lemma_stressed = IFNULL(
@@ -308,7 +337,7 @@ UPDATE lemma
 SET lemma_stressed = stress_syllable(lemma, num_syllables)
 WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'Ncm';
 
--- add stress to Ncn
+-- add stress to disyllabic Ncn
 UPDATE lemma
 SET lemma_stressed = stress_syllable(lemma, num_syllables)
 WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'Ncn' and lemma in (
@@ -326,7 +355,7 @@ UPDATE lemma
 SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
 WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'Ncn';
 
--- stress nouns without gender
+-- stress disyllabic nouns without gender
 UPDATE lemma
 SET lemma_stressed = stress_syllable(lemma, num_syllables)
 WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'Nc-' and lemma in (
@@ -336,5 +365,80 @@ WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'Nc-' and lemma in (
 UPDATE lemma
 SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
 WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'Nc-';
+
+-- stress disyllabic nouns without other specified properties
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
+WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'N' and lemma in (
+    'Анди','виги','джаги','зъбки','квадри','мъни','мюсли','ньоки','пилци','траки','франки',
+    'антрум','баткам','боря','брадство','бото','бурса','вагус','валгус','варус','визус','влюбя',
+    'вомик','владам','връцвам','вслушвам','върхам','гибус','гломус','гугол','деус','джембър',
+    'джобур','джуни','гуркам','дзвиска','дилям','дряхнал','дълнал','жидко','интра','истмус','кайрос',
+    'кимвал','квадра','клосен','коркой','кошум','круста','куркой','лаша','линка','лито','логос',
+    'луес','модерн','мудра','муни','мюрид','наос','ненки','нити','нодул','нравя','парси','пръчкав',
+    'птоза','пулке','пънкам','рексис','санкхя','сатва','свехна','свъзка','сгърне','себум','склера',
+    'сколекс','скотом','скръжав','скържав','спитен','строма','стъмва','суна','схима','схумвам',
+    'типла','тора','толос','тризмус','тросък', 'келти', 'ката',
+    'тургам', 'търгам', 'тържик', 'търне', 'укрух', 'улна', 'урсус', 'фата',
+    'форникс', 'фундус', 'худра', 'худри', 'хукам', 'хъмбък', 'цекум', 'чакри',
+    'ширвам', 'щурам', 'юрвам', 'юрна', 'чайтя', 'чутък', 'шакти'
+);
+
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables)
+WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'N' and lemma in (
+    'бодли', 'нивя', 'абстракт', 'агня', 'алеф', 'ангор', 'асцит', 'афиф',
+    'аргал', 'аум', 'багня', 'батал', 'бурсит', 'вагант', 'вглъбя', 'втека',
+    'вясна', 'герон', 'глиом', 'декокт', 'лимфом', 'дискус', 'дръмон', 'дулап',
+    'емиж', 'еон', 'занят', 'изуй', 'ирит', 'каук', 'кларне', 'коне', 'луперк', 'маказ',
+    'масал', 'махди', 'миом', 'мунист', 'ошур', 'петанк', 'пойда', 'прокол', 'продром',
+    'раджас', 'рефлукс', 'ръбец', 'сарком', 'синтрон', 'строптив', 'тамас', 'турнел',
+    'тутам', 'тутек', 'тълпя', 'фемур', 'фетор', 'фибром', 'флегмон', 'харам',
+    'хейлит', 'хендик', 'чакрък', 'явя', 'юдол'
+);
+
+-- stress some disyllabic adjectives on last syllable
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables)
+WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'A' and lemma in (
+    'безпръст', 'възпян', 'възтлъст', 'грешащ', 'двупръст', 'заклан', 'изпран',
+    'лайнян', 'лечим', 'прелют', 'пресвят', 'приспан', 'размит', 'решим', 'тризъб',
+    'трилик', 'трипръст', 'учащ', 'четим', 'шестглав', 'шестзъб', 'огрян', 'пишман',
+    'тавряз', 'двугръд', 'тригръб', 'тригръд', 'пърдян', 'бълшав', 'артък', 'зарист',
+    'заспал', 'момчан', 'мълчан', 'реглан', 'ресист', 'сербез', 'събран', 'убог'
+);
+
+-- stress disyllabic adjectives on penultimate syllable by default
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
+WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'A';
+
+-- deal with adverbs
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
+WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'D' and lemma in (
+    'анти', 'второ', 'гъвко', 'ерго', 'зверски', 'злачно', 'зорле',
+    'зорлен', 'зорлан', 'кански', 'коджа', 'кофти', 'контра', 'кратно',
+    'кришом', 'кръгом', 'кръстом', 'кухо', 'къщи', 'лани', 'леко', 'ленно',
+    'лишно', 'лъвски', 'микро', 'милно', 'морно', 'мъжки', 'мълком', 'нисше',
+    'осмо', 'пето', 'пишно', 'престо', 'присно', 'пробно', 'пряко', 'псевдо',
+    'психо', 'първен', 'първо', 'първом', 'пътем', 'заман', 'пъти', 'рохко',
+    'саде', 'сбито', 'свежо', 'светло', 'свето', 'свито', 'свойски', 'свястно',
+    'себе', 'седмо', 'сиво', 'скритом', 'скришом', 'скъдно', 'следом',
+    'смело', 'смъртно', 'сочно', 'сутрин', 'сявга', 'сигур', 'теком', 'телом',
+    'тихом', 'тлъсто', 'трижди', 'трето', 'тръпно', 'тясно', 'усвет', 'утрин',
+    'утром', 'фино', 'форте', 'хеле', 'цифром', 'челно', 'чогло', 'чудом',
+    'чуждо', 'чунки', 'чунким', 'шесто', 'ширно', 'широм', 'южно', 'яве'
+);
+
+UPDATE lemma
+SET lemma_stressed = stress_syllable(lemma, num_syllables)
+WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'D' and lemma in (
+    'ачик', 'бая', 'веднаж', 'вовек', 'заран', 'затуй',
+    'кабил', 'капо', 'кесим', 'мързи', 'натри', 'неспир',
+    'отгде', 'против', 'реми', 'раван', 'сегиз', 'сефте',
+    'тамън', 'тогиз', 'топтан', 'транзит', 'фарси', 'халал',
+    'хептен'
+);
 
 END TRANSACTION;
