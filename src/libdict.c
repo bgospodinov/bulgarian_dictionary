@@ -1,7 +1,5 @@
 #include <stdlib.h>
 #include <string.h>
-#include <wchar.h>
-#include <stdio.h>
 #include <assert.h>
 #include "../inc/libdict.h"
 #include "../inc/string_aux.h"

@@ -1,5 +1,4 @@
 #include <sqlite3ext.h>
-#include <stdio.h>
 #include <string.h>
 #include <locale.h>
 #include <stdlib.h>

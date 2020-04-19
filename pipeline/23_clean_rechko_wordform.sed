@@ -1,3 +1,4 @@
+# removes analytic wordforms from rechko
 /бъд\.вр\.|мин\.неопр\.|мин\.пред\.|бъд\.пред\.|пр\.накл\.|условно накл|'—'/ d
 /^\s*$/ d
 # replace , with custom ^ separator
