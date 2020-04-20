@@ -4,23 +4,70 @@
 #include "../inc/libdict.h"
 #include "../inc/string_aux.h"
 
-const wchar_t lc_vocals[] = { u'\u0430', u'\u0435', u'\u0438', u'\u043E', u'\u0443', u'\u044A', u'\u044E', u'\u044F' };
+// all of these arrays should be ordered ascendingly
+// includes ю and я, which are not vowels
+static const wchar_t lc_vocals[] = { L'а', L'е', L'и', L'о', L'у', L'ъ', L'ю', L'я' };
+// skipping й
+static const wchar_t lc_sonorants[] = { L'л', L'м', L'н', L'р' };
+// ignoring дж and дз
+static const wchar_t lc_voiced[] = { L'б', L'в', L'г', L'д', L'ж', L'з' };
+static const wchar_t lc_unvoiced[] = { L'к', L'п', L'с', L'т', L'ф', L'ц', L'ч', L'ш'};
+// keep the elements of the bottom two arrays to be parallel for first 6 consonants
+static const wchar_t lc_voiced_k[] = { L'б', L'в', L'г', L'д', L'ж', L'з' };
+static const wchar_t lc_unvoiced_v[] = { L'п', L'ф', L'к', L'т', L'ш', L'с' };
+
+int is_cyrillic(const wchar_t wc) {
+	return wc >= u'\u0410' && wc <= u'\u044F';
+}
+
+void lowercase_string(wchar_t * wstr) {
+	for (; *wstr; wstr++) {
+		if (is_cyrillic(*wstr)) {
+			lowercase_char(wstr);
+		}
+	}
+}
 
 int is_capitalized(const wchar_t * const word) {
 	return *word >= u'\u0410' && *word < u'\u0430';
 }
 
 int is_vocal(wchar_t wc) {
-	// account for capital letters
-	if (wc < u'\u0430') {
-		wc += 32;
-	}
+	return is_wc_of_charset_ci_sc(wc, lc_vocals, sizeof(lc_vocals) / sizeof(wchar_t));
+}
 
-	for (int j = 0; j < sizeof(lc_vocals) / 2; j++) {
-		int sign = (lc_vocals[j] > wc) - (lc_vocals[j] < wc);
-		if (sign == -1) continue;
-		else if (sign == 0) return 1;
-		else break;
+int is_sonorant(wchar_t wc) {
+	return is_wc_of_charset_ci_sc(wc, lc_sonorants, sizeof(lc_sonorants) / sizeof(wchar_t));
+}
+
+int is_voiced(wchar_t wc) {
+	return is_wc_of_charset_ci_sc(wc, lc_voiced, sizeof(lc_voiced) / sizeof(wchar_t));
+}
+
+int is_unvoiced(wchar_t wc) {
+	return is_wc_of_charset_ci_sc(wc, lc_unvoiced, sizeof(lc_unvoiced) / sizeof(wchar_t));
+}
+
+wchar_t invert_voiced(wchar_t wc) {
+	int idx = is_wc_of_charset_ci(wc, lc_voiced_k, sizeof(lc_voiced_k) / sizeof(wchar_t));
+	if (idx = is_voiced(wc)) {
+		wc = lc_unvoiced_v[idx - 1];
+	}
+	return wc;
+}
+
+int sonority_char(wchar_t wc) {
+	if (is_voiced(wc)) {
+		return 2;
+	}
+	else if(is_unvoiced(wc)) {
+		return 1;
+	}
+	else if(is_sonorant(wc)) {
+		return 3;
+	}
+	else if(is_vocal(wc)) {
+		return 4;
 	}
 
 	return 0;
@@ -90,6 +137,57 @@ void accent_model(char * result, const char * word) {
 	}
 }
 
+void pronounce(char * result, size_t rlen, const char * word) {
+	size_t wlen = strlen(word);
+	wchar_t wword[wlen + 1];
+	size_t wwlen = convert_to_wstring_h(wword, word, wlen);
+	wchar_t wres[rlen + 1];
+
+	// lowercase entire wordform
+	lowercase_string(wword);
+
+	int k = 0;
+	for (int i = 0; i < wwlen; i++) {
+		wchar_t wc = wword[i];
+
+		if (i < wwlen - 1) {
+			wchar_t nwc = wword[i + 1];
+			int sonority_curr = sonority_char(wc);
+			int sonority_nxt = sonority_char(nwc);
+			if (sonority_curr == 2 && sonority_nxt == 1) {
+				wres[k++] = invert_voiced(wc);
+				continue;
+			}
+		}
+
+		if (wc == L'щ') {
+			wres[k++] = L'ш';
+			wres[k++] = L'т';
+		}
+		else if (wc == L'я') {
+			wres[k++] = L'й';
+			wres[k++] = L'а';
+		}
+		else if (wc == L'ю') {
+			wres[k++] = L'й';
+			wres[k++] = L'у';
+		}
+		else {
+			wres[k++] = wc;
+		}
+	}
+
+	wres[k] = '\0';
+
+	// loss of voice for last voiced consonant in the word
+	wchar_t last_letter = wres[k - 1];
+	if (is_voiced(last_letter)) {
+		wres[k - 1] = invert_voiced(last_letter);
+	}
+
+	convert_to_mbstring_h(result, wres, rlen + 1);
+}
+
 const char * diminutive_to_base(const char * word) {
 	static const wchar_t * const suff[] = 
 	// only append new elements to the end or check the switch statement below
@@ -133,7 +231,7 @@ const char * stress_syllable(const char * word, int n) {
 	}
 
 	if (!*wword && n > 0) {
-copy:
+	copy:
 		wcsncpy(wres, wword_o, wword_len);
 	}
 	else {
@@ -242,14 +340,14 @@ void rechko_tag(char * res, const char * word, const char * pos, const char * pr
 			goto noun_article;
 		}
 
-noun_case:
+	noun_case:
 		if (wcsncmp(wprop, L"звателна", 8) == 0) {
 			strcat(res, "s-v");
 			return;
 		}
 		// no archaic accusative or dative in rechko
 
-noun_number:
+	noun_number:
 		if (wcsncmp(wprop, L"ед.ч.", 5) == 0) {
 			wprop += 5; // jump over delimiter as well
 			strcat(res, "s");
@@ -263,7 +361,7 @@ noun_number:
 			return;
 		}
 
-noun_article:
+	noun_article:
 		if(!*wprop) {
 			strcat(res, "i");
 			return;

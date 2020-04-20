@@ -3,6 +3,8 @@
 
 #include <wchar.h>
 
+int is_cyrillic(const wchar_t wc);
+void lowercase_string(wchar_t * wstr);
 int is_lemma(const char * wordform, const char * lemma, const char * tag);
 int count_syllables(const char *str);
 const char * stress_syllable(const char * word, int n);
@@ -14,7 +16,11 @@ void rechko_tag(char * res, const char * word, const char * pos, const char * pr
 int is_vocal(wchar_t wc);
 void accent_model(char * result, const char * word);
 int is_capitalized(const wchar_t * const word);
-
-extern const wchar_t lc_vocals[8];
+int is_sonorant(wchar_t wc);
+int is_voiced(wchar_t wc);
+int is_unvoiced(wchar_t wc);
+wchar_t invert_voiced(wchar_t wc);
+int sonority_char(wchar_t wc);
+void pronounce(char * result, size_t rlen, const char * word);
 
 #endif // LIBDICT_H_

@@ -5,6 +5,37 @@
 #include <stdlib.h>
 #include <errno.h>
 
+void lowercase_char(wchar_t * wc) {
+	if (*wc < u'\u0430') {
+		*wc += 32;
+	}
+}
+
+int is_wc_of_charset_ci_sc(wchar_t wc, const wchar_t charset[], size_t chssz) {
+	// account for capital letters
+	lowercase_char(&wc);
+
+	for (int i = 0; i < chssz; i++) {
+		int sign = (charset[i] > wc) - (charset[i] < wc);
+		if (sign == -1) continue;
+		else if (sign == 0) return i + 1;
+		else break;
+	}
+
+	return false;
+}
+
+int is_wc_of_charset_ci(wchar_t wc, const wchar_t charset[], size_t chssz) {
+	// account for capital letters
+	lowercase_char(&wc);
+
+	for (int i = 0; i < chssz; i++) {
+		if (charset[i] == wc) return i + 1;
+	}
+
+	return false;
+}
+
 wchar_t * strip_longest_suffix(wchar_t * const wword, 
 										const wchar_t * const suff[],
 										size_t suffsz, int * sfxmidx) {
@@ -82,6 +113,9 @@ size_t convert_to_mbstring_h(char * buffer, const wchar_t * wstr, size_t buffsz)
 		exit(EXIT_FAILURE);
 	}
 
+	if (rc == buffsz)
+		buffer[buffsz - 1] = '\0';
+
 	return rc;
 }
 
@@ -99,7 +133,7 @@ char * mbcopy(const char * str) {
 	return copy;
 }
 
-// https://stackoverflow.com/a/199453
+// see https://stackoverflow.com/a/199453
 void utf8rev(char * str) {
     /* this assumes that str is valid UTF-8 */
     char *scanl, *scanr, *scanr2, c;

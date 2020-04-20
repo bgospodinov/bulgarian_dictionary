@@ -6,6 +6,7 @@
 #include "../inc/string_aux.h"
 SQLITE_EXTENSION_INIT1
 
+static void sqlite_is_capitalized(sqlite3_context *context, int argc, sqlite3_value **argv);
 static void sqlite_is_lemma(sqlite3_context *context, int argc, sqlite3_value **argv);
 static void sqlite_is_vocal(sqlite3_context *context, int argc, sqlite3_value **argv);
 static void sqlite_count_syllables(sqlite3_context *context, int argc, sqlite3_value **argv);
@@ -18,12 +19,14 @@ static void sqlite_find_nth_stressed_syllable_rev(sqlite3_context *context, int 
 static void sqlite_diminutive_to_base(sqlite3_context *context, int argc, sqlite3_value **argv);
 static void sqlite_accent_model(sqlite3_context *context, int argc, sqlite3_value **argv);
 static void sqlite_reverse(sqlite3_context *context, int argc, sqlite3_value **argv);
+static void sqlite_pronounce(sqlite3_context *context, int argc, sqlite3_value **argv);
 
 int sqlite3_extfun_init(sqlite3 *db, char **pzErrMsg, const sqlite3_api_routines *pApi) {
 	setlocale(LC_ALL, "");
 	int rc = SQLITE_OK;
 	SQLITE_EXTENSION_INIT2(pApi);
 	// registering all custom sqlite functions
+	sqlite3_create_function(db, "is_capitalized", 1, SQLITE_UTF8, NULL, &sqlite_is_capitalized, NULL, NULL);
 	sqlite3_create_function(db, "is_lemma", 3, SQLITE_UTF8, NULL, &sqlite_is_lemma, NULL, NULL);
 	sqlite3_create_function(db, "is_vocal", 1, SQLITE_UTF8, NULL, &sqlite_is_vocal, NULL, NULL);
 	sqlite3_create_function(db, "count_syllables", 1, SQLITE_UTF8, NULL, &sqlite_count_syllables, NULL, NULL);
@@ -36,6 +39,7 @@ int sqlite3_extfun_init(sqlite3 *db, char **pzErrMsg, const sqlite3_api_routines
 	sqlite3_create_function(db, "diminutive_to_base", 1, SQLITE_UTF8, NULL, &sqlite_diminutive_to_base, NULL, NULL);
 	sqlite3_create_function(db, "accent_model", 1, SQLITE_UTF8, NULL, &sqlite_accent_model, NULL, NULL);
 	sqlite3_create_function(db, "reverse", 1, SQLITE_UTF8, NULL, &sqlite_reverse, NULL, NULL);
+	sqlite3_create_function(db, "pronounce", 1, SQLITE_UTF8, NULL, &sqlite_pronounce, NULL, NULL);
 	return rc;
 }
 
@@ -208,6 +212,37 @@ static void sqlite_reverse(sqlite3_context *context, int argc, sqlite3_value **a
 			utf8rev(result);
 			sqlite3_result_text(context, result, -1, SQLITE_TRANSIENT);
 			free(result);
+			return;
+		}
+	}
+
+	sqlite3_result_null(context);
+}
+
+static void sqlite_pronounce(sqlite3_context *context, int argc, sqlite3_value **argv) {
+	if (argc == 1) {
+		const char * word = sqlite3_value_text(argv[0]);
+		if (word) {
+			size_t rlen = strlen(word) * 2; // just in case the word consists only of letters that expand to two letters like щ -> шт
+			char result[rlen + 1];
+			pronounce(result, rlen, word);
+			sqlite3_result_text(context, result, -1, SQLITE_TRANSIENT);
+			return;
+		}
+	}
+
+	sqlite3_result_null(context);
+}
+
+static void sqlite_is_capitalized(sqlite3_context *context, int argc, sqlite3_value **argv) {
+	if (argc == 1) {
+		const char * word = sqlite3_value_text(argv[0]);
+		if (word) {
+			size_t wlen = strlen(word);
+			wchar_t wword[wlen + 1];
+			convert_to_wstring_h(wword, word, wlen);
+			int result = is_capitalized(wword);
+			sqlite3_result_int(context, result);
 			return;
 		}
 	}
