@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #include <errno.h>
 
+int is_cyrillic(const wchar_t wc) {
+	return wc >= u'\u0410' && wc <= u'\u044F';
+}
+
 void lowercase_char(wchar_t * wc) {
 	if (*wc < u'\u0430') {
 		*wc += 32;

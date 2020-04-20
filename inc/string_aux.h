@@ -1,6 +1,7 @@
 #ifndef STRING_AUX_H_
 #define STRING_AUX_H_
 
+int is_cyrillic(const wchar_t wc);
 void lowercase_char(wchar_t * wc);
 int is_wc_of_charset_ci_sc(wchar_t wc, const wchar_t charset[], size_t chssz);
 int is_wc_of_charset_ci(wchar_t wc, const wchar_t charset[], size_t chssz);

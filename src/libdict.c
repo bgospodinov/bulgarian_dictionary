@@ -16,10 +16,6 @@ static const wchar_t lc_unvoiced[] = { L'к', L'п', L'с', L'т', L'ф', L'ц',
 static const wchar_t lc_voiced_k[] = { L'б', L'в', L'г', L'д', L'ж', L'з' };
 static const wchar_t lc_unvoiced_v[] = { L'п', L'ф', L'к', L'т', L'ш', L'с' };
 
-int is_cyrillic(const wchar_t wc) {
-	return wc >= u'\u0410' && wc <= u'\u044F';
-}
-
 void lowercase_string(wchar_t * wstr) {
 	for (; *wstr; wstr++) {
 		if (is_cyrillic(*wstr)) {
@@ -50,8 +46,16 @@ int is_unvoiced(wchar_t wc) {
 
 wchar_t invert_voiced(wchar_t wc) {
 	int idx = is_wc_of_charset_ci(wc, lc_voiced_k, sizeof(lc_voiced_k) / sizeof(wchar_t));
-	if (idx = is_voiced(wc)) {
+	if (idx) {
 		wc = lc_unvoiced_v[idx - 1];
+	}
+	return wc;
+}
+
+wchar_t invert_unvoiced(wchar_t wc) {
+	int idx = is_wc_of_charset_ci(wc, lc_unvoiced_v, sizeof(lc_unvoiced_v) / sizeof(wchar_t));
+	if (idx) {
+		wc = lc_voiced_k[idx - 1];
 	}
 	return wc;
 }
@@ -158,6 +162,10 @@ void pronounce(char * result, size_t rlen, const char * word) {
 				wres[k++] = invert_voiced(wc);
 				continue;
 			}
+			else if (sonority_curr == 1 && sonority_nxt == 2 && nwc != L'в') {
+				wres[k++] = invert_unvoiced(wc);
+				continue;
+			}
 		}
 
 		if (wc == L'щ') {
@@ -171,6 +179,9 @@ void pronounce(char * result, size_t rlen, const char * word) {
 		else if (wc == L'ю') {
 			wres[k++] = L'й';
 			wres[k++] = L'у';
+		}
+		else if (wc == L'ь') {
+			wres[k++] = L'й';
 		}
 		else {
 			wres[k++] = wc;

@@ -3,7 +3,6 @@
 
 #include <wchar.h>
 
-int is_cyrillic(const wchar_t wc);
 void lowercase_string(wchar_t * wstr);
 int is_lemma(const char * wordform, const char * lemma, const char * tag);
 int count_syllables(const char *str);

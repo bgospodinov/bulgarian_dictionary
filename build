@@ -292,6 +292,9 @@ if [ $CLEAN_TEMP_DATA ] ; then
 		echo Deleting slovnik wordforms
 		sqlite3 $DB_MAIN_PATH "DROP TABLE IF EXISTS slovnik_wordform;"
 	fi
+
+	echo Vacuum...
+	sqlite3 $DB_MAIN_PATH "VACUUM"
 fi
 
 echo Create stress table...
@@ -324,6 +327,15 @@ fi
 
 echo Create pronunciation table...
 sqlite3 $DB_MAIN_PATH ".read pipeline/80_create_pronunciation.sql"
+
+echo Add pronunciations...
+sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/81_add_normative_pronunciation.sql"
+
+if [ $RUN_TESTS ] ; then
+	echo Run tests on pronunciations
+	sqlite3 -list $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/85_test_pronunciation.sql" 2>/dev/null |
+		diff tests/pronunciation.test -
+fi
 
 echo Vacuum...
 sqlite3 $DB_MAIN_PATH "VACUUM"
