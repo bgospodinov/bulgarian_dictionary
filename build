@@ -329,7 +329,7 @@ echo Create pronunciation table...
 sqlite3 $DB_MAIN_PATH ".read pipeline/80_create_pronunciation.sql"
 
 echo Add pronunciations...
-sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/81_add_normative_pronunciation.sql"
+sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/81_add_pronunciation.sql"
 
 if [ $RUN_TESTS ] ; then
 	echo Run tests on pronunciations

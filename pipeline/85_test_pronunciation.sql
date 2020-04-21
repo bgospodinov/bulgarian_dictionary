@@ -11,7 +11,7 @@ INSERT INTO _res VALUES("червенокръсци", (SELECT COUNT(*) > 0 FROM 
 INSERT INTO _res VALUES("штаслиф", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'штаслиф'));
 INSERT INTO _res VALUES("звезна", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'звезна'));
 INSERT INTO _res VALUES("кръсник", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'кръсник'));
-INSERT INTO _res VALUES("меснос", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'меснос'));
+INSERT INTO _res VALUES("месност", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'месност'));
 INSERT INTO _res VALUES("врапче", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'врапче'));
 INSERT INTO _res VALUES("исток", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'исток'));
 INSERT INTO _res VALUES("връсник", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'връсник'));
@@ -28,8 +28,12 @@ INSERT INTO _res VALUES("бйала", (SELECT COUNT(*) > 0 FROM pronunciation WH
 INSERT INTO _res VALUES("йулийа", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'йулийа'));
 INSERT INTO _res VALUES("булйон", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'булйон'));
 INSERT INTO _res VALUES("говорйъ", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'говорйъ'));
+INSERT INTO _res VALUES("говорйа", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'говорйа'));
 INSERT INTO _res VALUES("оборйъ", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'оборйъ'));
-INSERT INTO _res VALUES("изпитъ", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'изпитъ'));
+INSERT INTO _res VALUES("говорйът", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'говорйът'));
+INSERT INTO _res VALUES("говорйат", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'говорйат'));
+INSERT INTO _res VALUES("испитъ", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'испитъ'));
+INSERT INTO _res VALUES("испита", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'испита'));
 INSERT INTO _res VALUES("моментъ", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'моментъ'));
 
 SELECT * FROM _res;

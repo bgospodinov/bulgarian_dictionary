@@ -11,10 +11,10 @@ static const wchar_t lc_vocals[] = { L'а', L'е', L'и', L'о', L'у', L'ъ', L
 static const wchar_t lc_sonorants[] = { L'л', L'м', L'н', L'р' };
 // ignoring дж and дз
 static const wchar_t lc_voiced[] = { L'б', L'в', L'г', L'д', L'ж', L'з' };
-static const wchar_t lc_unvoiced[] = { L'к', L'п', L'с', L'т', L'ф', L'ц', L'ч', L'ш'};
+static const wchar_t lc_unvoiced[] = { L'к', L'п', L'с', L'т', L'ф', L'х', L'ц', L'ч', L'ш' };
 // keep the elements of the bottom two arrays to be parallel for first 6 consonants
-static const wchar_t lc_voiced_k[] = { L'б', L'в', L'г', L'д', L'ж', L'з' };
-static const wchar_t lc_unvoiced_v[] = { L'п', L'ф', L'к', L'т', L'ш', L'с' };
+static const wchar_t lc_voiced_m[] = { L'б', L'в', L'г', L'д', L'ж', L'з' };
+static const wchar_t lc_unvoiced_m[] = { L'п', L'ф', L'к', L'т', L'ш', L'с' };
 
 void lowercase_string(wchar_t * wstr) {
 	for (; *wstr; wstr++) {
@@ -44,18 +44,22 @@ int is_unvoiced(wchar_t wc) {
 	return is_wc_of_charset_ci_sc(wc, lc_unvoiced, sizeof(lc_unvoiced) / sizeof(wchar_t));
 }
 
+int is_consonant(wchar_t wc) {
+	return is_cyrillic(wc) && !is_vocal(wc);
+}
+
 wchar_t invert_voiced(wchar_t wc) {
-	int idx = is_wc_of_charset_ci(wc, lc_voiced_k, sizeof(lc_voiced_k) / sizeof(wchar_t));
+	int idx = is_wc_of_charset_ci(wc, lc_voiced_m, sizeof(lc_voiced_m) / sizeof(wchar_t));
 	if (idx) {
-		wc = lc_unvoiced_v[idx - 1];
+		wc = lc_unvoiced_m[idx - 1];
 	}
 	return wc;
 }
 
 wchar_t invert_unvoiced(wchar_t wc) {
-	int idx = is_wc_of_charset_ci(wc, lc_unvoiced_v, sizeof(lc_unvoiced_v) / sizeof(wchar_t));
+	int idx = is_wc_of_charset_ci(wc, lc_unvoiced_m, sizeof(lc_unvoiced_m) / sizeof(wchar_t));
 	if (idx) {
-		wc = lc_voiced_k[idx - 1];
+		wc = lc_voiced_m[idx - 1];
 	}
 	return wc;
 }
@@ -143,16 +147,41 @@ void accent_model(char * result, const char * word) {
 
 void pronounce(char * result, size_t rlen, const char * word) {
 	size_t wlen = strlen(word);
-	wchar_t wword[wlen + 1];
+	wchar_t wword[wlen + 2];
 	size_t wwlen = convert_to_wstring_h(wword, word, wlen);
+	wword[wwlen++] = '$'; // word terminator
+	wword[wwlen] = '\0';
 	wchar_t wres[rlen + 1];
 
 	// lowercase entire wordform
 	lowercase_string(wword);
 
 	int k = 0;
+	int cc = 0; // consecutive consonants
 	for (int i = 0; i < wwlen; i++) {
 		wchar_t wc = wword[i];
+		if (is_consonant(wc)) {
+			cc++;
+		}
+		else {
+			if (cc == 2) {
+				if (wres[k - 2] == L'т' && wres[k - 1] == L'т') {
+					wres[k - 2] = wres[k - 1];
+					k--;
+				}
+			}
+			else if (cc == 3) {
+				if ((wres[k - 3] == L'с' && wres[k - 2] == L'т') || (wres[k - 3] == L'з' && wres[k - 2] == L'д')) {
+					wres[k - 2] = wres[k - 1];
+					k--;
+				}
+			}
+			cc = 0;
+		}
+
+		if (wc == '$') {
+			break;
+		}
 
 		if (i < wwlen - 1) {
 			wchar_t nwc = wword[i + 1];
