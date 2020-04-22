@@ -1,5 +1,12 @@
 BEGIN TRANSACTION;
 
+-- deal with reflexives
+UPDATE slovnik_wordform
+SET
+	lemma = SUBSTR(lemma, 1, LENGTH(lemma) - 3),
+	wordform = SUBSTR(wordform, 1, LENGTH(wordform) - 3)
+WHERE lemma LIKE '% си' AND LENGTH(wordform) > 2;
+
 INSERT INTO lemma (
 	lemma, lemma_stressed, pos, source, num_syllables
 ) SELECT

@@ -1,5 +1,12 @@
 BEGIN TRANSACTION;
 
+-- removes reflexivity from murdarov
+UPDATE murdarov_lemma
+SET
+    lemma = SUBSTR(lemma, 1, LENGTH(lemma) - 3),
+    lemma_stressed = SUBSTR(lemma_stressed, 1, LENGTH(lemma_stressed) - 3)
+WHERE lemma LIKE '% се';
+
 -- update existing lemmata with stresses from murdarov
 UPDATE lemma
 SET lemma_stressed =

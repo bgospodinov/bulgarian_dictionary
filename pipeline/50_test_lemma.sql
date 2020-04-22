@@ -34,5 +34,11 @@ INSERT INTO _res VALUES("number_of_lemmata_without_wordforms", (
 	WHERE w.lemma_id IS NULL)
 );
 
+-- should be 0
+INSERT INTO _res VALUES("number_of_reflexive_lemmata", (
+	SELECT COUNT(*) FROM lemma WHERE lemma LIKE '% се' OR lemma LIKE '% ми' OR lemma LIKE '% си'
+	)
+);
+
 SELECT * FROM _res;
 DROP TABLE _res;

@@ -54,6 +54,21 @@ DELETE FROM main.rechko_lemma WHERE id = 901; -- скуош is misspelled as с�
 UPDATE main.rechko_lemma SET name = REPLACE(name, ' се', ''), name_stressed = REPLACE(name_stressed, ' се', '')
 WHERE classification = 'reflexive' or classification = '+reflexive';
 
+UPDATE main.rechko_lemma
+SET
+	name = SUBSTR(name, 1, LENGTH(name) - 3),
+	name_stressed = SUBSTR(name_stressed, 1, LENGTH(name_stressed) - 3),
+	pos = 'V'
+WHERE name LIKE '% се' OR name LIKE '% ми' OR name LIKE '% си';
+
+-- some verbs have two particles attached at the end
+UPDATE main.rechko_lemma
+SET
+	name = SUBSTR(name, 1, LENGTH(name) - 3),
+	name_stressed = SUBSTR(name_stressed, 1, LENGTH(name_stressed) - 3),
+	pos = 'V'
+WHERE name LIKE '% ми';
+
 -- here we join rechko and rbe lemmata, but lemma_id column contains repetitions
 CREATE TEMPORARY TABLE _lemma_ AS SELECT
 	rl.id as lemma_id,
