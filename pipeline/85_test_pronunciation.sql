@@ -35,6 +35,10 @@ INSERT INTO _res VALUES("говорйат", (SELECT COUNT(*) > 0 FROM pronunciat
 INSERT INTO _res VALUES("испитъ", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'испитъ'));
 INSERT INTO _res VALUES("испита", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'испита'));
 INSERT INTO _res VALUES("моментъ", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'моментъ'));
+INSERT INTO _res VALUES("метъ", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'метъ'));
+INSERT INTO _res VALUES("четъ", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'четъ'));
+INSERT INTO _res VALUES("пийъ", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'пийъ'));
+INSERT INTO _res VALUES("стойъ", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'стойъ'));
 
 SELECT * FROM _res;
 DROP TABLE _res;

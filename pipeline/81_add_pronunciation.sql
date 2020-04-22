@@ -36,13 +36,13 @@ SELECT *, 0 FROM SpecialVerbs;
 UPDATE pronunciation
 SET pronunciation = SUBSTR(pronunciation, 1, LENGTH(pronunciation) - 1) || 'ъ'
 WHERE wordform_id IN (
-    SELECT wordform_id FROM SpecialVerbs WHERE pronunciation LIKE '%йа'
+    SELECT wordform_id FROM SpecialVerbs WHERE pronunciation LIKE '%а'
 ) AND is_normative = 1;
 
 UPDATE pronunciation
 SET pronunciation = SUBSTR(pronunciation, 1, LENGTH(pronunciation) - 2) || 'ът'
 WHERE wordform_id IN (
-    SELECT wordform_id FROM SpecialVerbs WHERE pronunciation LIKE '%йат'
+    SELECT wordform_id FROM SpecialVerbs WHERE pronunciation LIKE '%ат'
 ) AND is_normative = 1;
 
 -- TODO: nouns ending in -ст
