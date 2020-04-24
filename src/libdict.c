@@ -11,7 +11,7 @@ static const wchar_t lc_vocals[] = { L'а', L'е', L'и', L'о', L'у', L'ъ', L
 static const wchar_t lc_sonorants[] = { L'л', L'м', L'н', L'р' };
 // ignoring дж and дз
 static const wchar_t lc_voiced[] = { L'б', L'в', L'г', L'д', L'ж', L'з' };
-static const wchar_t lc_unvoiced[] = { L'к', L'п', L'с', L'т', L'ф', L'х', L'ц', L'ч', L'ш' };
+static const wchar_t lc_unvoiced[] = { L'к', L'п', L'с', L'т', L'ф', L'х', L'ц', L'ч', L'ш', L'щ' };
 // keep the elements of the bottom two arrays to be parallel for first 6 consonants
 static const wchar_t lc_voiced_m[] = { L'б', L'в', L'г', L'д', L'ж', L'з' };
 static const wchar_t lc_unvoiced_m[] = { L'п', L'ф', L'к', L'т', L'ш', L'с' };
@@ -143,6 +143,21 @@ void accent_model(char * result, const char * word) {
 			result[rlen - 1] = '1';
 		}
 	}
+}
+
+void sonority_model(char * result, const char * word) {
+	size_t wlen = strlen(word);
+	wchar_t wword[wlen];
+	size_t wwlen = convert_to_wstring_h(wword, word, wlen);
+
+	int rlen = 0;
+	for (int i = 0; i < wwlen; i++) {
+		int sonority = sonority_char(wword[i]);
+		if (sonority > 0)
+			result[rlen++] = sonority + '0';
+	}
+
+	result[rlen] = '\0';
 }
 
 void pronounce(char * result, size_t rlen, const char * word) {

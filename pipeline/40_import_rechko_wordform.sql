@@ -78,7 +78,7 @@ CREATE TABLE main.wordform (
 	source TEXT DEFAULT 'manual',
 	num_syllables INT,
 	num_stresses INT GENERATED ALWAYS AS (LENGTH(wordform_stressed) - LENGTH(REPLACE(wordform_stressed, '`', ''))) STORED, -- only supported in sqlite >= 3.31.0
-	accent_model CHAR,
+	accent_model TEXT,
 	FOREIGN KEY(lemma_id) REFERENCES lemma(lemma_id) ON DELETE CASCADE
 );
 

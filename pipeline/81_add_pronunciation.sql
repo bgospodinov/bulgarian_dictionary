@@ -1,7 +1,7 @@
 BEGIN TRANSACTION;
 
-INSERT INTO pronunciation (wordform_id, pronunciation, pronunciation_stressed)
-SELECT wordform_id, pronounce(wordform), pronounce(wordform_stressed) FROM wordform;
+INSERT INTO pronunciation (wordform_id, pronunciation, pronunciation_stressed, sonority_model)
+SELECT wordform_id, pronounce(wordform), pronounce(wordform_stressed), sonority_model(wordform) FROM wordform;
 
 -- deal with masculine nouns with short definite article
 CREATE TEMP TABLE Ncmsh AS

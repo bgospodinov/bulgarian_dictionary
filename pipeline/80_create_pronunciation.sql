@@ -6,6 +6,7 @@ CREATE TABLE pronunciation (
   pronunciation TEXT,
   pronunciation_stressed TEXT,
   is_normative INT DEFAULT 1,
+  sonority_model TEXT,
   FOREIGN KEY(wordform_id) REFERENCES wordform(wordform_id)
   ON DELETE CASCADE
 );
