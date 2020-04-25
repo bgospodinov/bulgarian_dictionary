@@ -7,3 +7,4 @@ lib/
 *.so
 *.log
 *.dump
+*.gz

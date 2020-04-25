@@ -8,6 +8,7 @@ RUN_TESTS=true
 SET_TRAP=true
 COPY_FINAL=true
 SLOVNIK_PASS=
+ARCHIVE=
 
 set -b
 
@@ -29,7 +30,7 @@ do
 			shift;
 		;;
 		-c|--clean)
-			make clean
+			make clean-code
 			shift;
 		;;
 		-d|--debug)
@@ -48,8 +49,12 @@ do
 			SLOVNIK_PASS="$2"
 			shift 2;
 		;;
+		-a|--archive)
+			ARCHIVE=true
+			shift;
+		;;
 		--help)
-			echo "./build [--help --no-slovnik --no-tests --no-fail --clean --debug --no-trap --no-copy]"
+			echo "./build [--help --no-slovnik --no-tests --no-fail --clean --debug --no-trap --no-copy --archive]"
 			exit 0;
 		;;
 		*)
@@ -124,6 +129,9 @@ fi
 (
 	if [ $PROCESS_SLOVNIK ] ; then
 		##### SLOVNIK SECTION START #####
+		echo Cleaning previous builds...
+		make clean-result
+
 		echo Building db setup code...
 		make
 
@@ -343,6 +351,11 @@ sqlite3 $DB_MAIN_PATH "VACUUM"
 if [ $COPY_FINAL ] ; then
 	echo Persisting temp database...
 	cp $DB_MAIN_PATH $DB_FINAL_PATH
+fi
+
+if [ $ARCHIVE ] ; then
+	echo Archiving dictionary...
+	tar -czvf ${DB_FINAL_PATH%%.db}.tar.gz $DB_FINAL_PATH
 fi
 
 echo Build finished. Artifact generated.

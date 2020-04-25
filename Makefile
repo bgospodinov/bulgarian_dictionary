@@ -18,7 +18,7 @@ LIBEXTFUN_DEPS = $(addprefix $(SRC_DIR)/,libextfun.c libdict.c string_aux.c)
 LIBDICT_DEPS = $(addprefix $(OBJ_DIR)/,libdict.o string_aux.o)
 
 REBUILDABLES = $(OBJ_DIR) $(EXEC_DIR) $(LIB_DIR)
-CLEANABLES = dictionary.db dictionary.db-journal *.dump
+RESULTS = dictionary.db dictionary.db-journal *.dump dictionary.tar.gz
 
 vpath %.c src
 vpath %.h inc
@@ -52,8 +52,12 @@ $(EXEC_DIR):
 $(LIB_DIR):
 	mkdir $(LIB_DIR)
 
-clean :
-	-rm -rf $(REBUILDABLES) $(CLEANABLES)
+clean-code :
+	-rm -rf $(REBUILDABLES)
 	@echo Cleaning done
 
-.PHONY : all clean
+clean-result :
+	-rm -rf $(RESULTS)
+	@echo Cleaning done
+
+.PHONY : all clean-code clean-result
