@@ -1,20 +1,19 @@
 #include <sqlite3.h>
 #include <sqlite3_aux.h>
-#include <import_slovnik.h>
 #include <libdict.h>
 #include <stdio.h>
 #include <locale.h>
 #include <string.h>
 #include <stdlib.h>
 
-sqlite3 * db = NULL;
+static void import_slovnik_wordforms(char * path);
+static sqlite3 * db = NULL;
 
 int main(int argc, char ** argv) {
 	setlocale(LC_ALL, "");
-
 	if (argc != 3) {
-		fprintf(stderr, "You must pass the scratch path \
- and the database name as arguments.\n");
+		fprintf(stderr, "You must pass the database path \
+ and the slovnik csv path as arguments.\n");
 		exit(1);
 	}
 
@@ -28,7 +27,7 @@ int main(int argc, char ** argv) {
 	return 0;
 }
 
-void import_slovnik_wordforms(char * path) {
+static void import_slovnik_wordforms(char * path) {
 	printf("Importing table from %s...\n", path);
 	FILE *fp = fopen(path, "r");
 	if (fp == NULL) {

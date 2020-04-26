@@ -9,6 +9,7 @@ OBJ_EXT := o
 DEP_EXT := d
 
 CC := gcc
+RM := rm -f
 CFLAGS := -g -O3 -I$(INC_DIR)
 LIBS := -lsqlite3
 
@@ -40,7 +41,7 @@ all : $(TARGETS)
 -include $(DEPS)
 
 $(LIBDICT_TARGET) : $(LIBDICT_OBJS) | $(LIB_DIR)
-	ar rcsv $@ $^
+	$(AR) rcsv $@ $^
 
 $(LIBEXTFUN_TARGET) : $(LIBEXTFUN_SRCS) | $(LIB_DIR)
 	$(CC) $(CFLAGS) -fPIC -shared -o $@ $^
@@ -66,11 +67,11 @@ $(LIB_DIR):
 
 clean-code :
 	@echo Cleaning code...
-	-rm -rf $(REBUILDABLES)
+	-$(RM) -r $(REBUILDABLES)
 
 clean-result :
 	@echo Cleaning results...
-	-rm -rf $(RESULTS)
+	-$(RM) -r $(RESULTS)
 
 clean : clean-code clean-result
 	@echo All cleaned
