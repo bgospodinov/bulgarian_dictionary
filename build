@@ -95,18 +95,6 @@ if [ $EXIT_ON_FAILURE ] ; then
 	set -o pipefail
 fi
 
-echo Sourcing configuration from header files...
-CONFIG=$(sed -r '{
-        /^#define/!d
-        /#define[ \t]*[^ \t]*$/d
-        s/[^ \t]*[ \t]*([^ \t]*)[ \t]*(.*)/\1="\2"/
-		s/""/"/g
-        /(""|\([^\)]*\))/d
-    }' <(cat inc/*.h))
-
-echo "$CONFIG";
-eval "$CONFIG"
-
 SCRATCH_PATH=$(mktemp -d -t bdict.XXXXXXXXXX)
 RESOURCES_PATH=resources
 PIPELINE_PATH=pipeline
@@ -114,6 +102,7 @@ SLOVNIK_PATH=$SCRATCH_PATH/slovnik
 DB_RECHKO_PATH=$SCRATCH_PATH/rechko.db # this allows concurrent insertion
 DB_MAIN_PATH=$SCRATCH_PATH/main.db # in the end, everything is merged here
 DB_FINAL_PATH=dictionary.db # where the artifact gets deployed (relative to PWD)
+SLOVNIK_CSV_PATH=$SCRATCH_PATH/slovnik.csv
 
 if [ $SET_TRAP ] ; then
 	function finish {
@@ -141,7 +130,7 @@ fi
 		# assembling slovnik into one csv file
 		rm -f $SLOVNIK_PATH/all.txt;
 		for f in $SLOVNIK_PATH/*.txt; do
-			(cat "${f}"; printf "\n") >> $SCRATCH_PATH/$SLOVNIK_FILE_NAME
+			(cat "${f}"; printf "\n") >> $SLOVNIK_CSV_PATH
 			rm -f $f
 		done
 
@@ -149,8 +138,8 @@ fi
 
 		echo Importing slovnik wordforms...
 		sqlite3 $DB_MAIN_PATH ".read pipeline/10_create_slovnik_wordform.sql"
-		./bin/import_slovnik $SCRATCH_PATH ${DB_MAIN_PATH##*/}
-		rm -f $SCRATCH_PATH/$SLOVNIK_FILE_NAME
+		./bin/import_slovnik $SLOVNIK_CSV_PATH $DB_MAIN_PATH
+		rm -f $SLOVNIK_CSV_PATH
 		sqlite3 $DB_MAIN_PATH ".read pipeline/11_fix_slovnik_errors.sql"
 		sqlite3 $DB_MAIN_PATH ".read pipeline/12_update_pos_slovnik.sql"
 		##### SLOVNIK SECTION END #####
@@ -349,7 +338,7 @@ echo Create syllable table...
 sqlite3 $DB_MAIN_PATH ".read pipeline/90_create_syllable.sql"
 
 echo Generating syllables...
-./bin/generate_syllable $SCRATCH_PATH ${DB_MAIN_PATH##*/}
+./bin/generate_syllable $DB_MAIN_PATH
 
 if [ $COPY_FINAL ] ; then
 	echo Persisting temp database...

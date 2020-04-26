@@ -7,13 +7,11 @@
 #include <string.h>
 #include <stdlib.h>
 
-sqlite3 *db = NULL;
-char *scratch_path = NULL;
-char *db_path = NULL;
-char *db_file_name = NULL;
-char *slovnik_path = NULL;
+sqlite3 * db = NULL;
+char * slovnik_path = NULL;
+char * db_path = NULL;
 
-int main(int argc, char **argv) {
+int main(int argc, char ** argv) {
 	setlocale(LC_ALL, "");
 
 	if (argc != 3) {
@@ -22,35 +20,26 @@ int main(int argc, char **argv) {
 		exit(1);
 	}
 
-	scratch_path = argv[1];
-	db_file_name = argv[2];
-	db_path = malloc(strlen(scratch_path) + strlen(db_file_name) + 2);
-	sprintf(db_path, "%s/%s", scratch_path, db_file_name);
+	slovnik_path = argv[1];
+	db_path = argv[2];
 
 	initialize_db(&db, db_path);
-
-	slovnik_path = malloc(strlen(scratch_path) + strlen(SLOVNIK_FILE_NAME) + 2);
-	sprintf(slovnik_path, "%s/%s", scratch_path, SLOVNIK_FILE_NAME);
-
 	import_slovnik_wordforms(slovnik_path);
 
-	free(db_path);
-	free(slovnik_path);
 	sqlite3_close(db);
 	return 0;
 }
 
-void import_slovnik_wordforms(char* path) {
+void import_slovnik_wordforms(char * path) {
 	printf("Importing table from %s...\n", path);
 	FILE *fp = fopen(path, "r");
 	if (fp == NULL) {
-		fprintf(stderr, "Slovnik wordforms file does not exist \
-in %s.", path);
+		fprintf(stderr, "Slovnik wordforms file does not exist in %s.\n", path);
 		exit(1);
 	}
 
-	char *line = NULL;
-	char *delim = "\t";
+	char * line = NULL;
+	char * delim = "\t";
 	size_t len = 0;
 	size_t read;
 	const int maxcols = 3;
