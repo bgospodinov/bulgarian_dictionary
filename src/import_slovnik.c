@@ -8,8 +8,6 @@
 #include <stdlib.h>
 
 sqlite3 * db = NULL;
-char * slovnik_path = NULL;
-char * db_path = NULL;
 
 int main(int argc, char ** argv) {
 	setlocale(LC_ALL, "");
@@ -20,8 +18,8 @@ int main(int argc, char ** argv) {
 		exit(1);
 	}
 
-	slovnik_path = argv[1];
-	db_path = argv[2];
+	char * db_path = argv[1];
+	char * slovnik_path = argv[2];
 
 	initialize_db(&db, db_path);
 	import_slovnik_wordforms(slovnik_path);

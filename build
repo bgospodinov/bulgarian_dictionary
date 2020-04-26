@@ -138,10 +138,9 @@ fi
 
 		echo Importing slovnik wordforms...
 		sqlite3 $DB_MAIN_PATH ".read pipeline/10_create_slovnik_wordform.sql"
-		./bin/import_slovnik $SLOVNIK_CSV_PATH $DB_MAIN_PATH
+		./bin/import_slovnik $DB_MAIN_PATH $SLOVNIK_CSV_PATH
 		rm -f $SLOVNIK_CSV_PATH
-		sqlite3 $DB_MAIN_PATH ".read pipeline/11_fix_slovnik_errors.sql"
-		sqlite3 $DB_MAIN_PATH ".read pipeline/12_update_pos_slovnik.sql"
+		sqlite3 $DB_MAIN_PATH ".read pipeline/11_fix_slovnik_errors.sql" ".read pipeline/12_update_pos_slovnik.sql"
 		##### SLOVNIK SECTION END #####
 	fi
 
@@ -163,14 +162,12 @@ fi
 	rm -f $SCRATCH_PATH/db-rbe.sql
 
 	echo Importing RBE lemmata into database...;
-	sqlite3 $DB_MAIN_PATH ".read pipeline/30_create_rbe_lemma.sql";
-	sqlite3 $DB_MAIN_PATH ".mode csv" ".separator ^" ".import $SCRATCH_PATH/db-rbe.csv rbe_lemma";
+	sqlite3 $DB_MAIN_PATH ".read pipeline/30_create_rbe_lemma.sql" ".mode csv" ".separator ^" ".import $SCRATCH_PATH/db-rbe.csv rbe_lemma";
 	sqlite3 $DB_MAIN_PATH "CREATE VIRTUAL TABLE rbe_lemma_ft USING fts5(source_definition, content=rbe_lemma);" \
 	\	"INSERT INTO rbe_lemma_ft SELECT SUBSTR(source_definition, 1, MAX(INSTR(source_definition, '<b>1.'), 150)) FROM rbe_lemma;";
-	sqlite3 $DB_MAIN_PATH ".read pipeline/31_add_pos_to_rbe_lemma.sql"
-	sqlite3 $DB_MAIN_PATH ".read pipeline/32_fix_rbe_lemma_errors.sql"
-	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_rbe_lemma_lemma_pos ON rbe_lemma(lemma, pos);";
-	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_rbe_lemma_lemma_with_stress_pos ON rbe_lemma(lemma_with_stress, pos);";
+	sqlite3 $DB_MAIN_PATH ".read pipeline/31_add_pos_to_rbe_lemma.sql" ".read pipeline/32_fix_rbe_lemma_errors.sql"
+	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_rbe_lemma_lemma_pos ON rbe_lemma(lemma, pos);" \
+	\	"CREATE INDEX IF NOT EXISTS idx_rbe_lemma_lemma_with_stress_pos ON rbe_lemma(lemma_with_stress, pos);";
 	rm -f $SCRATCH_PATH/db-rbe.csv;
 	##### RBE SECTION END #####
 ) &
@@ -198,8 +195,8 @@ fi
 
 	echo Cleaning Rechko...
 	# useful tables from Rechko: derivative_form, word, word_type
-	sqlite3 $DB_RECHKO_PATH "ALTER TABLE word RENAME TO rechko_lemma;"
-	sqlite3 $DB_RECHKO_PATH "CREATE INDEX IF NOT EXISTS idx_rechko_lemma ON rechko_lemma(name);"
+	sqlite3 $DB_RECHKO_PATH "ALTER TABLE word RENAME TO rechko_lemma;" \
+\	\	"CREATE INDEX IF NOT EXISTS idx_rechko_lemma ON rechko_lemma(name);"
 
 	# then derivative forms into a csv
 	echo Extracting rechko derivative forms to csv
@@ -221,9 +218,9 @@ if [ $CLEAN_TEMP_DATA ] ; then
 fi
 
 echo Creating lemma indices
-sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_lemma_lemma_pos ON lemma(lemma, pos);"
-sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_lemma_lemma_stressed_pos ON lemma(lemma_stressed, pos);"
-sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_lemma_num_syllables ON lemma(num_syllables);"
+sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_lemma_lemma_pos ON lemma(lemma, pos);" \
+\	"CREATE INDEX IF NOT EXISTS idx_lemma_lemma_stressed_pos ON lemma(lemma_stressed, pos);" \
+\	"CREATE INDEX IF NOT EXISTS idx_lemma_num_syllables ON lemma(num_syllables);";
 
 if [ $PROCESS_SLOVNIK ] ; then
 	echo Joining Slovnik lemmata with lemmata
@@ -244,11 +241,11 @@ echo Importing Rechko wordforms
 sqlite3 $DB_MAIN_PATH ".read $SCRATCH_PATH/db_schema_rechko_wordform.sqlite";
 sqlite3 $DB_MAIN_PATH ".mode csv" ".separator ^" ".import $SCRATCH_PATH/rechko_wordform.csv derivative_form";
 sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/40_import_rechko_wordform.sql";
-sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_wordform_tag ON wordform(wordform, tag);"
-sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_lemma_id ON wordform(lemma_id);"
-sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_tag ON wordform(tag);"
-sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_wordform_stressed ON wordform(wordform_stressed);" # speeds up tests
-sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_rechko_wordform_wordform_tag ON rechko_wordform(wordform, tag);"
+sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_wordform_wordform_tag ON wordform(wordform, tag);" \
+\	"CREATE INDEX IF NOT EXISTS idx_wordform_lemma_id ON wordform(lemma_id);" \
+\	"CREATE INDEX IF NOT EXISTS idx_wordform_tag ON wordform(tag);" \
+\	"CREATE INDEX IF NOT EXISTS idx_wordform_wordform_stressed ON wordform(wordform_stressed);" \
+\	"CREATE INDEX IF NOT EXISTS idx_rechko_wordform_wordform_tag ON rechko_wordform(wordform, tag);";
 
 if [ $CLEAN_TEMP_DATA ] ; then
 	rm -f $SCRATCH_PATH/db-rechko.sql
@@ -258,9 +255,9 @@ fi
 
 if [ $PROCESS_SLOVNIK ] ; then
 	echo Joining Slovnik wordforms with Rechko wordforms
-	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_slovnik_wordform_wordform_tag ON slovnik_wordform(wordform, tag);"
-	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_slovnik_wordform_lemma_tag ON slovnik_wordform(lemma, tag);"
-	sqlite3 $DB_MAIN_PATH ".read pipeline/41_join_slovnik_wordforms.sql"
+	sqlite3 $DB_MAIN_PATH "CREATE INDEX IF NOT EXISTS idx_slovnik_wordform_wordform_tag ON slovnik_wordform(wordform, tag);" \
+\	"CREATE INDEX IF NOT EXISTS idx_slovnik_wordform_lemma_tag ON slovnik_wordform(lemma, tag);";
+	sqlite3 $DB_MAIN_PATH ".read pipeline/41_join_slovnik_wordforms.sql";
 fi
 
 echo Cleaning lemma and wordforms table
@@ -282,8 +279,7 @@ if [ $CLEAN_TEMP_DATA ] ; then
 	sqlite3 $DB_MAIN_PATH "DROP TABLE rbe_lemma;" "DROP TABLE rechko_lemma;" "DROP TABLE rbe_lemma_ft;" "DROP TABLE rechko_word_type;"
 
 	echo Deleting rechko wordforms table
-	sqlite3 $DB_MAIN_PATH "DROP TABLE IF EXISTS derivative_form;"
-	sqlite3 $DB_MAIN_PATH "DROP TABLE IF EXISTS rechko_wordform;"
+	sqlite3 $DB_MAIN_PATH "DROP TABLE IF EXISTS derivative_form;" "DROP TABLE IF EXISTS rechko_wordform;";
 
 	if [ $PROCESS_SLOVNIK ] ; then
 		echo Deleting slovnik wordforms
