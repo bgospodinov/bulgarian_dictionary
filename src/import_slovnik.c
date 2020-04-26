@@ -1,7 +1,7 @@
 #include <sqlite3.h>
-#include "../inc/sqlite3_aux.h"
-#include "../inc/import_slovnik.h"
-#include "../inc/libdict.h"
+#include <sqlite3_aux.h>
+#include <import_slovnik.h>
+#include <libdict.h>
 #include <stdio.h>
 #include <locale.h>
 #include <string.h>

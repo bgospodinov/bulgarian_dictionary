@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include "../inc/libdict.h"
-#include "../inc/string_aux.h"
+#include <libdict.h>
+#include <string_aux.h>
 
 // all of these arrays should be ordered ascendingly
 // includes ю and я, which are not vowels

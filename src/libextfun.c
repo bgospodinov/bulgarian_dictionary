@@ -2,8 +2,8 @@
 #include <string.h>
 #include <locale.h>
 #include <stdlib.h>
-#include "../inc/libdict.h"
-#include "../inc/string_aux.h"
+#include <libdict.h>
+#include <string_aux.h>
 SQLITE_EXTENSION_INIT1
 
 static void sqlite_is_lemma(sqlite3_context *context, int argc, sqlite3_value **argv) {
