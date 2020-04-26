@@ -1,5 +1,6 @@
 BEGIN TRANSACTION;
 -- don't remove from here, because rbe import file does not have this column and throws a warning during import
+ALTER TABLE rbe_lemma ADD comment TEXT;
 ALTER TABLE rbe_lemma ADD pos CHAR(4);
 
 UPDATE rbe_lemma SET pos = 'D'
@@ -35,14 +36,18 @@ WHERE pos IS NULL AND ROWID IN (select ROWID from rbe_lemma_ft WHERE rbe_lemma_f
 UPDATE rbe_lemma SET pos = 'M'
 WHERE pos IS NULL AND ROWID IN (select ROWID from rbe_lemma_ft WHERE rbe_lemma_ft MATCH '"<i>числ."');
 
+-- pluralia tantum and singularia tantum
+UPDATE rbe_lemma SET pos = 'N'
+WHERE pos IS NULL AND ROWID IN (select ROWID from rbe_lemma_ft WHERE rbe_lemma_ft MATCH '"само <i>мн." OR "<i>мн. Истор." OR "обикн. <i>мн." OR "<i>ед."');
+
 -- fix exceptions
 UPDATE rbe_lemma SET pos = 'A'
-WHERE pos IS NULL AND lemma IN ('полуграмотен');
+WHERE pos IS NULL AND lemma IN ('полуграмотен', ' получер');
 
 UPDATE rbe_lemma SET pos = 'N'
-WHERE pos IS NULL AND lemma IN ('поляни', 'померанци');
+WHERE pos IS NULL AND lemma IN ('преговор');
 
 -- all the rest are assumed to be verbs
-UPDATE rbe_lemma SET pos = 'V' WHERE pos IS NULL;
+UPDATE rbe_lemma SET pos = 'V', comment = 'assumed' WHERE pos IS NULL;
 
 END TRANSACTION;

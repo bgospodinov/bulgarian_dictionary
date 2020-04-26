@@ -79,6 +79,7 @@ CREATE TEMPORARY TABLE _lemma_ AS SELECT
 		THEN NULL
 		ELSE IFNULL(m.source_definition, '') || IFNULL(rl.meaning, '')
 	END AS source_definition,
+	m.comment as comment,
 	rl.pos as pos
 FROM main.rechko_lemma rl
 LEFT JOIN rbe_lemma m
@@ -91,6 +92,7 @@ CREATE TABLE lemma (
 	lemma,
 	lemma_stressed,
 	definition TEXT,
+	comment TEXT,
 	ner TEXT,
 	pos TEXT,
 	source TEXT,
@@ -100,7 +102,7 @@ CREATE TABLE lemma (
 );
 
 INSERT INTO lemma (
-	lemma_id, lemma, lemma_stressed, definition, pos, source, num_syllables
+	lemma_id, lemma, lemma_stressed, definition, comment, pos, source, num_syllables
 ) SELECT
 	CASE WHEN repetition > 0 
 		THEN (SELECT MAX(lemma_id) FROM _lemma_) + offset
@@ -109,6 +111,7 @@ INSERT INTO lemma (
 	lemma,
 	lemma_stressed,
 	source_definition as definition,
+	comment,
 	pos,
 	source,
 	COUNT_SYLLABLES(lemma) as num_syllables
@@ -137,11 +140,12 @@ BEGIN
 END;
 
 INSERT INTO lemma (
-	lemma, lemma_stressed, definition, pos, source, num_syllables
+	lemma, lemma_stressed, definition, comment, pos, source, num_syllables
 ) SELECT
 	lemma,
 	COALESCE(lemma_with_stress, lemma) as lemma_stressed,
 	m.source_definition as definition,
+	m.comment,
 	m.pos as pos,
 	'rbe' as source,
 	COUNT_SYLLABLES(lemma) as num_syllables
