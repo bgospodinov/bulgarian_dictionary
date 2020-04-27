@@ -60,7 +60,7 @@ SET
 	name = SUBSTR(name, 1, LENGTH(name) - 3),
 	name_stressed = SUBSTR(name_stressed, 1, LENGTH(name_stressed) - 3),
 	pos = 'V'
-WHERE name LIKE '% се' OR name LIKE '% ми' OR name LIKE '% си';
+WHERE name LIKE '% се' OR name LIKE '% ми' OR name LIKE '% си' OR name LIKE '% ме';
 
 -- some verbs have two particles attached at the end
 UPDATE main.rechko_lemma

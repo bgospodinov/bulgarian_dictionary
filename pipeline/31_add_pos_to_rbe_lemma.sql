@@ -45,7 +45,7 @@ UPDATE rbe_lemma SET pos = 'A'
 WHERE pos IS NULL AND lemma IN ('полуграмотен', ' получер');
 
 UPDATE rbe_lemma SET pos = 'N'
-WHERE pos IS NULL AND lemma IN ('преговор');
+WHERE pos IS NULL AND lemma IN ('преговор', 'печенези');
 
 -- all the rest are assumed to be verbs
 UPDATE rbe_lemma SET pos = 'V', comment = 'assumed' WHERE pos IS NULL;
