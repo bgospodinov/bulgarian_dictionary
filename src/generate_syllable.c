@@ -27,7 +27,7 @@ int main(int argc, char ** argv) {
 static void generate_syllable() {
     sqlite3_stmt * select_stmt = 0, * insert_stmt = 0;
     int rc = sqlite3_prepare_v2(db, "SELECT pronunciation_id, wordform_id, pronunciation, pronunciation_stressed FROM pronunciation;", -1, &select_stmt, 0);
-    rc = sqlite3_prepare_v2(db, "INSERT INTO syllable (pronunciation_id, wordform_id, syllable, onset, nucleus, coda, position, is_stressed) VALUES(?, ?, ?, ?, ?, ?, ?, ?);", -1, &insert_stmt, 0);
+    rc = sqlite3_prepare_v2(db, "INSERT INTO syllable (pronunciation_id, wordform_id, syllable, onset, nucleus, coda, position, offset, is_stressed) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &insert_stmt, 0);
     rc = sqlite3_exec(db, "BEGIN TRANSACTION", 0, 0, 0);
     rc = sqlite3_exec(db, "PRAGMA synchronous = OFF", 0, 0, 0);
     rc = sqlite3_exec(db, "PRAGMA journal_mode = OFF", 0, 0, 0);
@@ -146,7 +146,8 @@ static void generate_syllable() {
                             rc = sqlite3_bind_null(insert_stmt, 6);
                         }
                         rc = sqlite3_bind_int(insert_stmt, 7, i + 1);
-                        rc = sqlite3_bind_int(insert_stmt, 8, stress_pos[i]);
+                        rc = sqlite3_bind_int(insert_stmt, 8, num_syllables - i);
+                        rc = sqlite3_bind_int(insert_stmt, 9, stress_pos[i]);
                         rc = sqlite3_step(insert_stmt);
                         rc = sqlite3_clear_bindings(insert_stmt);
                         rc = sqlite3_reset(insert_stmt);

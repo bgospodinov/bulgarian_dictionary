@@ -39,6 +39,10 @@ INSERT INTO _res VALUES("метъ", (SELECT COUNT(*) > 0 FROM pronunciation WHER
 INSERT INTO _res VALUES("четъ", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'четъ'));
 INSERT INTO _res VALUES("пийъ", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'пийъ'));
 INSERT INTO _res VALUES("стойъ", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'стойъ'));
+INSERT INTO _res VALUES("имич", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'имич'));
+INSERT INTO _res VALUES("кеймбрич", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'кеймбрич'));
+INSERT INTO _res VALUES("бач", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'бач'));
+INSERT INTO _res VALUES("ксенц", (SELECT COUNT(*) > 0 FROM pronunciation WHERE pronunciation = 'ксенц'));
 
 SELECT * FROM _res;
 DROP TABLE _res;

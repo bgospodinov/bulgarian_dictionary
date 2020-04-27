@@ -9,6 +9,7 @@ CREATE TABLE syllable (
   nucleus TEXT,
   coda TEXT,
   position INT(2),
+  offset INT(2),
   is_stressed BOOLEAN DEFAULT 0,
   is_open BOOLEAN GENERATED ALWAYS AS (CASE WHEN LENGTH(coda) > 0 THEN 0 ELSE 1 END) STORED, -- only supported in sqlite >= 3.31.0
   FOREIGN KEY(pronunciation_id) REFERENCES pronunciation(pronunciation_id) ON DELETE CASCADE,

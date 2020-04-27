@@ -207,7 +207,7 @@ WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'Ncn' and lemma like '%ц
 -- stress disyllabic adjectives
 UPDATE lemma
 SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
-where num_stresses = 0 and num_syllables = 2 and pos = 'A' and lemma LIKE '%ен';
+where num_stresses = 0 and num_syllables = 2 and pos = 'A' and lemma LIKE '%ен' AND lemma_id NOT IN (54435);
 
 UPDATE lemma
 SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
@@ -405,7 +405,7 @@ WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'A' and lemma in (
     'лайнян', 'лечим', 'прелют', 'пресвят', 'приспан', 'размит', 'решим', 'тризъб',
     'трилик', 'трипръст', 'учащ', 'четим', 'шестглав', 'шестзъб', 'огрян', 'пишман',
     'тавряз', 'двугръд', 'тригръб', 'тригръд', 'пърдян', 'бълшав', 'артък', 'зарист',
-    'заспал', 'момчан', 'мълчан', 'реглан', 'ресист', 'сербез', 'събран', 'убог'
+    'заспал', 'момчан', 'мълчан', 'реглан', 'ресист', 'сербез', 'събран', 'убог', 'снабден'
 );
 
 -- stress disyllabic adjectives on penultimate syllable by default

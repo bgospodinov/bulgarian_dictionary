@@ -14,7 +14,7 @@ The dictionary is meant to be used for translating or writing metric and rhymed 
 
 The build script requires a Linux distribution (it is developed on a standard Arch Linux setup), although the resulting artifact is a platform-independent SQLite file. To see how to set up on Ubuntu, please refer to .github/workflows/build.yml. Recommended RAM > 2.5GB. The script uses as many cores as possible, where parallelization is feasible.
 
-For best results mount /tmp to main memory as tmpfs or ramfs. Build time is 2 minutes on a quad-core i7 @ 3.4 GHz.
+For best results mount /tmp to main memory as tmpfs or ramfs. Build time is ~3 minutes on a quad-core i7 @ 3.4 GHz.
 
 All wordforms in the database are annotated using the BulTreeBank morphosyntactic tagset. To learn more about it, please refer to the technical report inside resources/.
 The Slovnik dictionary, however, is encrypted as it is not intended for public use. Add option --no-slovnik to skip augmenting Slovnik into the final artifact. If you want to gain access to Slovnik, contact a BTB member at http://bultreebank.org. Afterwards, I will provide you with the password to decrypt Slovnik.

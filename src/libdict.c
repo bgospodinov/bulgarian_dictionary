@@ -232,6 +232,17 @@ void pronounce(char * result, size_t rlen, const char * word) {
 		}
 	}
 
+	// check if it ends in дж or дз
+	if (wres[k - 2] == L'д' && (wres[k - 1] == L'ж' || wres[k - 1] == L'з')) {
+		if (wres[k - 1] == L'ж') {
+			wres[k - 2] = L'ч';
+		}
+		else {
+			wres[k - 2] = L'ц';
+		}
+		k--;
+	}
+
 	wres[k] = '\0';
 
 	// loss of voice for last voiced consonant in the word
