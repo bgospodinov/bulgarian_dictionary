@@ -3,7 +3,14 @@ Install dependencies listed in pkglist.txt (names will vary depending from distr
 ./build --no-slovnik
 ```
 
-This repository contains code that produces a dictionary of 200 000 Bulgarian lemmata and 2 million wordforms along with their stress patterns, morphosyntactic properties and pronunciation. It is meant to be used as a dictionary to assist with translating or writing metric and rhymed poetry in Bulgarian. It is based on previous Bulgarian linguistic resources such as Slovnik, RBE, Rechko and Murdarov's dictionary.
+This repository contains code that produces a dictionary of 190 000 Bulgarian lemmata and 2 million wordforms along with:
+* stress patterns for most wordforms
+* full Slovnik-style morphosyntactic analysis of all wordforms
+* pronunciation of all wordforms
+* complete breakdown by syllables
+* derivational relationships between some of the lemmata
+
+The dictionary is meant to be used for translating or writing metric and rhymed poetry in Bulgarian. It is based on previous Bulgarian linguistic resources such as Slovnik, RBE, Rechko and Murdarov's dictionary.
 
 The build script requires a Linux distribution (it is developed on a standard Arch Linux setup), although the resulting artifact is a platform-independent SQLite file. To see how to set up on Ubuntu, please refer to .github/workflows/build.yml. Recommended RAM > 2.5GB. The script uses as many cores as possible, where parallelization is feasible.
 

@@ -27,7 +27,7 @@ int main(int argc, char ** argv) {
 static void generate_syllable() {
     sqlite3_stmt * select_stmt = 0, * insert_stmt = 0;
     int rc = sqlite3_prepare_v2(db, "SELECT pronunciation_id, wordform_id, pronunciation, pronunciation_stressed FROM pronunciation;", -1, &select_stmt, 0);
-    rc = sqlite3_prepare_v2(db, "INSERT INTO syllable (pronunciation_id, wordform_id, syllable, position, is_stressed) VALUES(?, ?, ?, ?, ?);", -1, &insert_stmt, 0);
+    rc = sqlite3_prepare_v2(db, "INSERT INTO syllable (pronunciation_id, wordform_id, syllable, onset, nucleus, coda, position, is_stressed) VALUES(?, ?, ?, ?, ?, ?, ?, ?);", -1, &insert_stmt, 0);
     rc = sqlite3_exec(db, "BEGIN TRANSACTION", 0, 0, 0);
     rc = sqlite3_exec(db, "PRAGMA synchronous = OFF", 0, 0, 0);
     rc = sqlite3_exec(db, "PRAGMA journal_mode = OFF", 0, 0, 0);
@@ -97,7 +97,6 @@ static void generate_syllable() {
                     }
 
                     syllable_endings[num_syllables - 1] = wpron_len - 1;
-
                     int start = 0;
                     for (int i = 0; i < num_syllables; i++) {
                         if (wpron[start] == L'-' || wpron[start] == L' ') {
@@ -105,19 +104,54 @@ static void generate_syllable() {
                         }
                         int syllable_wide_length = syllable_endings[i] - start + 1;
                         int syllable_char_buffer_length = syllable_wide_length * 2;
-                        char syllable[syllable_char_buffer_length];
+                        char syllable[syllable_char_buffer_length],
+                            onset[syllable_char_buffer_length],
+                            nucleus[syllable_char_buffer_length],
+                            coda[syllable_char_buffer_length];
                         size_t syllable_char_length = wcstombs(syllable, &wpron[start], syllable_char_buffer_length);
                         syllable[syllable_char_length] = '\0';
-                        start = syllable_endings[i] + 1;
+
+                        // find onset
+                        wchar_t * syllable_start = &wpron[start];
+                        int syllable_idx = 0;
+                        for (; syllable_idx < syllable_wide_length && !is_vocal(*(syllable_start + syllable_idx)); syllable_idx++);
+                        size_t onset_char_length = wcstombs(onset, syllable_start, syllable_idx * 2);
+                        onset[onset_char_length] = '\0';
+
+                        // find nucleus
+                        size_t nucleus_char_length = wcstombs(nucleus, syllable_start + syllable_idx, 2);
+                        nucleus[nucleus_char_length] = '\0';
+
+                        // find coda
+                        wchar_t * syllable_end;
+                        syllable_idx++;
+                        size_t coda_char_length = wcstombs(coda, syllable_start + syllable_idx, (syllable_wide_length - syllable_idx) * 2);
+                        coda[coda_char_length] = '\0';
+
                         // insert into sqlite db
                         rc = sqlite3_bind_int(insert_stmt, 1, pronunciation_id);
                         rc = sqlite3_bind_int(insert_stmt, 2, wordform_id);
                         rc = sqlite3_bind_text(insert_stmt, 3, syllable, -1, SQLITE_TRANSIENT);
-                        rc = sqlite3_bind_int(insert_stmt, 4, i + 1);
-                        rc = sqlite3_bind_int(insert_stmt, 5, stress_pos[i]);
+                        if (onset_char_length > 0) {
+                            rc = sqlite3_bind_text(insert_stmt, 4, onset, -1, SQLITE_TRANSIENT);
+                        }
+                        else {
+                            rc = sqlite3_bind_null(insert_stmt, 4);
+                        }
+                        rc = sqlite3_bind_text(insert_stmt, 5, nucleus, -1, SQLITE_TRANSIENT);
+                        if (coda_char_length > 0) {
+                            rc = sqlite3_bind_text(insert_stmt, 6, coda, -1, SQLITE_TRANSIENT);
+                        }
+                        else {
+                            rc = sqlite3_bind_null(insert_stmt, 6);
+                        }
+                        rc = sqlite3_bind_int(insert_stmt, 7, i + 1);
+                        rc = sqlite3_bind_int(insert_stmt, 8, stress_pos[i]);
                         rc = sqlite3_step(insert_stmt);
                         rc = sqlite3_clear_bindings(insert_stmt);
                         rc = sqlite3_reset(insert_stmt);
+
+                        start = syllable_endings[i] + 1;
                     }
                 }
                 break;
