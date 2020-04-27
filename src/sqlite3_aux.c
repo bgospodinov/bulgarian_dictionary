@@ -3,17 +3,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void initialize_db(sqlite3 **db, char *db_path) {
-	int rc = sqlite3_open(db_path, db);
-
-	if (rc != SQLITE_OK) {
+void initialize_db(sqlite3 ** db, char * db_path) {
+	if (sqlite3_open(db_path, db) != SQLITE_OK) {
 		fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(*db));
 		sqlite3_close(*db);
 		exit(1);
 	}	
 }
 
-char *read_file_into_string(char *filename) {
+char * read_file_into_string(char * filename) {
 	char *buffer = 0;
 	long length;
 	FILE *f = fopen (filename, "rb");
@@ -39,8 +37,8 @@ char *read_file_into_string(char *filename) {
 	return buffer;
 }
 
-int run_sql_file(sqlite3 *db, char *path) {
-	printf("Running %s...\n", path);
+int run_sql_file(sqlite3 * db, char * path) {
+	printf("Running %s\n", path);
 	char *err_msg = 0;
 	char *sql = read_file_into_string(path);
 	int rc = sqlite3_exec(db, sql, 0, 0, &err_msg);

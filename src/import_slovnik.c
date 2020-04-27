@@ -28,8 +28,8 @@ int main(int argc, char ** argv) {
 }
 
 static void import_slovnik_wordforms(char * path) {
-	printf("Importing table from %s...\n", path);
-	FILE *fp = fopen(path, "r");
+	printf("Importing table from %s\n", path);
+	FILE * fp = fopen(path, "r");
 	if (fp == NULL) {
 		fprintf(stderr, "Slovnik wordforms file does not exist in %s.\n", path);
 		exit(1);
@@ -40,9 +40,9 @@ static void import_slovnik_wordforms(char * path) {
 	size_t len = 0;
 	size_t read;
 	const int maxcols = 3;
-	char *toks[maxcols];
+	char * toks[maxcols];
 
-	sqlite3_stmt* stmt = 0;
+	sqlite3_stmt * stmt = 0;
 	int rc = sqlite3_prepare_v2(db, "INSERT INTO slovnik_wordform (wordform, lemma, tag, is_lemma, num_syllables) VALUES (?, ?, ?, ?, ?);", -1, &stmt, 0);
 	rc = sqlite3_exec(db, "BEGIN TRANSACTION", 0, 0, 0);
 	rc = sqlite3_exec(db, "PRAGMA synchronous = OFF", 0, 0, 0);
@@ -50,7 +50,7 @@ static void import_slovnik_wordforms(char * path) {
 
 	while ((read = getline(&line, &len, fp)) != -1) {
 		int ncols = 0;
-		char *tok = strtok(line, delim);
+		char * tok = strtok(line, delim);
 
 		while (tok != NULL && ncols < maxcols) {
 			toks[ncols] = tok;
@@ -58,7 +58,7 @@ static void import_slovnik_wordforms(char * path) {
 			tok = strtok(NULL, delim);
 		}
 
-		char *nwp = NULL;
+		char * nwp = NULL;
 		if((nwp = strchr(toks[2], '\n')) != NULL)
 			*nwp = '\0';
 
@@ -75,7 +75,7 @@ static void import_slovnik_wordforms(char * path) {
 		rc = sqlite3_reset(stmt);
 	}
 
-	char *zErrMsg = 0;
+	char * zErrMsg = 0;
 	rc = sqlite3_exec(db, "END TRANSACTION", 0, 0, &zErrMsg);
 	rc = sqlite3_finalize(stmt);
 

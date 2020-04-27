@@ -46,6 +46,7 @@ UPDATE main.rechko_lemma SET name_stressed = 'хиля`да' WHERE id = 102948;
 UPDATE main.rechko_lemma SET name_stressed = 'разме`ням' WHERE id = 97770;
 
 -- fix some spelling mistakes
+-- dont forget to delete corresponding wordforms from rechko_wordform
 UPDATE main.rechko_lemma SET name = 'четиринайсет', name_stressed = 'четирина`йсет' WHERE id = 102923;
 DELETE FROM main.rechko_lemma WHERE id = 782; -- прираст is misspelled as приръст
 DELETE FROM main.rechko_lemma WHERE id = 901; -- скуош is misspelled as скоуш

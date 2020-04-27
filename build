@@ -118,13 +118,13 @@ fi
 (
 	if [ $PROCESS_SLOVNIK ] ; then
 		##### SLOVNIK SECTION START #####
-		echo Cleaning previous builds...
+		echo Cleaning previous builds
 		make clean-result
 
-		echo Building DB setup code...
+		echo Building DB setup code
 		make
 
-		echo Decrypting and unpacking Slovnik...
+		echo Decrypting and unpacking Slovnik
 		openssl enc -aes-256-cbc -d -in $RESOURCES_PATH/slovnik.tar.gz.enc -pbkdf2 -pass "pass:$SLOVNIK_PASS" | tar -xz -C $SCRATCH_PATH
 
 		# assembling slovnik into one csv file
@@ -136,7 +136,7 @@ fi
 
 		rm -rf $SLOVNIK_PATH
 
-		echo Importing slovnik wordforms...
+		echo Importing slovnik wordforms
 		sqlite3 $DB_MAIN_PATH ".read pipeline/10_create_slovnik_wordform.sql"
 		./bin/import_slovnik $DB_MAIN_PATH $SLOVNIK_CSV_PATH
 		rm -f $SLOVNIK_CSV_PATH
@@ -145,23 +145,23 @@ fi
 	fi
 
 	###### MURDAROV SECTION START #####
-	echo Importing Murdarov lemmata...
+	echo Importing Murdarov lemmata
 	sqlite3 $DB_MAIN_PATH "CREATE TABLE murdarov_lemma(lemma_stressed TEXT);" ".mode csv" ".import $RESOURCES_PATH/murdarov.txt murdarov_lemma" \
 ".read pipeline/13_import_murdarov_lemma.sql"
 	##### MURDAROV SECTION END #####
 
 	###### RBE SECTION START #####
-	echo Unpacking RBE...
+	echo Unpacking RBE
 	zcat $RESOURCES_PATH/db-rbe.sql.gz > $SCRATCH_PATH/db-rbe.sql
 
-	echo Cleaning RBE...
+	echo Cleaning RBE
 	parallel -a $SCRATCH_PATH/db-rbe.sql --block 30M --pipe-part \
 		"sed -n -E -f $PIPELINE_PATH/20_*.sed |\
 			sed -E -f $PIPELINE_PATH/21_*.sed" \
 				>$SCRATCH_PATH/db-rbe.csv
 	rm -f $SCRATCH_PATH/db-rbe.sql
 
-	echo Importing RBE lemmata into database...;
+	echo Importing RBE lemmata into database;
 	sqlite3 $DB_MAIN_PATH ".read pipeline/30_create_rbe_lemma.sql" ".mode csv" ".separator ^" ".import $SCRATCH_PATH/db-rbe.csv rbe_lemma";
 	sqlite3 $DB_MAIN_PATH "CREATE VIRTUAL TABLE rbe_lemma_ft USING fts5(source_definition, content=rbe_lemma);" \
 	\	"INSERT INTO rbe_lemma_ft SELECT SUBSTR(source_definition, 1, MAX(INSTR(source_definition, '<b>1.'), 150)) FROM rbe_lemma;";
@@ -174,7 +174,7 @@ fi
 
 (
 	##### RECHKO SECTION START #####
-	echo Unpacking Rechko...
+	echo Unpacking Rechko
 	zcat $RESOURCES_PATH/db-rechko.sql.gz > $SCRATCH_PATH/db-rechko.sql
 
 	echo Converting Rechko MySQL schema dump to SQLite
@@ -185,7 +185,7 @@ fi
 	# then words/lemmata and word types into a sqlite file, since their definitions are hard to convert to csv and they are small
 	./tools/mysql2sqlite.awk <( sed -n -E -e '1268,1301 p' -e '1370 p' $SCRATCH_PATH/db-rechko.sql ) > $SCRATCH_PATH/rechko_lemma_and_types.sqlite
 
-	echo Importing Rechko schema, lemmata and types...
+	echo Importing Rechko schema, lemmata and types
 	sqlite3 $DB_RECHKO_PATH ".read $SCRATCH_PATH/db_schema_rechko_all.sqlite" ".read $SCRATCH_PATH/rechko_lemma_and_types.sqlite"
 
 	if [ $CLEAN_TEMP_DATA ] ; then
@@ -193,7 +193,7 @@ fi
 		rm -f $SCRATCH_PATH/rechko_lemma_and_types.sqlite
 	fi
 
-	echo Cleaning Rechko...
+	echo Cleaning Rechko
 	# useful tables from Rechko: derivative_form, word, word_type
 	sqlite3 $DB_RECHKO_PATH "ALTER TABLE word RENAME TO rechko_lemma;" \
 \	\	"CREATE INDEX IF NOT EXISTS idx_rechko_lemma ON rechko_lemma(name);"
@@ -286,11 +286,11 @@ if [ $CLEAN_TEMP_DATA ] ; then
 		sqlite3 $DB_MAIN_PATH "DROP TABLE IF EXISTS slovnik_wordform;"
 	fi
 
-	echo Vacuum...
+	echo Vacuum
 	sqlite3 $DB_MAIN_PATH "VACUUM"
 fi
 
-echo Fixing lemmata table...
+echo Fixing lemmata table
 sqlite3 $DB_MAIN_PATH ".read pipeline/61_fix_stress_errors.sql"
 
 echo Detecting morphological derivations
@@ -302,7 +302,7 @@ sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/64_add_stress_to_lem
 echo Populating wordform table with stresses
 sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/66_add_stress_to_wordform.sql" ".read pipeline/67_add_stress_to_wordform_manually.sql"
 
-echo Generating accent model...
+echo Generating accent model
 sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/69_add_accent_model.sql"
 
 if [ $RUN_TESTS ] ; then
@@ -315,10 +315,10 @@ if [ $CLEAN_TEMP_DATA ] ; then
 	sqlite3 $DB_MAIN_PATH "DROP TABLE murdarov_lemma;"
 fi
 
-echo Create pronunciation table...
+echo Create pronunciation table
 sqlite3 $DB_MAIN_PATH ".read pipeline/80_create_pronunciation.sql"
 
-echo Add pronunciations...
+echo Add pronunciations
 sqlite3 $DB_MAIN_PATH ".load lib/libextfun" ".read pipeline/81_add_pronunciation.sql"
 
 if [ $RUN_TESTS ] ; then
@@ -327,22 +327,25 @@ if [ $RUN_TESTS ] ; then
 		diff tests/pronunciation.test -
 fi
 
-echo Vacuum...
+echo Vacuum
 sqlite3 $DB_MAIN_PATH "VACUUM"
 
-echo Create syllable table...
+echo Create syllable table
 sqlite3 $DB_MAIN_PATH ".read pipeline/90_create_syllable.sql"
 
-echo Generating syllables...
+echo Generating syllables
 ./bin/generate_syllable $DB_MAIN_PATH
 
+echo Vacuum
+sqlite3 $DB_MAIN_PATH "VACUUM"
+
 if [ $COPY_FINAL ] ; then
-	echo Persisting temp database...
+	echo Persisting temp database
 	cp $DB_MAIN_PATH $DB_FINAL_PATH
 fi
 
 if [ $ARCHIVE ] ; then
-	echo Archiving dictionary...
+	echo Archiving dictionary
 	tar -czvf ${DB_FINAL_PATH%%.db}.tar.gz $DB_FINAL_PATH
 fi
 

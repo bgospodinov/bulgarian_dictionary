@@ -166,7 +166,7 @@ void pronounce(char * result, size_t rlen, const char * word) {
 	size_t wwlen = convert_to_wstring_h(wword, word, wlen);
 	wword[wwlen++] = '$'; // word terminator
 	wword[wwlen] = '\0';
-	wchar_t wres[rlen + 1];
+	wchar_t wres[rlen];
 
 	// lowercase entire wordform
 	lowercase_string(wword);
@@ -240,7 +240,7 @@ void pronounce(char * result, size_t rlen, const char * word) {
 		wres[k - 1] = invert_voiced(last_letter);
 	}
 
-	convert_to_mbstring_h(result, wres, rlen + 1);
+	convert_to_mbstring_h(result, wres, rlen);
 }
 
 const char * diminutive_to_base(const char * word) {

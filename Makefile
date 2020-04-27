@@ -22,7 +22,7 @@ TARGETS = $(LIBDICT_TARGET) $(LIBEXTFUN_TARGET) $(SLOVNIK_TARGET) $(SYLLABLE_TAR
 LIBDICT_OBJS = $(addprefix $(OBJ_DIR)/,libdict.o string_aux.o)
 LIBEXTFUN_SRCS = $(addprefix $(SRC_DIR)/,libextfun.c libdict.c string_aux.c)
 SLOVNIK_OBJS = $(addprefix $(OBJ_DIR)/,import_slovnik.o sqlite3_aux.o)
-SYLLABLE_OBJS = $(addprefix $(OBJ_DIR)/,generate_syllable.o sqlite3_aux.o)
+SYLLABLE_OBJS = $(addprefix $(OBJ_DIR)/,generate_syllable.o sqlite3_aux.o string_aux.o)
 
 REBUILDABLES = $(OBJ_DIR) $(EXEC_DIR) $(LIB_DIR)
 RESULTS = *.db *.db-journal *.dump *.tar.gz
@@ -49,11 +49,11 @@ $(LIBEXTFUN_TARGET) : $(LIBEXTFUN_SRCS) | $(LIB_DIR)
 $(SLOVNIK_TARGET) : $(SLOVNIK_OBJS) $(LIBDICT_TARGET) | $(EXEC_DIR)
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
 
-$(SYLLABLE_TARGET) : $(SYLLABLE_OBJS) | $(EXEC_DIR)
+$(SYLLABLE_TARGET) : $(SYLLABLE_OBJS) $(LIBDICT_TARGET) | $(EXEC_DIR)
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
 
 $(OBJ_DIR)/%.o : %.c | $(OBJ_DIR)
-	@echo Building $@...
+	@echo Building $@
 	$(CC) $(CFLAGS) -MMD -MP -c -o $@ $< $(LIBS)
 
 $(OBJ_DIR):
@@ -66,11 +66,11 @@ $(LIB_DIR):
 	mkdir -p $(LIB_DIR)
 
 clean-code :
-	@echo Cleaning code...
+	@echo Cleaning code
 	-$(RM) -r $(REBUILDABLES)
 
 clean-result :
-	@echo Cleaning results...
+	@echo Cleaning results
 	-$(RM) -r $(RESULTS)
 
 clean : clean-code clean-result

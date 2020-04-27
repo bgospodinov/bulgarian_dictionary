@@ -200,8 +200,8 @@ static void sqlite_pronounce(sqlite3_context *context, int argc, sqlite3_value *
 	if (argc == 1) {
 		const char * word = sqlite3_value_text(argv[0]);
 		if (word) {
-			size_t rlen = strlen(word) * 2; // just in case the word consists only of letters that expand to two letters like щ -> шт
-			char result[rlen + 1];
+			size_t rlen = strlen(word) * 2 + 1; // just in case the word consists only of letters that expand to two letters like щ -> шт
+			char result[rlen];
 			pronounce(result, rlen, word);
 			sqlite3_result_text(context, result, -1, SQLITE_TRANSIENT);
 			return;
