@@ -58,8 +58,11 @@ WITH svryh AS (
     WHERE lemma.lemma_id IN (SELECT child_id FROM svryh) AND lemma.num_stresses = 0;
 
 -- add stress to words starting with контра-
-UPDATE lemma SET lemma_stressed = stress_syllable(lemma_stressed, 1)
-WHERE lemma_stressed LIKE 'контра%' AND num_stresses > 0;
+WITH kontra AS (
+	SELECT * FROM derivation LEFT JOIN lemma ON lemma.lemma_id = derivation.parent_id WHERE type = 'kontra'
+)
+    UPDATE lemma SET lemma_stressed = stress_syllable(lemma_stressed, 1)
+    WHERE lemma.lemma_id IN (SELECT child_id FROM kontra) AND lemma.num_stresses > 0 AND find_nth_stressed_syllable(lemma_stressed, 1) > 2;
 
 WITH kontra AS (
 	SELECT * FROM derivation LEFT JOIN lemma ON lemma.lemma_id = derivation.parent_id WHERE type = 'kontra'

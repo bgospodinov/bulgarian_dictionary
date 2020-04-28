@@ -163,7 +163,9 @@ SELECT *, 'kontra' FROM
 	FROM lemma l1
 	INNER JOIN lemma l2 ON l1.pos = l2.pos AND l1.lemma_id != l2.lemma_id
 	WHERE l1.lemma = SUBSTR(l2.lemma, 7) AND
-		l2.lemma LIKE 'контра%'
+		l2.lemma LIKE 'контра%' AND l2.lemma NOT IN
+		('контрастен', 'контракт', 'контраст', 'контракция',
+		'контрастно', 'контрактче', 'контрастче')
 );
 
 END TRANSACTION;

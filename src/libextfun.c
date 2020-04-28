@@ -86,7 +86,22 @@ static void sqlite_replace_last_stress(sqlite3_context *context, int argc, sqlit
 		const char * text = sqlite3_value_text(argv[0]);
 		int n = sqlite3_value_int(argv[1]);
 		if (text) {
-			char * result = (char *)stress_syllable(remove_last_char(mbcopy(text), "`"), n);
+			char * result = (char *)stress_syllable(remove_char(mbcopy(text), "`", true), n);
+			sqlite3_result_text(context, result, -1, SQLITE_TRANSIENT);
+			free(result);
+			return;
+		}
+	}
+
+	sqlite3_result_null(context);
+}
+
+static void sqlite_remove_first_char(sqlite3_context *context, int argc, sqlite3_value **argv) {
+	if (argc == 2) {
+		const char * text = sqlite3_value_text(argv[0]);
+		const char * c = sqlite3_value_text(argv[1]);
+		if (text) {
+			char * result = (char *)remove_char(text, c, false);
 			sqlite3_result_text(context, result, -1, SQLITE_TRANSIENT);
 			free(result);
 			return;
@@ -101,7 +116,7 @@ static void sqlite_remove_last_char(sqlite3_context *context, int argc, sqlite3_
 		const char * text = sqlite3_value_text(argv[0]);
 		const char * c = sqlite3_value_text(argv[1]);
 		if (text) {
-			char * result = (char *)remove_last_char(text, c);
+			char * result = (char *)remove_char(text, c, true);
 			sqlite3_result_text(context, result, -1, SQLITE_TRANSIENT);
 			free(result);
 			return;
@@ -239,6 +254,7 @@ int sqlite3_extfun_init(sqlite3 *db, char **pzErrMsg, const sqlite3_api_routines
 	sqlite3_create_function(db, "rechko_tag", 3, SQLITE_UTF8, NULL, &sqlite_rechko_tag, NULL, NULL);
 	sqlite3_create_function(db, "stress_syllable", 2, SQLITE_UTF8, NULL, &sqlite_stress_syllable, NULL, NULL);
 	sqlite3_create_function(db, "replace_last_stress", 2, SQLITE_UTF8, NULL, &sqlite_replace_last_stress, NULL, NULL);
+	sqlite3_create_function(db, "remove_first_char", 2, SQLITE_UTF8, NULL, &sqlite_remove_first_char, NULL, NULL);
 	sqlite3_create_function(db, "remove_last_char", 2, SQLITE_UTF8, NULL, &sqlite_remove_last_char, NULL, NULL);
 	sqlite3_create_function(db, "find_nth_stressed_syllable", 2, SQLITE_UTF8, NULL, &sqlite_find_nth_stressed_syllable, NULL, NULL);
 	sqlite3_create_function(db, "find_nth_stressed_syllable_rev", 2, SQLITE_UTF8, NULL, &sqlite_find_nth_stressed_syllable_rev, NULL, NULL);

@@ -1,9 +1,9 @@
 #include <wchar.h>
 #include <string.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <string_aux.h>
 
 int is_cyrillic(const wchar_t wc) {
 	return wc >= u'\u0410' && wc <= u'\u044F';
@@ -128,6 +128,25 @@ char * convert_to_mbstring(const wchar_t * wstr) {
 	char * str = (char *) calloc(wstrl, sizeof(char));
 	convert_to_mbstring_h(str, wstr, wstrl);
 	return str;
+}
+
+const char * remove_char(const char * word, const char * c, const bool last) {
+	wchar_t * wword = convert_to_wstring(word);
+	const size_t wword_len = wcslen(wword);
+	wchar_t * wc = convert_to_wstring(c);
+	wchar_t * const wc_o = wc;
+
+	// last occurence of char
+	wchar_t * lwc = last ? wcsrchr(wword, *wc) : wcschr(wword, *wc);
+
+	if (lwc != NULL) {
+		wmemmove(lwc, lwc + 1, wword_len - (lwc - wword));
+	}
+
+	free(wc_o);
+	char * res = convert_to_mbstring(wword);
+	free(wword);
+	return res;
 }
 
 char * mbcopy(const char * str) {
