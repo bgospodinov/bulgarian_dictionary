@@ -21,14 +21,6 @@ UPDATE rbe_lemma SET lemma_with_stress = 'позакръ`гля' WHERE lemma_wit
 UPDATE rbe_lemma SET lemma_with_stress = 'вкле`щя' WHERE lemma_with_stress = 'вкле`щя`' AND pos = 'V';
 UPDATE rbe_lemma SET lemma_with_stress = 'наока`ча' WHERE lemma_with_stress = 'наока`ча`' AND pos = 'V';
 
--- deal with reflexives
-UPDATE rbe_lemma
-SET
-	lemma = SUBSTR(lemma, 1, LENGTH(lemma) - 3),
-	lemma_with_stress = SUBSTR(lemma_with_stress, 1, LENGTH(lemma_with_stress) - 3),
-	pos = 'V'
-WHERE lemma LIKE '% ми' OR lemma LIKE '% ме';
-
 INSERT INTO rbe_lemma (lemma, lemma_with_stress, pos) VALUES
     ('боклуча', 'боклуча`', 'V'),
     ('вися', 'вися`', 'V'),
@@ -39,5 +31,13 @@ INSERT INTO rbe_lemma (lemma, lemma_with_stress, pos) VALUES
     ('вклещя', 'вклещя`', 'V'),
     ('наокача', 'наокача`', 'V')
 ;
+
+-- deal with reflexives
+UPDATE rbe_lemma
+SET
+	lemma = SUBSTR(lemma, 1, LENGTH(lemma) - 3),
+	lemma_with_stress = SUBSTR(lemma_with_stress, 1, LENGTH(lemma_with_stress) - 3),
+	pos = 'V'
+WHERE lemma LIKE '% ми' OR lemma LIKE '% ме';
 
 END TRANSACTION;

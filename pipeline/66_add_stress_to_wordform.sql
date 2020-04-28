@@ -7,7 +7,7 @@ SET wordform_stressed =
         (SELECT lemma_stressed FROM lemma WHERE lemma_id = wordform.lemma_id AND num_stresses > 0),
         wordform_stressed
     )
-WHERE num_stresses = 0 AND is_lemma = 1;
+WHERE is_lemma = 1;
 
 -- adds trivial stress to monosyllabic wordforms
 UPDATE wordform
@@ -54,6 +54,22 @@ SET wordform_stressed =
                                 find_nth_stressed_syllable_rev((SELECT lemma_stressed FROM ctx), 3)
                             ),
                             find_nth_stressed_syllable_rev((SELECT lemma_stressed FROM ctx), 4)
+                        )
+            WHEN 5 THEN stress_syllable(
+                            stress_syllable(
+                                stress_syllable(
+                                    stress_syllable(
+                                        stress_syllable(
+                                            wordform_stressed,
+                                            MIN(num_syllables, find_nth_stressed_syllable_rev((SELECT lemma_stressed FROM ctx), 1))
+                                        ),
+                                        find_nth_stressed_syllable_rev((SELECT lemma_stressed FROM ctx), 2)
+                                    ),
+                                    find_nth_stressed_syllable_rev((SELECT lemma_stressed FROM ctx), 3)
+                                ),
+                                find_nth_stressed_syllable_rev((SELECT lemma_stressed FROM ctx), 4)
+                            ),
+                            find_nth_stressed_syllable_rev((SELECT lemma_stressed FROM ctx), 5)
                         )
             ELSE wordform_stressed
             END

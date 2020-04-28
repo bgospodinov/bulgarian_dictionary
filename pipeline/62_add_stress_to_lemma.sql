@@ -231,7 +231,7 @@ where num_stresses = 0 and num_syllables = 2 and pos = 'A' AND lemma like 'не%
 
 UPDATE lemma
 SET lemma_stressed = stress_syllable(lemma, num_syllables)
-where num_stresses = 0 and num_syllables = 2 and pos = 'A' AND lemma like 'свръх%';
+where num_syllables = 2 and pos = 'A' AND lemma like 'свръх%' AND accent_model != '01';
 
 -- stress lemma that are duplicated with the same stress as their siblings
 UPDATE lemma

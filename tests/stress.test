@@ -2,7 +2,7 @@ monosyllabic_lemmata_without_stress|0
 monosyllabic_wordforms_without_stress|0
 wordforms_that_dont_match_their_lemma_stress|0
 lemmata_that_dont_match_their_wordform_stress|0
-missing_murdarov_lemmata|39
+missing_murdarov_lemmata|44
 number_of_lemma_stress_mismatches|0
 number_of_wordform_stress_mismatches|0
 number_of_lemma_with_double_stress|0

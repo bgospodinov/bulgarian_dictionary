@@ -5,12 +5,12 @@ CREATE TABLE derivation(
 	derivative_id INTEGER PRIMARY KEY,
 	parent_id INTEGER,
 	child_id INTEGER,
-	type CHAR,
+	type TEXT,
 	FOREIGN KEY(parent_id) REFERENCES lemma(lemma_id) ON DELETE CASCADE,
 	FOREIGN KEY(child_id) REFERENCES lemma(lemma_id) ON DELETE CASCADE
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_derivation_parent_id_child_id ON derivation(parent_id, child_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_derivation_parent_id_child_id_type ON derivation(parent_id, child_id, type);
 
 -- detect diminutives
 INSERT INTO derivation (parent_id, child_id, type)
@@ -80,6 +80,90 @@ SELECT *, 'noun-to-noun' FROM
 	-- стил
 	UNION ALL SELECT 974, 381
 	UNION ALL SELECT 974, 744
+);
+
+-- add пра- derivations
+INSERT INTO derivation (parent_id, child_id, type)
+SELECT *, 'pra1' FROM
+(
+	SELECT
+		l1.lemma_id AS parent_id,
+		l2.lemma_id AS child_id
+	FROM lemma l1
+	INNER JOIN lemma l2 ON l1.pos = l2.pos AND l1.lemma_id != l2.lemma_id
+	WHERE l1.lemma = SUBSTR(l2.lemma, 4) AND
+		l2.lemma IN ('прадревен', 'праисторичен', 'правнучка', 'праисторийка', 'прапрабаба',
+		'прародителка', 'прароднина', 'прабиблейски', 'прагермански', 'прадядовски',
+		'прародителски', 'пратюркски', 'прачовешки', 'праобраз', 'праокеан', 'прабабче',
+		'прабългарче', 'правнуче', 'праизворче', 'праобразче', 'праокеанче', 'прарелигия',
+		'працивилизация', 'прабългарка', 'правнук', 'праисторик', 'праплеменник',
+		'прачовек', 'праобитател', 'прародител', 'прамайка', 'правуйчо', 'прачичо',
+		'прахора', 'пралеля', 'прабългари', 'правнука', 'правнуче', 'прадеден',
+		'прадядов', 'прадядовски', 'прамайка', 'праотчески')
+);
+
+INSERT INTO derivation (parent_id, child_id, type)
+SELECT *, 'pra2' FROM
+(
+	SELECT
+		l1.lemma_id AS parent_id,
+		l2.lemma_id AS child_id
+	FROM lemma l1
+	INNER JOIN lemma l2 ON l1.pos = l2.pos AND l1.lemma_id != l2.lemma_id
+	WHERE l1.lemma = SUBSTR(l2.lemma, 4) AND
+		l2.lemma IN ('прапрароднина', 'праправнуче', 'прапрародител', 'прапрадеди',
+	'прапрачичо', 'прапралеля','прапрабаба', 'праправнук',
+	'праправнучка', 'прапрадядо')
+);
+
+INSERT INTO derivation (parent_id, child_id, type)
+SELECT *, 'pra3' FROM
+(
+	SELECT
+		l1.lemma_id AS parent_id,
+		l2.lemma_id AS child_id
+	FROM lemma l1
+	INNER JOIN lemma l2 ON l1.pos = l2.pos AND l1.lemma_id != l2.lemma_id
+	WHERE l1.lemma = SUBSTR(l2.lemma, 4) AND
+		l2.lemma IN ('прапраправнучка', 'прапраправнук', 'прапрапрабаба', 'прапрапрадядо')
+);
+
+INSERT INTO derivation (parent_id, child_id, type)
+SELECT *, 'pra4' FROM
+(
+	SELECT
+		l1.lemma_id AS parent_id,
+		l2.lemma_id AS child_id
+	FROM lemma l1
+	INNER JOIN lemma l2 ON l1.pos = l2.pos AND l1.lemma_id != l2.lemma_id
+	WHERE l1.lemma = SUBSTR(l2.lemma, 4) AND
+		l2.lemma IN ('прапрапрапрадядо',  'прапрапрапрабаба')
+);
+
+-- add свръх- derivations
+INSERT INTO derivation (parent_id, child_id, type)
+SELECT *, 'svryh' FROM
+(
+	SELECT
+		l1.lemma_id AS parent_id,
+		l2.lemma_id AS child_id
+	FROM lemma l1
+	INNER JOIN lemma l2 ON l1.pos = l2.pos AND l1.lemma_id != l2.lemma_id
+	WHERE l1.lemma = SUBSTR(l2.lemma, 6) AND
+		l2.lemma LIKE 'свръх%'
+);
+
+-- add контра- derivations
+INSERT INTO derivation (parent_id, child_id, type)
+SELECT *, 'kontra' FROM
+(
+	SELECT
+		l1.lemma_id AS parent_id,
+		l2.lemma_id AS child_id
+	FROM lemma l1
+	INNER JOIN lemma l2 ON l1.pos = l2.pos AND l1.lemma_id != l2.lemma_id
+	WHERE l1.lemma = SUBSTR(l2.lemma, 7) AND
+		l2.lemma LIKE 'контра%'
 );
 
 END TRANSACTION;
