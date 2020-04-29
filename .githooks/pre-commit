@@ -1,0 +1,31 @@
+#!/bin/bash
+
+exec < /dev/tty
+
+hasChanges=$(git diff)
+if [ -n "$hasChanges" ]; then
+	git stash push --keep-index
+fi
+
+function finish {
+	if [ -n "$hasChanges" ]; then
+		echo Unstashing previous changes...
+		git stash pop
+	fi
+}
+
+trap finish EXIT;
+
+echo Running pre-commit hook tests...
+./build --no-copy --clean 2>&1
+testResult=$?
+
+echo Test exit code is $testResult
+
+if [[ $testResult -eq 0 ]]; then
+	echo Tests passed
+else
+	echo Tests failed
+fi
+
+exit $testResult

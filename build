@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# enable custom hooks
+git config --local core.hooksPath .githooks
+
 # different modes of running the build
 PROCESS_SLOVNIK=true
 EXIT_ON_FAILURE=true
@@ -102,10 +105,13 @@ SLOVNIK_CSV_PATH=$SCRATCH_PATH/slovnik.csv
 
 if [ $SET_TRAP ] ; then
 	function finish {
+		exit_status=$?
+		set +e
 		echo Temporary files removed.
 		rm -rf "$SCRATCH_PATH"
 		echo Killing background jobs
 		jobs -p | xargs kill 2>/dev/null -9
+		exit "$exit_status"
 	}
 
 	trap finish EXIT;

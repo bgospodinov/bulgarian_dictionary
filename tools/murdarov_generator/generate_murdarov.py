@@ -2,6 +2,7 @@ import os
 from os.path import expanduser, join
 import lxml.html
 
+# path to website downloaded by wayback_machine_downloader from Archive Wayback Machine
 murdarov_path = expanduser('~/websites/wiki.workroom.chitanka.info/'
                            'Page:Murdarov-Rechnik_na_sljatoto_polusljatoto_i_razdelnoto_pisane.djvu')
 output_path = 'murdarov.txt'
