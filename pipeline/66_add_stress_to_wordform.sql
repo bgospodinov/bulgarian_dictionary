@@ -258,7 +258,7 @@ SET wordform_stressed
     = stress_syllable(wordform, MAX(1, (SELECT find_nth_stressed_syllable(lemma_stressed, 1) FROM lemma WHERE lemma_id = wordform.lemma_id) - 1))
 WHERE lemma_id IN (
     WITH RECURSIVE ctx(lemma_id) AS (
-        SELECT lemma_id FROM lemma WHERE lemma IN ('чета', 'плета') AND pos = 'V'
+        SELECT lemma_id FROM lemma WHERE lemma IN ('чета', 'плета') AND pos LIKE 'V%'
         UNION SELECT d.child_id FROM ctx c
         INNER JOIN lemma l1 ON l1.lemma_id = c.lemma_id
         INNER JOIN derivation d ON d.parent_id = c.lemma_id
@@ -272,13 +272,13 @@ AND (tag LIKE 'V___f_o__' OR tag LIKE 'V___cv_____' OR tag LIKE 'V___cao____');
 UPDATE wordform
 SET wordform_stressed 
     = replace_last_stress(wordform_stressed, MIN(num_syllables, (SELECT find_nth_stressed_syllable_rev(lemma_stressed, 1) FROM lemma WHERE lemma_id = wordform.lemma_id) + 1))
-WHERE num_syllables > 1 AND lemma_id IN (SELECT lemma_id FROM lemma WHERE find_nth_stressed_syllable_rev(lemma_stressed, 1) < num_syllables AND pos = 'V') AND
+WHERE num_syllables > 1 AND lemma_id IN (SELECT lemma_id FROM lemma WHERE find_nth_stressed_syllable_rev(lemma_stressed, 1) < num_syllables AND pos LIKE 'V%') AND
 tag LIKE 'V___z__2_';
 
 UPDATE wordform
 SET wordform_stressed
     = replace_last_stress(wordform_stressed, MIN(num_syllables, (SELECT find_nth_stressed_syllable_rev(lemma_stressed, 1) FROM lemma WHERE lemma_id = wordform.lemma_id) - 1))
-WHERE num_syllables > 1 AND lemma_id IN (SELECT lemma_id FROM lemma WHERE find_nth_stressed_syllable_rev(lemma_stressed, 1) = num_syllables AND pos = 'V' AND num_syllables > 1) AND
+WHERE num_syllables > 1 AND lemma_id IN (SELECT lemma_id FROM lemma WHERE find_nth_stressed_syllable_rev(lemma_stressed, 1) = num_syllables AND pos LIKE 'V%' AND num_syllables > 1) AND
 tag LIKE 'V___z__2_';
 
 -- deal with verbs like ям where stress moves one syllable to the right of its position in the lemma
@@ -287,7 +287,7 @@ UPDATE wordform SET wordform_stressed =
         MIN(num_syllables, (SELECT find_nth_stressed_syllable_rev(lemma_stressed, 1) FROM lemma WHERE lemma_id = wordform.lemma_id) + 1))
 WHERE lemma_id IN (
     WITH RECURSIVE ctx(lemma_id) AS (
-        SELECT lemma_id FROM lemma WHERE lemma IN ('ям') AND pos = 'V'
+        SELECT lemma_id FROM lemma WHERE lemma IN ('ям') AND pos LIKE 'V%'
         UNION SELECT d.child_id FROM ctx c
         INNER JOIN lemma l1 ON l1.lemma_id = c.lemma_id
         INNER JOIN derivation d ON d.parent_id = c.lemma_id

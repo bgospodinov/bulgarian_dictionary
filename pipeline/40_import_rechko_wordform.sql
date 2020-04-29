@@ -51,11 +51,11 @@ WHERE lemma_id = 102923;
 -- deals with wrong inflections
 DELETE FROM main.rechko_wordform WHERE wordform LIKE 'полугласи%' AND lemma_id = 34169;
 DELETE FROM main.rechko_wordform WHERE wordform LIKE 'радиочаси%' AND lemma_id = 34598;
+DELETE FROM rechko_wordform WHERE wordform = 'начета' AND tag LIKE 'V%' AND is_lemma = 1;
 
 -- this helps evade rechko mismatches for reflexive verbs and adjectives
 UPDATE rechko_wordform SET wordform = REPLACE(wordform, ' се', ''), wordform_stressed = REPLACE(wordform_stressed, ' се', '')
 WHERE classification = 'reflexive' or classification = '+reflexive';
-DELETE FROM rechko_wordform WHERE wordform = 'начета' AND tag LIKE 'V%' AND is_lemma = 1;
 
 -- fix rechko bugs, where reflexive verbs have wrong imperative forms and are considered lemmata
 UPDATE rechko_wordform
@@ -63,9 +63,9 @@ UPDATE rechko_wordform
 		(wordform, wordform_stressed) =
 			(SELECT IFNULL(w2.wordform, rechko_wordform.wordform), IFNULL(w2.wordform_stressed, rechko_wordform.wordform) FROM lemma l
 			INNER JOIN rechko_wordform w ON l.lemma_id = w.lemma_id AND w.is_lemma = 1 AND w.wordform = l.lemma
-			INNER JOIN lemma l2 ON l.lemma = l2.lemma AND l.pos = l2.pos AND l.lemma_id != l2.lemma_id
+			INNER JOIN lemma l2 ON l.lemma = l2.lemma AND l.lemma_id != l2.lemma_id
 			INNER JOIN rechko_wordform w2 ON l2.lemma_id = w2.lemma_id AND w.tag = w2.tag AND w.wordform != w2.wordform
-			WHERE w.tag LIKE 'V___z__2_' AND l.lemma_id = rechko_wordform.lemma_id)
+			WHERE w.tag LIKE 'V___z__2_' AND l.lemma_id = rechko_wordform.lemma_id AND l.pos LIKE 'V%' AND l2.pos LIKE 'V%')
 WHERE rechko_wordform.tag LIKE 'V___z__2_' AND rechko_wordform.is_lemma = 1;
 
 CREATE TABLE main.wordform (
@@ -108,7 +108,7 @@ SELECT
 	COUNT_SYLLABLES(w2.wordform) AS num_syllables
 FROM lemma l1
 LEFT JOIN wordform w1 ON w1.lemma_id = l1.lemma_id
-INNER JOIN lemma l2 ON l1.lemma_stressed = l2.lemma_stressed AND l1.pos = l2.pos AND l1.lemma_id != l2.lemma_id
+INNER JOIN lemma l2 ON l1.lemma_stressed = l2.lemma_stressed AND (l1.pos = l2.pos OR SUBSTR(l1.pos, 1, 1) = l2.pos) AND l1.lemma_id != l2.lemma_id
 INNER JOIN wordform w2 ON w2.lemma_id = l2.lemma_id
 WHERE w1.wordform_id IS NULL;
 

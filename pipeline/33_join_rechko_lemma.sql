@@ -17,7 +17,7 @@ CREATE TABLE main.rechko_lemma(
   corpus_rank INT, "id:1" INT, "name:1" TEXT,
   idi_number INT, speech_part TEXT, comment TEXT,
   rules TEXT, rules_test TEXT, example_word TEXT,
-  "speech_part:1" TEXT, pos
+  "speech_part:1" TEXT, pos TEXT
 );
 
 INSERT INTO main.rechko_lemma SELECT
@@ -69,26 +69,31 @@ UPDATE main.rechko_lemma SET name_stressed = 'разме`ням' WHERE id = 9777
 -- fix some spelling mistakes
 -- dont forget to delete corresponding wordforms from rechko_wordform
 UPDATE main.rechko_lemma SET name = 'четиринайсет', name_stressed = 'четирина`йсет' WHERE id = 102923;
+UPDATE main.rechko_lemma SET pos = 'P' WHERE name_stressed = 'се`бе си';
 DELETE FROM main.rechko_lemma WHERE id = 782; -- прираст is misspelled as приръст
 DELETE FROM main.rechko_lemma WHERE id = 901; -- скуош is misspelled as скоуш
 
--- this helps evade rechko mismatches for reflexive verbs and adjectives
-UPDATE main.rechko_lemma SET name = REPLACE(name, ' се', ''), name_stressed = REPLACE(name_stressed, ' се', '')
+-- this helps evade rechko mismatches for reflexive verbs and participles
+UPDATE main.rechko_lemma
+SET
+	name = REPLACE(name, ' се', ''),
+	name_stressed = REPLACE(name_stressed, ' се', ''),
+	pos = 'Vr'
 WHERE classification = 'reflexive' or classification = '+reflexive';
 
 UPDATE main.rechko_lemma
 SET
 	name = SUBSTR(name, 1, LENGTH(name) - 3),
 	name_stressed = SUBSTR(name_stressed, 1, LENGTH(name_stressed) - 3),
-	pos = 'V'
-WHERE name LIKE '% се' OR name LIKE '% ми' OR name LIKE '% си' OR name LIKE '% ме';
+	pos = 'Vr'
+WHERE (name LIKE '% се' OR name LIKE '% ми' OR name LIKE '% си' OR name LIKE '% ме') AND pos != 'P';
 
 -- some verbs have two particles attached at the end
 UPDATE main.rechko_lemma
 SET
 	name = SUBSTR(name, 1, LENGTH(name) - 3),
 	name_stressed = SUBSTR(name_stressed, 1, LENGTH(name_stressed) - 3),
-	pos = 'V'
+	pos = 'Vr'
 WHERE name LIKE '% ми';
 
 -- separates words that have two possiblе stresses

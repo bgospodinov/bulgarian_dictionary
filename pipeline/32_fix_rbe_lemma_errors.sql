@@ -79,7 +79,7 @@ UPDATE rbe_lemma
 SET
 	lemma = SUBSTR(lemma, 1, LENGTH(lemma) - 3),
 	lemma_with_stress = SUBSTR(lemma_with_stress, 1, LENGTH(lemma_with_stress) - 3),
-	pos = 'V'
-WHERE lemma LIKE '% ми' OR lemma LIKE '% ме';
+	pos = 'Vr'
+WHERE (lemma LIKE '% ми' OR lemma LIKE '% ме');
 
 END TRANSACTION;

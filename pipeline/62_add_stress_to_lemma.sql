@@ -162,11 +162,11 @@ WHERE num_syllables > 0 AND num_stresses = 0 AND lemma LIKE '%мина' and pos 
 
 UPDATE lemma
 SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
-WHERE num_syllables > 0 AND num_stresses = 0 AND lemma LIKE '%авам' and pos = 'V';
+WHERE num_syllables > 0 AND num_stresses = 0 AND lemma LIKE '%авам' and pos LIKE 'V%';
 
 UPDATE lemma
 SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
-WHERE num_syllables > 0 AND num_stresses = 0 AND lemma LIKE '%явам' and pos = 'V';
+WHERE num_syllables > 0 AND num_stresses = 0 AND lemma LIKE '%явам' and pos LIKE 'V%';
 
 UPDATE lemma
 SET lemma_stressed = stress_syllable(lemma, num_syllables - 2)
@@ -248,7 +248,7 @@ where lemma.num_stresses = 0;
 -- most verbs (84%) have stress on their penultimate syllable, for the rest it is on the last syllable (with very few exceptions)
 UPDATE lemma
 SET lemma_stressed = stress_syllable(lemma, num_syllables)
-WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'V' and lemma in (
+WHERE num_syllables = 2 AND num_stresses = 0 and pos LIKE 'V%' and lemma in (
     'дъхтя', 'кълбя', 'сърбя', 'лумтя', 'рося', 'сладя',
     'хладя', 'снежа', 'двоя', 'слоя', 'дуя', 'плуя',
     'скривя', 'сдуша', 'спеша', 'вдълбя', 'взломя', 'вледя',
@@ -271,7 +271,7 @@ WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'V' and lemma in (
 -- assume penultimate stress for the rest
 UPDATE lemma
 SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
-WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'V';
+WHERE num_syllables = 2 AND num_stresses = 0 and pos LIKE 'V%';
 
 -- 85% of disyllabic Ncf is stressed on penultimate syllable
 UPDATE lemma

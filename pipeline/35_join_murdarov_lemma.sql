@@ -4,7 +4,8 @@ BEGIN TRANSACTION;
 UPDATE murdarov_lemma
 SET
     lemma = SUBSTR(lemma, 1, LENGTH(lemma) - 3),
-    lemma_stressed = SUBSTR(lemma_stressed, 1, LENGTH(lemma_stressed) - 3)
+    lemma_stressed = SUBSTR(lemma_stressed, 1, LENGTH(lemma_stressed) - 3),
+    pos = 'Vr'
 WHERE lemma LIKE '% се';
 
 -- separates words that have two possiblе stresses
@@ -40,7 +41,7 @@ INSERT INTO lemma (
 ) SELECT
     lemma,
     lemma_stressed,
-    NULL AS pos,
+    pos,
     'murdarov' as source,
     COUNT_SYLLABLES(lemma) as num_syllables
 FROM murdarov_lemma m

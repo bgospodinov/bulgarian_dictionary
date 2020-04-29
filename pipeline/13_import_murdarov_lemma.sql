@@ -1,6 +1,7 @@
 BEGIN TRANSACTION;
 
 ALTER TABLE murdarov_lemma ADD lemma TEXT;
+ALTER TABLE murdarov_lemma ADD pos TEXT;
 
 CREATE INDEX IF NOT EXISTS idx_murdarov_lemma_lemma ON murdarov_lemma(lemma);
 CREATE INDEX IF NOT EXISTS idx_murdarov_lemma_lemma_stressed ON murdarov_lemma(lemma_stressed);

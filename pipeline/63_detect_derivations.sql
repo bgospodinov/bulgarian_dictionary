@@ -40,7 +40,7 @@ FROM lemma l1
 INNER JOIN lemma l2 ON l1.pos = l2.pos AND l1.lemma_id != l2.lemma_id
 WHERE
 	l1.lemma IN ('чета', 'плета') AND
-	l1.pos = 'V' AND
+	l1.pos LIKE 'V%' AND
 	l2.lemma LIKE '%' || l1.lemma
 UNION ALL SELECT
 	l1.lemma_id AS parent_id,
@@ -50,7 +50,7 @@ FROM lemma l1
 INNER JOIN lemma l2 ON l1.pos = l2.pos AND l1.lemma_id != l2.lemma_id
 WHERE
 	l1.lemma_stressed IN ('я`м') AND
-	l1.pos = 'V' AND
+	l1.pos LIKE 'V%' AND
 	l2.lemma_stressed LIKE '%' || l1.lemma_stressed
 ;
 

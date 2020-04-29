@@ -48,6 +48,6 @@ UPDATE rbe_lemma SET pos = 'N'
 WHERE pos IS NULL AND lemma IN ('преговор', 'печенези');
 
 -- all the rest are assumed to be verbs
-UPDATE rbe_lemma SET pos = 'V', comment = 'assumed' WHERE pos IS NULL;
+UPDATE rbe_lemma SET pos = 'V', comment = 'pos-assumed' WHERE pos IS NULL;
 
 END TRANSACTION;

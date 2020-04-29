@@ -21,7 +21,7 @@ SELECT
 		WHEN l.pos = 'A' THEN 'msi'
 		WHEN l.pos = 'M' THEN 'c-si'
 		WHEN l.pos = 'D' THEN '-'
-		WHEN l.pos = 'V' THEN 'pitf-r1s'
+		WHEN l.pos LIKE 'V%' THEN 'pitf-r1s'
 	END AS tag,
 	COUNT_SYLLABLES(l.lemma),
 	l.source
