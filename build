@@ -112,14 +112,14 @@ if [ $SET_TRAP ] ; then
 fi
 
 (
+	echo Cleaning previous builds
+	make clean-result
+
+	echo Building DB setup code
+	make
+
 	if [ $PROCESS_SLOVNIK ] ; then
 		##### SLOVNIK SECTION START #####
-		echo Cleaning previous builds
-		make clean-result
-
-		echo Building DB setup code
-		make
-
 		echo Decrypting and unpacking Slovnik
 		openssl enc -aes-256-cbc -d -in $RESOURCES_PATH/slovnik.tar.gz.enc -pbkdf2 -pass "pass:$SLOVNIK_PASS" | tar -xz -C $SCRATCH_PATH
 
