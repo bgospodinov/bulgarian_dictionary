@@ -97,7 +97,7 @@ PIPELINE_PATH=pipeline
 SLOVNIK_PATH=$SCRATCH_PATH/slovnik
 DB_RECHKO_PATH=$SCRATCH_PATH/rechko.db # this allows concurrent insertion
 DB_MAIN_PATH=$SCRATCH_PATH/main.db # in the end, everything is merged here
-DB_FINAL_PATH=dictionary.db # where the artifact gets deployed (relative to PWD)
+DB_FINAL_PATH=dictionary.$(git describe).db # where the artifact gets deployed (relative to PWD)
 SLOVNIK_CSV_PATH=$SCRATCH_PATH/slovnik.csv
 
 if [ $SET_TRAP ] ; then
