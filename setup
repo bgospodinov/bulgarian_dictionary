@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# enable custom hooks
+git config --local core.hooksPath .githooks

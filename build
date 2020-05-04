@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# enable custom hooks
-git config --local core.hooksPath .githooks
-
 # different modes of running the build
 PROCESS_SLOVNIK=true
 EXIT_ON_FAILURE=true
