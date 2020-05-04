@@ -1,6 +1,9 @@
 bin/
 obj/
 lib/
+.vscode/
+.idea/
+__pycache__/
 *.csv
 *.db*
 *.o
@@ -8,4 +11,4 @@ lib/
 *.log
 *.dump
 *.gz
-.vscode/
+*.tsv

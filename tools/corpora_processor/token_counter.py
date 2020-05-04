@@ -1,20 +1,22 @@
-from collections import Counter
-from os.path import join
-from os import walk
-import re
-import sys
-import signal
 import argparse
-from timeit import default_timer as timer
+import signal
+import sys
+from collections import Counter
 from multiprocessing import Process, Queue, cpu_count
+from os import walk
+from os.path import join
+from timeit import default_timer as timer
 
+from tokenizer import tokenize, filter_non_cyrillic
+
+OUTPUT_FILE = 'counter.tsv'
 STOP_MESSAGE = 'STOP'
 
 
 def worker_process(input_queue, output_queue):
     counter = Counter()
-    for task in iter(input_queue.get, STOP_MESSAGE):
-        words = re.findall(r'\w+', open(task).read().lower())
+    for task_file in iter(input_queue.get, STOP_MESSAGE):
+        words = filter_non_cyrillic(tokenize(open(task_file).read().lower()))
         counter.update(Counter(words))
         completed = total_files_num - input_queue.qsize()
         if completed % 100 == 0:
@@ -30,11 +32,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
     file_paths = []
 
-    print('Root scan dir is {}'.format(args.root))
+    print(f'Root scan dir is {args.root}')
 
     for (dirpath, dirnames, filenames) in walk(args.root):
-        if '.git' in dirnames:
-            dirnames.remove('.git')
+        for dirname in dirnames:
+            if dirname.startswith('.'):
+                dirnames.remove(dirname)
         file_paths += [join(dirpath, name) for name in filenames]
 
     iq, oq = Queue(), Queue()
@@ -51,7 +54,7 @@ if __name__ == '__main__':
         iq.close()
         oq.close()
         end = timer()
-        print('Computation took {} seconds in total.'.format(end - start))
+        print(f'Computation took {end - start} seconds in total.')
 
 
     def signal_handler(sig, frame):
@@ -61,7 +64,7 @@ if __name__ == '__main__':
         sys.exit(0)
 
 
-    print('Found {} files. Starting to count...'.format(total_files_num))
+    print(f'Found {total_files_num} files. Starting to count...')
 
     start = timer()
     for file_path in file_paths:
@@ -80,16 +83,16 @@ if __name__ == '__main__':
         total_counter.update(oq.get())
         if i == 0:
             print()
-        sys.stdout.write(f'\rMerging results {i}/{num_processes}')
+        sys.stdout.write(f'\rMerging results {i + 1}/{num_processes}')
         sys.stdout.flush()
 
     print()
     print('Done.')
     print('Saving results to file...')
 
-    with open('counter', 'w') as w:
+    with open(OUTPUT_FILE, 'w') as w:
         for (word, freq) in total_counter.most_common():
-            w.write("{}\t{:,}\n".format(word, freq))
+            w.write(f"{word}\t{freq:,}\n")
 
-    print('Total number of words counted is {:,}'.format(sum(total_counter.values())))
+    print(f'Total number of words counted is {sum(total_counter.values()):,}')
     finish()
