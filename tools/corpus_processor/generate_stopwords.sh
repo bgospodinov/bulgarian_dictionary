@@ -1,5 +1,5 @@
 #!/bin/bash
-PATH_TO_CORPUS=$1
+PATH_TO_CORPUS=../../corpora/chitanka/
 COUNTER_FILE=counter.tsv
 
 python3 token_counter.py $PATH_TO_CORPUS $COUNTER_FILE

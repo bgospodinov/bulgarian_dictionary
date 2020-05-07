@@ -1,0 +1,9 @@
+[submodule "corpora/chitanka/content-text"]
+	path = corpora/chitanka/content-text
+	url = git@github.com:chitanka/content-text.git
+[submodule "corpora/chitanka/content-book-anno"]
+	path = corpora/chitanka/content-book-anno
+	url = git@github.com:chitanka/content-book-anno.git
+[submodule "corpora/chitanka/content-text-anno"]
+	path = corpora/chitanka/content-text-anno
+	url = git@github.com:chitanka/content-text-anno.git
