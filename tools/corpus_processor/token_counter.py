@@ -8,7 +8,7 @@ from os.path import join
 from queue import Empty
 from timeit import default_timer as timer
 
-from tokenizer import tokenize, filter_cyrillic_tokens
+from tokenizer import tokenize, filter_cyrillic_words
 
 STOP_MESSAGE = 'STOP'
 
@@ -17,16 +17,16 @@ def worker_process(input_queue, output_queue):
     try:
         counter = Counter()
         for task_file in iter(input_queue.get, STOP_MESSAGE):
-            tokens = filter_cyrillic_tokens(tokenize(open(task_file).read().lower()))
+            tokens = filter_cyrillic_words(tokenize(open(task_file).read().lower()))
             counter.update(Counter(tokens))
             completed = total_files_num - input_queue.qsize()
             if completed % 100 == 0:
                 sys.stdout.write(
-                    f'\rFinished {completed}/{total_files_num} ({completed / total_files_num * 100}%)...')
+                    f'\rFinished {completed}/{total_files_num} ({completed / total_files_num * 100:.2f}%)...')
                 sys.stdout.flush()
         output_queue.put(counter)
     except:
-        print(f'Unexpected error in worker: {sys.exc_info()[0]}')
+        print(f'Worker exited due to error: {sys.exc_info()[0]}')
         raise
 
 
