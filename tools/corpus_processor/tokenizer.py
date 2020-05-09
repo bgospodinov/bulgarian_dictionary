@@ -1,4 +1,5 @@
 import re
+import itertools
 
 cyrillic_range = r'[\u0410-\u044F\d]'
 hyphens = r'‐‑‒–—\-'
@@ -17,7 +18,11 @@ r_tokenize = re.compile(rf'''(?x)               # set flag to allow verbose rege
 r_cyrillic_word = re.compile(rf'{cyrillic_range}+(?:{mid_word_punct_range}{cyrillic_range}+)*{end_word_punct_range}*')
 
 
-def tokenize(text):
+def tokenize_list(sentences):
+    return list(itertools.chain.from_iterable([tokenize_string(sentence) for sentence in sentences]))
+
+
+def tokenize_string(text):
     """Simple Cyrillic tokenization."""
     return r_tokenize.findall(text)
 
