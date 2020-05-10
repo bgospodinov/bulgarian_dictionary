@@ -10,3 +10,7 @@ def scan_all_files(root):
                 dirnames.remove(dirname)
         file_paths += [join(dirpath, name) for name in filenames]
     return file_paths
+
+
+def omit(blacklist, lst):
+    return (wrd for wrd in lst if wrd not in blacklist)
