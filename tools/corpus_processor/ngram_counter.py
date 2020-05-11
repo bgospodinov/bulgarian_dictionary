@@ -66,14 +66,14 @@ def worker_process(input_queue, output_queue, n, min_freq, files_per_cycle, inte
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Simple token counter.')
     parser.add_argument('root_dir', help='Root directory to scan for files.')
-    parser.add_argument('output_file', help='Output file path.')
     parser.add_argument('-n', default=1, type=int)
-    parser.add_argument('--skipgram', help='Max step for skipgrams (bigrams only)', type=int)
+    parser.add_argument('--skipgram', help='Max step size for skipgrams (bigrams only)', type=int)
     parser.add_argument('--stopwords')
     parser.add_argument('--min-freq-per-cycle', default=0, type=int)
     parser.add_argument('--files-per-cycle', default=1_000, type=int)
     parser.add_argument('--no-interning', dest='interning', action='store_false')
-    parser.add_argument('--serialize', action='store_true')
+    parser.add_argument('--marshal', help='Marshal output as pickle.')
+    parser.add_argument('--export', help='Export output in human-readable format')
     args = parser.parse_args()
 
     if args.skipgram and args.n != 2:
@@ -150,13 +150,14 @@ if __name__ == '__main__':
     print()
     print('Done.')
 
-    if args.serialize:
+    if args.marshal:
         print('Serializing the counters...')
-        with open(args.output_file, 'wb') as w:
+        with open(args.marshal, 'wb') as w:
             pickle.dump(total_counter, w)
-    else:
-        print('Saving results to file...')
-        with open(args.output_file, 'w') as w:
+
+    if args.export:
+        print('Exporting results to file...')
+        with open(args.export, 'w') as w:
             for (word, freq) in total_counter.most_common():
                 w.write(f"{word}\t{freq:,}\n")
 
