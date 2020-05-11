@@ -65,6 +65,7 @@ WHERE name_stressed IN (
 UPDATE main.rechko_lemma SET name_stressed = 'чета`' WHERE id = 98942;
 UPDATE main.rechko_lemma SET name_stressed = 'хиля`да' WHERE id = 102948;
 UPDATE main.rechko_lemma SET name_stressed = 'разме`ням' WHERE id = 97770;
+UPDATE main.rechko_lemma SET name_stressed = 'госпожа`' WHERE id = 83823;
 
 -- fix some spelling mistakes
 -- dont forget to delete corresponding wordforms from rechko_wordform

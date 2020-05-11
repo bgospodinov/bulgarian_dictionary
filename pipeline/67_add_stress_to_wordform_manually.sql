@@ -197,4 +197,30 @@ WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'бодил' ORDER BY lemm
     ((SELECT * FROM ctx), 'бодли', 'бодли`', 'Ncmpi', 2),
     ((SELECT * FROM ctx), 'бодлите', 'бодли`те', 'Ncmpd', 3);
 
+-- госпожа
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma_stressed = 'госпожа`' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'госпожи', 'госпо`жи', 'Ncfpi', 3),
+    ((SELECT * FROM ctx), 'госпожите', 'госпо`жите', 'Ncfpd', 4),
+    ((SELECT * FROM ctx), 'госпожа', 'госпожа`', 'Ncfs-v', 3),
+    ((SELECT * FROM ctx), 'госпожа', 'госпо`жа', 'Ncfs-v', 3),
+    ((SELECT * FROM ctx), 'госпоже', 'госпо`же', 'Ncfs-v', 3);
+
+-- враг
+WITH ctx AS (SELECT lemma_id FROM wordform WHERE wordform_stressed = 'врагове`' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'врази', 'вра`зи', 'Ncmpi', 2);
+
+-- алт
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'алт' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'алти', 'алти`', 'Ncmpi', 2);
+
+-- гръм
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'гръм' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'гърмове', 'гъ`рмове', 'Ncmpi', 3),
+    ((SELECT * FROM ctx), 'гърмовете', 'гъ`рмовете', 'Ncmpd', 4),
+    ((SELECT * FROM ctx), 'гърма', 'гъ`рма', 'Ncmt', 4);
+
 END TRANSACTION;

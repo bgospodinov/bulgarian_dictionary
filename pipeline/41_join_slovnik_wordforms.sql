@@ -20,7 +20,10 @@ LEFT JOIN
 ON
 	s.lemma = l.lemma AND
 	s.pos = l.pos
-WHERE (SELECT COUNT(*) FROM wordform w WHERE w.wordform = s.wordform AND w.tag = s.tag) == 0;
+WHERE (
+	SELECT COUNT(*) FROM wordform w WHERE w.wordform = s.wordform AND w.tag = s.tag
+		AND s.lemma = (SELECT lemma FROM lemma WHERE lemma_id = w.lemma_id)
+	) == 0;
 
 -- add lemma manually for some slovnik wordforms
 UPDATE wordform
