@@ -8,7 +8,7 @@ from multiprocessing import Process, Queue, cpu_count
 from queue import Empty
 from timeit import default_timer as timer
 
-from ngram import ngram
+from ngram import ngram, skip_bigram
 from sentence_segmenter import flat_segment
 from tokenizer import tokenize_list, filter_cyrillic_words
 from util import scan_all_files, omit
@@ -20,7 +20,7 @@ def clean_counter(counter, min_freq):
     return Counter(el for el in counter.elements() if counter[el] >= min_freq)
 
 
-def worker_process(input_queue, output_queue, n, min_freq, files_per_cycle, interning, stopwords):
+def worker_process(input_queue, output_queue, n, min_freq, files_per_cycle, interning, stopwords, skipgram):
     try:
         counter = Counter()
 
@@ -31,6 +31,8 @@ def worker_process(input_queue, output_queue, n, min_freq, files_per_cycle, inte
                 gc.collect()
 
         def __ngram(x):
+            if skipgram:
+                return skip_bigram(x, max_step=skipgram)
             if n > 1:
                 return ngram(x, n=n)
             return x
@@ -66,12 +68,17 @@ if __name__ == '__main__':
     parser.add_argument('root_dir', help='Root directory to scan for files.')
     parser.add_argument('output_file', help='Output file path.')
     parser.add_argument('-n', default=1, type=int)
+    parser.add_argument('--skipgram', help='Max step for skipgrams (bigrams only)', type=int)
     parser.add_argument('--stopwords')
     parser.add_argument('--min-freq-per-cycle', default=0, type=int)
     parser.add_argument('--files-per-cycle', default=1_000, type=int)
     parser.add_argument('--no-interning', dest='interning', action='store_false')
     parser.add_argument('--serialize', action='store_true')
     args = parser.parse_args()
+
+    if args.skipgram and args.n != 2:
+        print('Skipgrams only allowed for n = 2.', file=sys.stderr)
+        sys.exit(1)
 
     print(args)
     file_paths = scan_all_files(args.root_dir)
@@ -115,7 +122,9 @@ if __name__ == '__main__':
     for file_path in file_paths:
         iq.put(file_path)
 
-    worker_args = (iq, oq, args.n, args.min_freq_per_cycle, args.files_per_cycle, args.interning, stopword_list)
+    worker_args = (
+        iq, oq, args.n, args.min_freq_per_cycle, args.files_per_cycle, args.interning, stopword_list, args.skipgram)
+
     for i in range(num_processes):
         iq.put(STOP_MESSAGE)
         process = Process(target=worker_process, args=worker_args)
