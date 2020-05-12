@@ -1,5 +1,6 @@
 BEGIN TRANSACTION;
 
+-- fix some slovnik mistakes
 DELETE FROM slovnik_wordform WHERE wordform = 'хилядо' and tag = 'Mc-pi';
 
 -- join all wordforms from the morphological dictionary (slovnik_wordform table)

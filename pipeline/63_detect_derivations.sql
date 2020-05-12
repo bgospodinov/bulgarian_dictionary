@@ -64,7 +64,7 @@ SELECT *, 'noun-to-noun' FROM
 	FROM lemma l1
 	INNER JOIN lemma l2 ON l1.pos = l2.pos AND l1.lemma_id != l2.lemma_id
 	WHERE
-		l1.lemma IN ('сън', 'смях', 'глад', 'град', 'дял', 'звук', 'кръг',
+		l1.lemma IN ('сън', 'смях', 'глад', 'град', 'дял', 'звук', 'кръг', 'съдия',
 		'труд', 'бог', 'клас', 'прах', 'страх', 'час', 'мост', 'мъж', 'крал') AND
 		l1.lemma_id NOT IN (321) AND
 		l1.pos LIKE 'N%' AND

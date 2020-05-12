@@ -115,8 +115,10 @@ if [ $SET_TRAP ] ; then
 fi
 
 (
-	echo Cleaning previous builds
-	make clean-result
+	if [ $COPY_FINAL ] ; then
+		echo Cleaning previous builds
+		make clean-result
+	fi
 
 	echo Building DB setup code
 	make

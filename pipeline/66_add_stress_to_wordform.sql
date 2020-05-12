@@ -101,7 +101,7 @@ WHERE lemma_id IN
     )
     AND (tag LIKE 'N__sh' OR tag LIKE 'N__sf');
 
--- and with plural ове`
+-- and with plural ове` and еве`
 UPDATE wordform
 SET wordform_stressed =
     replace_last_stress(wordform_stressed, find_nth_stressed_syllable_rev(wordform_stressed, 1) + 2)
@@ -214,23 +214,70 @@ WHERE tag LIKE 'N_np_' AND ((
     WHERE w.lemma_id = wordform.lemma_id AND w.is_lemma = 1 AND w.wordform_stressed LIKE '%о' AND num_stresses > 0
 ) > 0);
 
--- deal with nouns whose plural ends in 'ена'
+-- deal with neuter nouns whose plural ends in 'ена', 'еса' or 'я'
+CREATE TEMP TABLE NeuterNounsEnaEsaJa AS
+SELECT lemma_id FROM wordform WHERE (wordform LIKE '%ена' OR wordform LIKE '%еса') AND tag = 'Ncnpi'
+UNION SELECT w1.lemma_id FROM wordform w1
+INNER JOIN wordform w2 ON w1.lemma_id = w2.lemma_id
+WHERE w1.tag = 'Ncnsi' AND w1.num_syllables = 2 AND find_nth_stressed_syllable(w1.wordform_stressed, 1) = 1
+AND w2.tag = 'Ncnpi' AND w2.num_syllables = w1.num_syllables AND w2.wordform LIKE '%я';
+
 UPDATE wordform
 SET wordform_stressed = replace_last_stress(wordform_stressed, num_syllables)
 WHERE lemma_id IN (
-    SELECT lemma_id FROM wordform WHERE (wordform LIKE '%ена' OR wordform LIKE '%еса') AND tag = 'Ncnpi'
+    SELECT * FROM NeuterNounsEnaEsaJa
 ) AND tag = 'Ncnpi';
 
 UPDATE wordform
 SET wordform_stressed = replace_last_stress(wordform_stressed, num_syllables - 1)
 WHERE lemma_id IN (
-    SELECT lemma_id FROM wordform WHERE (wordform LIKE '%ена' OR wordform LIKE '%еса') AND tag = 'Ncnpi'
+    SELECT * FROM NeuterNounsEnaEsaJa
 ) AND tag = 'Ncnpd';
 
 -- put stress on penultimate syllable for all disyllabic vocative forms of nouns
 UPDATE wordform
 SET wordform_stressed = stress_syllable(wordform, 1)
 WHERE tag = 'Ncms-v' AND num_syllables = 2 AND wordform LIKE '%ьо';
+
+-- deal with exceptions
+CREATE TEMP TABLE Sudijia AS
+WITH RECURSIVE ctx(lemma_id) AS (
+    -- base case
+    SELECT l1.lemma_id FROM lemma l1 WHERE l1.lemma IN ('съдия') AND l1.pos = 'Ncm'
+    -- inductive case
+    UNION SELECT d.child_id FROM ctx c -- inefficient to omit ALL, but necessary to prevent infinite loop
+    INNER JOIN lemma l1 ON l1.lemma_id = c.lemma_id
+    INNER JOIN derivation d ON d.parent_id = c.lemma_id
+    INNER JOIN lemma l2 ON d.child_id = l2.lemma_id AND l1.pos = l2.pos
+
+) SELECT * FROM ctx;
+
+UPDATE wordform SET wordform_stressed = replace_last_stress(wordform_stressed, num_syllables - 1)
+WHERE lemma_id IN (
+    SELECT * FROM Sudijia
+) AND (tag = 'Ncmpi' OR tag = 'Ncmt');
+
+UPDATE wordform SET wordform_stressed = replace_last_stress(wordform_stressed, num_syllables - 2)
+WHERE lemma_id IN (
+    SELECT * FROM Sudijia
+) AND tag = 'Ncmpd';
+
+UPDATE wordform
+SET wordform_stressed = 'съди`лища'
+WHERE wordform_stressed = 'съ`дилища';
+
+UPDATE wordform
+SET wordform_stressed = 'номера`'
+WHERE wordform_stressed = 'но`мера' AND tag = 'Ncmpi';
+
+UPDATE wordform
+SET wordform_stressed = 'номера`та'
+WHERE wordform_stressed = 'но`мерата' AND tag = 'Ncmpd';
+
+-- fix misstressed vocative forms
+UPDATE wordform
+SET wordform_stressed = 'о`тче'
+WHERE wordform_stressed = 'отче`';
 
 -- deal with numerals after "three" where the suffixed article receives the stress e.g. chetirite`
 UPDATE wordform

@@ -152,7 +152,9 @@ WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'лен' ORDER BY lemma_id
 WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'дол' ORDER BY lemma_id LIMIT 1)
     INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
     ((SELECT * FROM ctx), 'дола', 'до`ла', 'Ncmsh', 2),
-    ((SELECT * FROM ctx), 'долът', 'до`лът', 'Ncmsf', 2);
+    ((SELECT * FROM ctx), 'долът', 'до`лът', 'Ncmsf', 2),
+    ((SELECT * FROM ctx), 'долове', 'до`лове', 'Ncmpi', 3),
+    ((SELECT * FROM ctx), 'доловете', 'до`ловете', 'Ncmpd', 4);
 
 -- плет
 WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'плет' ORDER BY lemma_id LIMIT 1)
@@ -222,5 +224,68 @@ WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'гръм' ORDER BY lemma_
     ((SELECT * FROM ctx), 'гърмове', 'гъ`рмове', 'Ncmpi', 3),
     ((SELECT * FROM ctx), 'гърмовете', 'гъ`рмовете', 'Ncmpd', 4),
     ((SELECT * FROM ctx), 'гърма', 'гъ`рма', 'Ncmt', 4);
+
+-- дърво
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'дърво' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'дърве', 'дъ`рве', 'Ncnpi', 2),
+    ((SELECT * FROM ctx), 'дървя', 'дървя`', 'Ncnpi', 2),
+    ((SELECT * FROM ctx), 'дървята', 'дървя`та', 'Ncnpd', 3),
+    ((SELECT * FROM ctx), 'дървеса', 'дървеса`', 'Ncnpi', 3),
+    ((SELECT * FROM ctx), 'дървесата', 'дървеса`та', 'Ncnpd', 4);
+
+-- слово
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'слово' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'словеса', 'словеса`', 'Ncnpi', 3),
+    ((SELECT * FROM ctx), 'словесата', 'словеса`та', 'Ncnpd', 4);
+
+-- поле
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'поле' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'поля', 'поля`', 'Ncnpi', 2),
+    ((SELECT * FROM ctx), 'полята', 'поля`та', 'Ncnpd', 3);
+
+-- море
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'море' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'моря', 'моря`', 'Ncnpi', 2),
+    ((SELECT * FROM ctx), 'морята', 'моря`та', 'Ncnpd', 3);
+
+-- джоб
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'джоб' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'джобове', 'джобо`ве', 'Ncmpi', 3),
+    ((SELECT * FROM ctx), 'джобовете', 'джобо`вете', 'Ncmpd', 4);
+
+-- стих
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'стих' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'стихове', 'стихове`', 'Ncmpi', 3),
+    ((SELECT * FROM ctx), 'стиховете', 'стихове`те', 'Ncmpd', 4);
+
+-- рог
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'рог' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'рога', 'рога`', 'Ncmpi', 2),
+    ((SELECT * FROM ctx), 'рогата', 'рога`та', 'Ncmpd', 3);
+
+-- даскал
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'даскал' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'даскаля', 'даскаля`', 'Ncmpi', 3),
+    ((SELECT * FROM ctx), 'даскалята', 'даскаля`та', 'Ncmpd', 4);
+
+-- циганин
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'циганин' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'циганя', 'циганя`', 'Ncmpi', 3),
+    ((SELECT * FROM ctx), 'циганята', 'циганя`та', 'Ncmpd', 4);
+
+-- журналист
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'журналист' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'журналя', 'журналя`', 'Ncmpi', 3),
+    ((SELECT * FROM ctx), 'журналята', 'журналя`та', 'Ncmpd', 4);
 
 END TRANSACTION;

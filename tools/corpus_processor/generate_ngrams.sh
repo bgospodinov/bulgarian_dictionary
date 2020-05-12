@@ -1,9 +1,6 @@
 #!/bin/bash
 source include.sh
 
-# unigrams
-python3 ngram_counter.py $PATH_TO_CORPUS --marshal $MODEL_PATH/unigram.pkl --export $MODEL_PATH/unigram.tsv --no-interning
-
 # bigrams
 python3 ngram_counter.py $PATH_TO_CORPUS --marshal $MODEL_PATH/bigram.pkl --export $MODEL_PATH/bigram.tsv -n 2 \
   --min-freq-per-cycle=2 --stopwords $MODEL_PATH/stopwords.txt
