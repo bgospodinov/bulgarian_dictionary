@@ -6,7 +6,7 @@
 
 // all of these arrays should be ordered ascendingly
 // includes ю and я, which are not vowels
-static const wchar_t lc_vocals[] = { L'а', L'е', L'и', L'о', L'у', L'ъ', L'ю', L'я' };
+static const wchar_t lc_vocals[] = { L'а', L'е', L'и', L'о', L'у', L'ъ', L'ю', L'я', L'ѝ' };
 // skipping й
 static const wchar_t lc_sonorants[] = { L'л', L'м', L'н', L'р' };
 // ignoring дж and дз

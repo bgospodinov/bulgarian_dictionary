@@ -1,6 +1,17 @@
 BEGIN TRANSACTION;
 
--- add words with two possible stress patterns (dubletni formi)
+-- add missing forms and words with two possible stress patterns (dubletni formi)
+-- съм
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'съм' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'беше', 'бе`ше', 'Vxitf-t2s', 2),
+    ((SELECT * FROM ctx), 'беше', 'бе`ше', 'Vxitf-t3s', 2);
+
+-- неин
+WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'неин' ORDER BY lemma_id LIMIT 1)
+    INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES
+    ((SELECT * FROM ctx), 'ѝ', 'ѝ`', 'Psot--3--f', 1);
+
 -- дар
 WITH ctx AS (SELECT lemma_id FROM lemma WHERE lemma = 'дар' LIMIT 1)
     INSERT INTO wordform (lemma_id, wordform, wordform_stressed, tag, num_syllables) VALUES

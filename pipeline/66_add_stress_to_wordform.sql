@@ -297,7 +297,7 @@ SET wordform_stressed = stress_syllable(wordform, 1)
 WHERE lemma_id = 102948 AND wordform like 'хиляди%';
 
 -- deal with prepositions
-UPDATE wordform SET wordform = 'ѝ', wordform_stressed = 'ѝ`' WHERE wordform = 'й' and num_stresses = 0;
+UPDATE wordform SET wordform_stressed = 'й`' WHERE wordform = 'й' and num_stresses = 0;
 
 -- deal with verbs like чета which change their stress in aorist
 UPDATE wordform
