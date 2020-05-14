@@ -8,6 +8,18 @@ import nltk
 from nltk import FreqDist
 from nltk.collocations import BigramCollocationFinder, TrigramCollocationFinder
 
+
+def load_ngrams(path, n):
+    d = pickle.load(open(path, 'rb'))
+    if n > 1:
+        r = defaultdict(int)
+        for k in d.keys():
+            # this will remove positions from skip-grams if any
+            r[k[-n:]] += d[k]
+        return FreqDist(r)
+    return FreqDist(d)
+
+
 if __name__ == '__main__':
     parser = ArgumentParser(description='Collocations explorer.')
     parser.add_argument('-n', default=2, type=int, choices=[2, 3])
@@ -19,16 +31,16 @@ if __name__ == '__main__':
                         choices=['raw_freq', 'student_t', 'chi_sq', 'mi_like', 'pmi', 'likelihood_ratio',
                                  'poisson_stirling', 'jaccard', 'phi_sq', 'fisher', 'dice'])
     parser.add_argument('--unigram', default='models/unigram.pkl', help='Path to unigrams.')
-    parser.add_argument('--bigram', default='models/bigram.pkl', help='Path to bigrams.')
+    parser.add_argument('--bigram', default='models/bigram.pkl', help='Path to bigrams or skip-bigrams.')
     parser.add_argument('--trigram', default='models/trigram.pkl', help='Path to trigrams.')
     args = parser.parse_args()
     print(args)
 
-    unigrams = FreqDist(pickle.load(open(args.unigram, 'rb')))
-    bigrams = FreqDist(pickle.load(open(args.bigram, 'rb')))
+    unigrams = load_ngrams(args.unigram, 1)
+    bigrams = load_ngrams(args.bigram, 2)
 
     if args.n == 3:
-        trigrams = FreqDist(pickle.load(open(args.trigram, 'rb')))
+        trigrams = load_ngrams(args.trigram, 3)
         wildcards = defaultdict(int)
         for key in trigrams.keys():
             wildcards[(key[0], key[2])] += trigrams.get(key)
