@@ -38,7 +38,8 @@ def worker_process(input_queue, output_queue, n, min_freq, files_per_cycle, inte
             return x
 
         for idx, task_file in enumerate(iter(input_queue.get, STOP_MESSAGE)):
-            text = open(task_file).read().lower()
+            with open(task_file) as tf:
+                text = tf.read().lower()
             sentences = flat_segment(text)
             tokens = tokenize_list(sentences)
             cyr_words = omit(stopwords, filter_cyrillic_words(tokens))
