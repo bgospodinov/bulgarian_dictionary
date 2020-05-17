@@ -10,6 +10,7 @@ r_tokenize = re.compile(rf'''(?x)               # set flag to allow verbose rege
             [\d.,]+|                            # dates or floating numbers
             [а-я]\.|                            # abbreviations
             (?:[A-ZА-Я]\.)+|                    # acronyms
+            </?\w>         |                    # tags
             \w+(?:{mid_word_punct_range}\w+)*{end_word_punct_range}*|    # possibly hyphenated words
             \.\.\.|                             # ellipsis
             \S                                  # every other non-whitespace character is assumed to be punctuation
@@ -27,6 +28,8 @@ def tokenize_string(text):
     return r_tokenize.findall(text)
 
 
-def filter_cyrillic_words(tokens):
+def filter_cyrillic_words(tokens, exclude=None):
     """Only leaves standalone Cyrillic words"""
-    return filter(lambda t: r_cyrillic_word.fullmatch(t), tokens)
+    if exclude is None:
+        exclude = []
+    return filter(lambda t: t in exclude or r_cyrillic_word.fullmatch(t), tokens)

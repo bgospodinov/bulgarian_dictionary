@@ -4,14 +4,15 @@ import pickle
 import signal
 import sys
 from collections import Counter
+from itertools import chain
 from multiprocessing import Process, Queue, cpu_count
 from queue import Empty
 from timeit import default_timer as timer
 
 from ngram import ngram, skip_bigram
 from sentence_segmenter import flat_segment
-from tokenizer import tokenize_list, filter_cyrillic_words
-from util import scan_all_files, omit
+from tokenizer import filter_cyrillic_words, tokenize_string
+from util import scan_all_files, omit, load_stopwords
 
 STOP_MESSAGE = 'STOP'
 
@@ -20,7 +21,7 @@ def clean_counter(counter, min_freq):
     return Counter(el for el in counter.elements() if counter[el] >= min_freq)
 
 
-def worker_process(input_queue, output_queue, n, min_freq, files_per_cycle, interning, stopwords, skipgram):
+def worker_process(input_queue, output_queue, n, min_freq, files_per_cycle, interning, stopwords, skipgram, lps, rps):
     try:
         counter = Counter()
 
@@ -41,12 +42,18 @@ def worker_process(input_queue, output_queue, n, min_freq, files_per_cycle, inte
             with open(task_file) as tf:
                 text = tf.read().lower()
             sentences = flat_segment(text)
-            tokens = tokenize_list(sentences)
-            cyr_words = omit(stopwords, filter_cyrillic_words(tokens))
+            exclude = []
+            if lps or rps:
+                exclude = [lps, rps]
+                sentences = [lps + " " + sentence + " " + rps for sentence in sentences]
+            token_sentences = [tokenize_string(sentence) for sentence in sentences]
+            cyr_sentences = [omit(stopwords, filter_cyrillic_words(token_sentence, exclude=exclude)) for token_sentence
+                             in
+                             token_sentences]
             if interning:
-                cyr_words = [sys.intern(cyr_word) for cyr_word in cyr_words]
-            ngram_keys = __ngram(cyr_words)
-            counter.update(Counter(ngram_keys))
+                cyr_sentences = [(sys.intern(cyr_word) for cyr_word in cyr_sentence) for cyr_sentence in cyr_sentences]
+            ngram_sentences = chain.from_iterable(__ngram(cyr_sentence) for cyr_sentence in cyr_sentences)
+            counter.update(Counter(ngram_sentences))
             completed = total_files_num - input_queue.qsize()
 
             if idx % files_per_cycle == 0 and idx > 0:
@@ -75,24 +82,23 @@ if __name__ == '__main__':
     parser.add_argument('--no-interning', dest='interning', action='store_false')
     parser.add_argument('--marshal', help='Marshal output as pickle.')
     parser.add_argument('--export', help='Export output in human-readable format')
+    parser.add_argument('-lps', '--left-pad-symbol', help='Left pad symbol at the beginning of sentences.',
+                        default='<s>')
+    parser.add_argument('-rps', '--right-pad-symbol', help='Right pad symbol at the beginning of sentences.',
+                        default='</s>')
+    parser.add_argument('--no-padding', dest='padding', action='store_false')
     args = parser.parse_args()
 
+    if not args.padding:
+        args.left_pad_symbol = None
+        args.right_pad_symbol = None
     if args.skipgram and args.n != 2:
         print('Skipgrams only allowed for n = 2.', file=sys.stderr)
         sys.exit(1)
 
     print(args)
     file_paths = scan_all_files(args.root_dir)
-
-    stopword_list = []
-    if args.stopwords:
-        print(f'Loading stopwords from {args.stopwords}...')
-        with open(args.stopwords) as f:
-            for line in f:
-                stopword_list.append(line.strip())
-        print(f'Loaded {len(stopword_list)} lines.')
-        print(stopword_list)
-
+    stopword_list = load_stopwords(args.stopwords)
     iq, oq = Queue(), Queue()
     processes = []
     total_files_num = len(file_paths)
@@ -124,7 +130,8 @@ if __name__ == '__main__':
         iq.put(file_path)
 
     worker_args = (
-        iq, oq, args.n, args.min_freq_per_cycle, args.files_per_cycle, args.interning, stopword_list, args.skipgram)
+        iq, oq, args.n, args.min_freq_per_cycle, args.files_per_cycle, args.interning, stopword_list, args.skipgram,
+        args.left_pad_symbol, args.right_pad_symbol)
 
     for i in range(num_processes):
         iq.put(STOP_MESSAGE)

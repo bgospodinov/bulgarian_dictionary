@@ -14,3 +14,15 @@ def scan_all_files(root):
 
 def omit(blacklist, lst):
     return (wrd for wrd in lst if wrd not in blacklist)
+
+
+def load_stopwords(file_path):
+    stopword_list = []
+    if file_path:
+        print(f'Loading stopwords from {file_path}...')
+        with open(file_path) as f:
+            for line in f:
+                stopword_list.append(line.strip())
+        print(f'Loaded {len(stopword_list)} lines.')
+        print(stopword_list)
+    return stopword_list

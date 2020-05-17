@@ -1,4 +1,3 @@
-import pickle
 import re
 from argparse import ArgumentParser
 from collections import defaultdict
@@ -8,17 +7,7 @@ import nltk
 from nltk import FreqDist
 from nltk.collocations import BigramCollocationFinder, TrigramCollocationFinder
 
-
-def load_ngrams(path, n):
-    d = pickle.load(open(path, 'rb'))
-    if n > 1:
-        r = defaultdict(int)
-        for k in d.keys():
-            # this will remove positions from skip-grams if any
-            r[k[-n:]] += d[k]
-        return FreqDist(r)
-    return FreqDist(d)
-
+from ngram import load_ngrams
 
 if __name__ == '__main__':
     parser = ArgumentParser(description='Collocations explorer.')
