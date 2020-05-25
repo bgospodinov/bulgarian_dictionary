@@ -42,7 +42,10 @@ WHERE pos IS NULL AND ROWID IN (select ROWID from rbe_lemma_ft WHERE rbe_lemma_f
 
 -- fix exceptions
 UPDATE rbe_lemma SET pos = 'A'
-WHERE pos IS NULL AND lemma IN ('полуграмотен', ' получер');
+WHERE pos IS NULL AND lemma IN ('полуграмотен', 'получер', 'всявгашен');
+
+UPDATE rbe_lemma SET pos = 'D'
+WHERE pos IS NULL AND lemma IN ('всявга');
 
 UPDATE rbe_lemma SET pos = 'N'
 WHERE pos IS NULL AND lemma IN ('преговор', 'печенези');

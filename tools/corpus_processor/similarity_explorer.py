@@ -9,7 +9,7 @@ from ngram import load_ngrams
 if __name__ == '__main__':
     parser = ArgumentParser(description='Context explorer.')
     parser.add_argument('word')
-    parser.add_argument('-n', '--number', default=20)
+    parser.add_argument('-n', '--number', default=20, type=int)
     args = parser.parse_args()
     print(args)
     trigrams = load_ngrams('models/trigram.pkl', n=3)
