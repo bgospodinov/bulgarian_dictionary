@@ -63,9 +63,11 @@ WHERE name_stressed IN (
 
 -- fix other stressing mistakes
 UPDATE main.rechko_lemma SET name_stressed = 'чета`' WHERE id = 98942;
+UPDATE main.rechko_lemma SET name_stressed = 'просека`' WHERE id = 101830;
 UPDATE main.rechko_lemma SET name_stressed = 'хиля`да' WHERE id = 102948;
 UPDATE main.rechko_lemma SET name_stressed = 'разме`ням' WHERE id = 97770;
 UPDATE main.rechko_lemma SET name_stressed = 'госпожа`' WHERE id = 83823;
+UPDATE main.rechko_lemma SET name_stressed = 'клада`' WHERE id = 98937;
 
 -- fix some spelling mistakes
 -- dont forget to delete corresponding wordforms from rechko_wordform
@@ -143,7 +145,7 @@ CREATE TABLE lemma (
 	comment TEXT,
 	ner TEXT,
 	pos TEXT,
-	source TEXT,
+	source TEXT DEFAULT 'manual',
 	num_syllables INT,
 	num_stresses INT GENERATED ALWAYS AS (LENGTH(lemma_stressed) - LENGTH(REPLACE(lemma_stressed, '`', ''))) STORED, -- only supported in sqlite >= 3.31.0
 	accent_model TEXT

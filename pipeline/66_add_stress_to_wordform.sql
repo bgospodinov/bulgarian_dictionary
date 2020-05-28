@@ -299,18 +299,38 @@ WHERE lemma_id = 102948 AND wordform like 'хиляди%';
 -- deal with prepositions
 UPDATE wordform SET wordform_stressed = 'й`' WHERE wordform = 'й' and num_stresses = 0;
 
--- deal with verbs like чета which change their stress in aorist
+-- deal with verbs like чета which change their stress in aorist (incl. participle) and passive
 UPDATE wordform
-SET wordform_stressed 
+SET wordform_stressed
     = stress_syllable(wordform, MAX(1, (SELECT find_nth_stressed_syllable(lemma_stressed, 1) FROM lemma WHERE lemma_id = wordform.lemma_id) - 1))
 WHERE lemma_id IN (
     WITH RECURSIVE ctx(lemma_id) AS (
-        SELECT lemma_id FROM lemma WHERE lemma IN ('чета', 'плета') AND pos LIKE 'V%'
+        SELECT lemma_id FROM lemma WHERE lemma IN ('чета', 'плета', 'бода', 'неса', 'клада', 'крада', 'лека',
+            'мета', 'преда', 'сека', 'веда', 'треса', 'паса', 'раста', 'река', 'пека', 'тека', 'гнета',
+            'дера', 'пера', 'бера', 'сера', 'кълна')
+            AND lemma_stressed LIKE '%`' AND pos LIKE 'V%'
         UNION SELECT d.child_id FROM ctx c
         INNER JOIN lemma l1 ON l1.lemma_id = c.lemma_id
         INNER JOIN derivation d ON d.parent_id = c.lemma_id
-        INNER JOIN lemma l2 ON d.child_id = l2.lemma_id AND l1.pos = l2.pos
-        WHERE l2.num_stresses > 0
+        INNER JOIN lemma l2 ON d.child_id = l2.lemma_id
+        WHERE l1.pos LIKE 'V%' AND l2.pos LIKE 'V%' -- you need this to match non-reflexive and reflexive verbs
+        AND l2.num_stresses > 0
+    ) SELECT * FROM ctx
+)
+AND (tag LIKE 'V___f_o__' OR tag LIKE 'V___cv_____' OR tag LIKE 'V___cao____');
+
+UPDATE wordform
+SET wordform_stressed
+    = stress_syllable(wordform, MIN(num_syllables, (SELECT find_nth_stressed_syllable(lemma_stressed, 1) FROM lemma WHERE lemma_id = wordform.lemma_id) + 1))
+WHERE lemma_id IN (
+    WITH RECURSIVE ctx(lemma_id) AS (
+        SELECT lemma_id FROM lemma WHERE lemma IN ('дойда', 'зайда') AND pos LIKE 'V%'
+        UNION SELECT d.child_id FROM ctx c
+        INNER JOIN lemma l1 ON l1.lemma_id = c.lemma_id
+        INNER JOIN derivation d ON d.parent_id = c.lemma_id
+        INNER JOIN lemma l2 ON d.child_id = l2.lemma_id
+        WHERE l1.pos LIKE 'V%' AND l2.pos LIKE 'V%' -- you need this to match non-reflexive and reflexive verbs
+        AND l2.num_stresses > 0
     ) SELECT * FROM ctx
 )
 AND (tag LIKE 'V___f_o__' OR tag LIKE 'V___cv_____' OR tag LIKE 'V___cao____');

@@ -37,11 +37,13 @@ SELECT
 	l2.lemma_id AS child_id,
 	'verb-to-verb' AS type
 FROM lemma l1
-INNER JOIN lemma l2 ON l1.pos = l2.pos AND l1.lemma_id != l2.lemma_id
+INNER JOIN lemma l2 ON l1.lemma_id != l2.lemma_id
 WHERE
-	l1.lemma IN ('чета', 'плета') AND
-	l1.pos LIKE 'V%' AND
-	l2.lemma LIKE '%' || l1.lemma
+	l1.lemma IN ('чета', 'плета', 'бода', 'неса', 'клада', 'крада', 'лека', 'мета', 'преда', 'сека', 'веда',
+		'треса', 'паса', 'раста', 'река', 'пека', 'тека', 'гнета', 'дера', 'пера', 'бера', 'сера', 'кълна') AND
+	l1.pos LIKE 'V%' AND -- you need this to match non-reflexive and reflexive verbs
+	l2.pos LIKE 'V%' AND
+	l2.lemma_stressed LIKE '%' || l1.lemma_stressed
 UNION ALL SELECT
 	l1.lemma_id AS parent_id,
 	l2.lemma_id AS child_id,

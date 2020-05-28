@@ -19,13 +19,14 @@ DELETE FROM rechko_wordform WHERE lemma_id = 782; -- прираст is misspelle
 DELETE FROM rechko_wordform WHERE lemma_id = 901;
 
 -- fix bugs in rechko
--- fix wordforms wrongfully marked up as lemmata
 UPDATE rechko_wordform
 SET
 	wordform = SUBSTR(wordform, 1, LENGTH(wordform) - 1) || 'о',
 	wordform_stressed = SUBSTR(wordform_stressed, 1, LENGTH(wordform_stressed) - 1) || 'о'
 WHERE tag = 'Ncms-v' AND is_lemma = 1 AND SUBSTR(wordform, LENGTH(wordform)) = 'а';
-UPDATE rechko_wordform SET is_lemma = 0 WHERE tag = 'Ncms-v' AND is_lemma = 1;
+
+-- fix wordforms wrongfully marked up as lemmata
+UPDATE rechko_wordform SET is_lemma = 0 WHERE tag IN ('Ncms-v', 'Vpptf-o2s', 'Vpptf-o3s') AND is_lemma = 1;
 
 -- replace latin letters with cyrillic equivalents
 UPDATE rechko_wordform SET wordform = REPLACE(wordform, 'o', 'о'), wordform_stressed = REPLACE(wordform_stressed, 'o', 'о');
@@ -49,13 +50,15 @@ SET wordform = REPLACE(wordform, 'черири', 'четири'),
 WHERE lemma_id = 102923;
 
 -- deals with wrong inflections
-DELETE FROM main.rechko_wordform WHERE wordform LIKE 'полугласи%' AND lemma_id = 34169;
-DELETE FROM main.rechko_wordform WHERE wordform LIKE 'радиочаси%' AND lemma_id = 34598;
-DELETE FROM rechko_wordform WHERE wordform = 'начета' AND tag LIKE 'V%' AND is_lemma = 1;
+DELETE FROM rechko_wordform WHERE wordform LIKE 'полугласи%' AND lemma_id = 34169;
+DELETE FROM rechko_wordform WHERE wordform LIKE 'радиочаси%' AND lemma_id = 34598;
 
 -- this helps evade rechko mismatches for reflexive verbs and adjectives
 UPDATE rechko_wordform SET wordform = REPLACE(wordform, ' се', ''), wordform_stressed = REPLACE(wordform_stressed, ' се', '')
 WHERE classification = 'reflexive' or classification = '+reflexive';
+
+-- deals with wrong inflections
+DELETE FROM rechko_wordform WHERE wordform IN ('начета', 'затека', 'завлека') AND tag LIKE 'V%' AND tag NOT LIKE '%r1s' AND is_lemma = 1;
 
 -- fix rechko bugs, where reflexive verbs have wrong imperative forms and are considered lemmata
 UPDATE rechko_wordform
