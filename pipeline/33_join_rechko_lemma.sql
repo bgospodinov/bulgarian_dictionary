@@ -68,6 +68,14 @@ UPDATE main.rechko_lemma SET name_stressed = 'хиля`да' WHERE id = 102948;
 UPDATE main.rechko_lemma SET name_stressed = 'разме`ням' WHERE id = 97770;
 UPDATE main.rechko_lemma SET name_stressed = 'госпожа`' WHERE id = 83823;
 UPDATE main.rechko_lemma SET name_stressed = 'клада`' WHERE id = 98937;
+UPDATE main.rechko_lemma SET name_stressed = 'възме`зден' WHERE id = 2688;
+UPDATE main.rechko_lemma SET name_stressed = 'бо`жи' WHERE id = 24023;
+UPDATE main.rechko_lemma SET name_stressed = 'те`жичък' WHERE id = 83728;
+
+-- fix stress of misstressed adjectives
+-- e.g. задуше`н -> заду`шен, запасе`н -> запа`сен, заразе`н -> зара`зен
+UPDATE main.rechko_lemma SET name_stressed = replace_last_stress(name_stressed, find_nth_stressed_syllable_rev(name_stressed, 1) - 1)
+WHERE id IN (4548, 4576, 4581, 6010, 6301, 6757, 6788, 6921, 6950, 7076, 7255, 6580, 8278, 8843, 8867, 8899, 8959, 8974, 9244, 10253, 11518, 76975);
 
 -- fix some spelling mistakes
 -- dont forget to delete corresponding wordforms from rechko_wordform
