@@ -47,6 +47,11 @@ FROM rechko.rechko_lemma rl
 LEFT JOIN rechko_word_type rwt
 	ON rl.type_id = rwt.id;
 
+-- replace latin letters with cyrillic equivalents
+UPDATE rechko_lemma SET
+	name = REPLACE(REPLACE(name, 'o', 'о'), 'e', 'е'),
+	name_stressed = REPLACE(REPLACE(name_stressed, 'o', 'о'), 'e', 'е');
+
 -- fix some mistakes in rechko
 UPDATE main.rechko_lemma SET pos = 'V' WHERE name = 'недей';
 UPDATE main.rechko_lemma SET name_stressed = name WHERE name_stressed IS NULL;
@@ -71,6 +76,7 @@ UPDATE main.rechko_lemma SET name_stressed = 'клада`' WHERE id = 98937;
 UPDATE main.rechko_lemma SET name_stressed = 'възме`зден' WHERE id = 2688;
 UPDATE main.rechko_lemma SET name_stressed = 'бо`жи' WHERE id = 24023;
 UPDATE main.rechko_lemma SET name_stressed = 'те`жичък' WHERE id = 83728;
+UPDATE main.rechko_lemma SET name_stressed = 'де`сен' WHERE id = 84676;
 
 -- fix stress of misstressed adjectives
 -- e.g. задуше`н -> заду`шен, запасе`н -> запа`сен, заразе`н -> зара`зен

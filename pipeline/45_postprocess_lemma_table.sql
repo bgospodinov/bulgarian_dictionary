@@ -12,6 +12,10 @@ DELETE FROM lemma WHERE ROWID IN (
 INSERT INTO lemma (lemma, lemma_stressed, definition, comment, pos, num_syllables)
 VALUES('лека', 'лека`', 'archetype', 'archetype', 'V', 2);
 
+-- insert some lemmata with double stresses
+INSERT INTO lemma (lemma, lemma_stressed, pos)
+VALUES('пролом', 'про`лом', 'Ncm'), ('наедно', 'наедно`', 'D');
+
 -- insert lemmata without wordforms into wordform table
 INSERT INTO wordform (lemma_id, wordform, wordform_stressed, is_lemma, tag, num_syllables, source)
 SELECT

@@ -29,7 +29,9 @@ WHERE tag = 'Ncms-v' AND is_lemma = 1 AND SUBSTR(wordform, LENGTH(wordform)) = '
 UPDATE rechko_wordform SET is_lemma = 0 WHERE tag IN ('Ncms-v', 'Vpptf-o2s', 'Vpptf-o3s') AND is_lemma = 1;
 
 -- replace latin letters with cyrillic equivalents
-UPDATE rechko_wordform SET wordform = REPLACE(wordform, 'o', 'о'), wordform_stressed = REPLACE(wordform_stressed, 'o', 'о');
+UPDATE rechko_wordform SET
+	wordform = REPLACE(REPLACE(wordform, 'o', 'о'), 'e', 'е'),
+	wordform_stressed = REPLACE(REPLACE(wordform_stressed, 'o', 'о'), 'e', 'е');
 
 -- certain words are not inflected
 UPDATE rechko_wordform SET wordform = 'урната', wordform_stressed = 'урната', is_lemma = 0 WHERE lemma_id = 114436 AND tag = 'Ncfsd';
