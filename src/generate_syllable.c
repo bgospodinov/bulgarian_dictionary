@@ -8,21 +8,7 @@
 #include <sqlite3_aux.h>
 #include <string_aux.h>
 
-static void generate_syllable();
 static sqlite3 * db = NULL;
-
-int main(int argc, char ** argv) {
-	setlocale(LC_ALL, "");
-	if (argc != 2) {
-		fprintf(stderr, "You must pass the database path as argument.\n");
-		exit(1);
-	}
-	char * db_path = argv[1];
-	initialize_db(&db, db_path);
-	generate_syllable();
-	sqlite3_close(db);
-	return 0;
-}
 
 static void generate_syllable() {
 	sqlite3_stmt * select_stmt = 0, * insert_stmt = 0;
@@ -45,6 +31,7 @@ static void generate_syllable() {
 				wordform_id = sqlite3_column_int(select_stmt, 1);
 				pronunciation  = sqlite3_column_text(select_stmt, 2);
 				pronunciation_stressed  = sqlite3_column_text(select_stmt, 3);
+
 				if (pronunciation != NULL) {
 					size_t pron_len = strlen(pronunciation);
 					size_t wpron_len = convert_to_wstring_h(wpron, pronunciation, pron_len);
@@ -73,10 +60,14 @@ static void generate_syllable() {
 						int peak_distance = right_peak - left_peak;
 
 						// scan for hyphens or spaces first
-						for (int j = peak_pos[i] + 1; j < peak_pos[i + 1] - 1; j++) {
+						// and discount й from peak distance
+						for (int j = left_peak + 1; j < right_peak; j++) {
 							if (wpron[j] == L'-' || wpron[j] == L' ') {
 								syllable_end_pos = j - 1;
 								goto syllable_end;
+							}
+							else if (wpron[j] == L'й') {
+								peak_distance--;
 							}
 						}
 
@@ -85,10 +76,10 @@ static void generate_syllable() {
 						}
 						else if (peak_distance > 3) {
 							syllable_end_pos++;
-							for (int j = peak_pos[i] + 2;
-									j < (peak_pos[i + 1] - 1) &&
+							for (int j = left_peak + 2;
+									j < (right_peak - 1) &&
 										sonority_char(wpron[j]) <= sonority_char(wpron[j - 1]) &&
-										wpron[j] != L'й';
+										wpron[j + 1] != L'й';
 								j++, syllable_end_pos++
 							);
 						}
@@ -169,4 +160,17 @@ static void generate_syllable() {
 	rc = sqlite3_exec(db, "END TRANSACTION", 0, 0, &zErrMsg);
 	rc = sqlite3_finalize(select_stmt);
 	rc = sqlite3_finalize(insert_stmt);
+}
+
+int main(int argc, char ** argv) {
+	setlocale(LC_ALL, "");
+	if (argc != 2) {
+		fprintf(stderr, "You must pass the database path as argument.\n");
+		exit(1);
+	}
+	char * db_path = argv[1];
+	initialize_db(&db, db_path);
+	generate_syllable();
+	sqlite3_close(db);
+	return 0;
 }
