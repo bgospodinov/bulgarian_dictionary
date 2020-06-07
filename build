@@ -314,6 +314,7 @@ fi
 
 if [ $CLEAN_TEMP_DATA ] ; then
 	sqlite3 $DB_MAIN_PATH "DROP TABLE murdarov_lemma;"
+	sqlite3 $DB_MAIN_PATH "DROP TABLE derivation;"
 fi
 
 echo Create pronunciation table

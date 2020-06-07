@@ -212,7 +212,13 @@ SET wordform_stressed =
 WHERE tag LIKE 'N_np_' AND ((
     SELECT COUNT(*) FROM wordform w
     WHERE w.lemma_id = wordform.lemma_id AND w.is_lemma = 1 AND w.wordform_stressed LIKE '%о' AND num_stresses > 0
-) > 0);
+) > 0)
+AND lemma_id NOT IN
+    (SELECT lemma_id FROM lemma WHERE lemma IN
+        ('демо', 'диско', 'експо', 'интро', 'кадро', 'каско', 'банджо', 'велкро', 'клио', 'лого', 'мамбо', 'Марго', 'поло', 'порно',
+        'ретро', 'серво', 'сумо', 'его', 'джъмбо', 'етно', 'инфо', 'калчо', 'кендо', 'бинго', 'веро', 'лего', 'Локо', 'манго', 'мото',
+        'пончо', 'промо', 'ранчо', 'рондо', 'Стройко')
+    );
 
 -- deal with neuter nouns whose plural ends in 'ена', 'еса' or 'я'
 CREATE TEMP TABLE NeuterNounsEnaEsaJa AS

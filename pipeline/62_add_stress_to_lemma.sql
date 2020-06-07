@@ -142,7 +142,7 @@ WHERE num_syllables > 0 AND num_stresses = 0 AND lemma LIKE '%овище' and po
 
 UPDATE lemma
 SET lemma_stressed = stress_syllable(lemma, num_syllables)
-WHERE num_syllables > 0 AND num_stresses = 0 AND lemma LIKE '%ат' AND lemma_id NOT IN (33690);
+WHERE num_syllables > 0 AND num_stresses = 0 AND lemma LIKE '%ат' AND lemma_id NOT IN (33690, 46728, 53736, 182042, 182131, 182290, 182922);
 
 UPDATE lemma
 SET lemma_stressed = stress_syllable(lemma, num_syllables - 1)
@@ -296,7 +296,7 @@ WHERE num_syllables = 2 AND num_stresses = 0 and pos = 'Ncm' and lemma in (
     'капсул', 'каркас', 'карлсберг', 'карнет', 'картоп', 'картридж', 'келвин',
     'киликс', 'кокпит', 'команч', 'конкум', 'концепт', 'кончов', 'кортекс',
     'кромлех', 'левъл', 'лейбъл', 'лексус', 'линкълн', 'магнум', 'макрос', 'Маргин',
-    'маржин', 'матрикс', 'метъл', 'мишунг', 'морбил', 'морон',
+    'маржин', 'матрикс', 'метъл', 'мишунг', 'морбил', 'морон', 'уврат',
     'мъпет', 'ориндж', 'отврат', 'памперс', 'паунд',  'пеналт',
     'пикчърс', 'пинбол', 'питбул', 'питлейн', 'плейлист',   'плимут',
     'плъгин', 'попъп', 'преслап', 'примас', 'припас', 'прицеп', 'провес',
